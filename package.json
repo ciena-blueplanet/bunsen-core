@@ -1,0 +1,37 @@
+{
+  "name": "bunsen-core",
+  "version": "0.0.1",
+  "description": "Core bunsen library",
+  "main": "lib/index.js",
+  "scripts": {
+    "lint": "eslint *.js lib tests",
+    "test": "npm run lint && npm run utest",
+    "utest": "istanbul cover _mocha -- --recursive tests"
+  },
+  "repository": "git@github.com:ciena-blueplanet/bunsen-core.git",
+  "engines": {
+    "node": ">= 5.0.0"
+  },
+  "keywords": [
+    "bunsen"
+  ],
+  "author": "Adam Meadows [https://github.com/job13er]",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/job13er/bunsen-core/issues"
+  },
+  "homepage": "https://github.com/job13er/bunsen-core#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-subset": "^1.2.2",
+    "eslint": "^2.11.1",
+    "eslint-config-frost-standard": "^2.0.0",
+    "istanbul": "^0.4.3",
+    "mocha": "^2.5.3",
+    "sinon": "^1.17.4"
+  },
+  "dependencies": {
+    "lodash": "^4.13.1",
+    "z-schema": "^3.17.0"
+  }
+}
