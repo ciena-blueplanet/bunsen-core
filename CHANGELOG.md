@@ -1,3 +1,17 @@
+# 0.2.0
+ * **Added** a new schema for v2 of bunsen views. 
+
+### What's new in bunsen views v2?
+This schema isn't supported in any implementation of bunsen yet and while the schema itself is much longer, it provides the ability to write much more concise and simpler view definitions. 
+ * **Removed** the concept of `containers` and replaced it with `cells` that can have a `children` property (an `array` of `cells`). 
+ * **Replaced** the concept of `rootContainers` with a simple top-level `array` of `cells` to serve as entry-points (tabs if there is more than one)
+ * **Added** the `cellDefinitions` property to the top-level of the schema, allowing for re-use of `cells`
+ * **Added** an `extends` property to `cell` to allow re-use of previously defined `cellDefinitions`
+ * **Added** schemas for the `options` (formerly `properties`) that can be passed into different  `renderers`
+
+
+
+
 # 0.1.0
  * **Added** validator code from `ember-frost-bunsen`
 
