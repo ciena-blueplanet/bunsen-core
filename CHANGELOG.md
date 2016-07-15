@@ -1,3 +1,9 @@
+# 0.3.0
+
+* Converted source code from CommonJS to ES6 modules. Published package still includes CommonJS code under `lib` directory but now also includes the ES6 modules under a new `src` directory.
+
+
+
 # 0.2.0
  * **Added** a new schema for v2 of bunsen views. 
 
