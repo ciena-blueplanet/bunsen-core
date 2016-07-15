@@ -1,11 +1,17 @@
 'use strict'
 
-require('../typedefs')
-const _ = require('lodash')
-const ZSchema = require('z-schema')
+import '../typedefs'
+import _ from 'lodash'
+import ZSchema from 'z-schema'
 
-const utils = require('./utils')
-const dereference = require('../dereference').dereference
+import {
+  addErrorResult,
+  aggregateResults,
+  ensureJsonObject,
+  validateRequiredAttribute
+} from './utils'
+
+import {dereference} from '../dereference'
 
 const validator = new ZSchema({
   noTypeless: true,
@@ -31,14 +37,14 @@ const lib = {
     ]
 
     if (model.editable !== undefined && typeof model.editable !== 'boolean') {
-      utils.addErrorResult(results, `${path}/editable`, `Expected a boolean, found [${JSON.stringify(model.editable)}]`)
+      addErrorResult(results, `${path}/editable`, `Expected a boolean, found [${JSON.stringify(model.editable)}]`)
     }
 
     if (model.type === 'object') {
       _.forEach(model.properties, (subModel, key) => {
         const subPath = `${path}/properties/${key}`
         if (key.indexOf('.') !== -1) {
-          utils.addErrorResult(results, subPath, 'Property names cannot include "."')
+          addErrorResult(results, subPath, 'Property names cannot include "."')
         }
         // We have a circular dependency in these functions, so one needs to be defined before the others
         results.push(lib.validateSubModel(subPath, subModel)) // eslint-disable-line no-use-before-define
@@ -48,7 +54,7 @@ const lib = {
       results.push(lib._validateArray(path, model)) // eslint-disable-line no-use-before-define
     }
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   },
 
   /**
@@ -58,8 +64,8 @@ const lib = {
    * @returns {BunsenValidationResult} the results of the model validation
    */
   validateSubModel (path, subModel) {
-    return utils.aggregateResults([
-      utils.validateRequiredAttribute(subModel, path, 'type', supportedTypes),
+    return aggregateResults([
+      validateRequiredAttribute(subModel, path, 'type', supportedTypes),
       lib._validateChildren(path, subModel)
     ])
   },
@@ -89,7 +95,7 @@ const lib = {
       })
     }
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   },
 
   /**
@@ -113,7 +119,7 @@ const lib = {
    */
   validate (model) {
     // let strResult = null
-    let jsonObject = utils.ensureJsonObject(model)
+    let jsonObject = ensureJsonObject(model)
     model = jsonObject[0]
     let strResult = jsonObject[1]
 
@@ -133,7 +139,7 @@ const lib = {
 
     const results = []
     if (model.type !== 'object') {
-      utils.addErrorResult(results, '#/type', 'Only root level "object" type is supported.')
+      addErrorResult(results, '#/type', 'Only root level "object" type is supported.')
     } else {
       results.push(lib._validateChildren('#', model))
     }
@@ -146,7 +152,7 @@ const lib = {
       lib.validateRefs(model)
     )
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   }
 }
 

@@ -1,5 +1,5 @@
 // The JSON Schema for a view definition (version 1.0)
-module.exports = {
+export default {
   additionalProperties: false,
   definitions: {
     cell: {
