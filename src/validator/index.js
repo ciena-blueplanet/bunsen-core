@@ -1,15 +1,22 @@
 'use strict'
 
-require('../typedefs')
-const _ = require('lodash')
+import '../typedefs'
+import _ from 'lodash'
 
-const dereference = require('../dereference').dereference
-const utils = require('./utils')
-const containerValidatorFactory = require('./container')
-const viewSchema = require('./view-schemas/v1')
+import {dereference} from '../dereference'
 
-const validateModel = require('./value').validate
-const validateValue = require('./value').validate
+import {
+  addWarningResult,
+  aggregateResults,
+  ensureJsonObject,
+  validateRequiredAttribute
+} from './utils'
+
+import containerValidatorFactory from './container'
+import viewSchema from './view-schemas/v1'
+
+import {validate as validateModel} from './value'
+const validateValue = validateModel
 
 const lib = {
   builtInRenderers: {
@@ -46,8 +53,8 @@ const lib = {
       const container = view.containers[containerIndex]
       const containerPath = `#/containers/${containerIndex}`
       const rootContainerResults = [
-        utils.validateRequiredAttribute(rootContainer, path, 'label'),
-        utils.validateRequiredAttribute(rootContainer, path, 'container', _.map(view.containers, (c) => c.id))
+        validateRequiredAttribute(rootContainer, path, 'label'),
+        validateRequiredAttribute(rootContainer, path, 'container', _.map(view.containers, (c) => c.id))
       ]
 
       if (container !== undefined) {
@@ -56,10 +63,10 @@ const lib = {
         )
       }
 
-      return utils.aggregateResults(rootContainerResults)
+      return aggregateResults(rootContainerResults)
     })
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   },
 
   /**
@@ -86,7 +93,7 @@ const lib = {
       })
     })
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   },
 
   /**
@@ -100,7 +107,7 @@ const lib = {
   validate (view, model, renderers, owner) {
     renderers = renderers || Object.keys(lib.builtInRenderers)
     let strResult = null
-    const temp = utils.ensureJsonObject(view)
+    const temp = ensureJsonObject(view)
     view = temp[0]
     strResult = temp[1]
 
@@ -137,14 +144,14 @@ const lib = {
     const validatedPaths = containerValidator.containersValidated
     const missedPaths = _.difference(allContainerPaths, validatedPaths)
     missedPaths.forEach((path) => {
-      utils.addWarningResult(results, path, 'Unused container was not validated')
+      addWarningResult(results, path, 'Unused container was not validated')
     })
 
     if (strResult !== null) {
       results.push(strResult)
     }
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   },
 
   // convenience exports so everything can be consumed from this entry point
@@ -152,4 +159,4 @@ const lib = {
   validateValue
 }
 
-module.exports = lib
+export default lib

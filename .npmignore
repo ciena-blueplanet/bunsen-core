@@ -1,0 +1,8 @@
+.github/
+coverage/
+tests/
+.eslintrc
+.gitignore
+.npmignore
+.pullapprove.yml
+.travis.yml

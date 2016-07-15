@@ -1,11 +1,16 @@
 'use strict'
 
-require('../typedefs')
-const _ = require('lodash')
+import '../typedefs'
+import _ from 'lodash'
 
-const getSubModel = require('../utils').getSubModel
-const viewSchema = require('./view-schemas/v1')
-const utils = require('./utils')
+import {getSubModel} from '../utils'
+import viewSchema from './view-schemas/v1'
+
+import {
+  addErrorResult,
+  addWarningResult,
+  aggregateResults
+} from './utils'
 
 function createFactory (proto) {
   const factory = function () {
@@ -39,7 +44,7 @@ function isObjectArray (model) {
 /**
  * @alias validator
  */
-module.exports = createFactory({
+export default createFactory({
 
   /** attributes required by every container */
   REQUIRED_CONTAINER_ATTRS: ['id', 'rows'],
@@ -78,14 +83,14 @@ module.exports = createFactory({
     const containerIndex = _.findIndex(this.containers, {id: containerId})
     const container = this.containers[containerIndex]
     if (container === undefined) {
-      utils.addErrorResult(results, path, `Invalid container reference "${containerId}"`)
+      addErrorResult(results, path, `Invalid container reference "${containerId}"`)
     } else {
       results.push(
         this.validate(`#/containers/${containerIndex}`, container, model)
       )
     }
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   },
 
   /**
@@ -114,10 +119,10 @@ module.exports = createFactory({
       !_.includes(this.renderers, rendererName) &&
       !this.owner.lookup(`component:${rendererName}`)
     ) {
-      utils.addErrorResult(results, rendererPath, `Invalid renderer reference "${rendererName}"`)
+      addErrorResult(results, rendererPath, `Invalid renderer reference "${rendererName}"`)
     }
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   },
 
   /**
@@ -131,14 +136,14 @@ module.exports = createFactory({
     const results = []
     if (cell.container) {
       const msg = 'Containers on arrays not currently supported. Maybe you want it on the item sub-object?'
-      utils.addErrorResult(results, path, msg)
+      addErrorResult(results, path, msg)
     } else if (cell.item.container) {
       results.push(
         this._validateSubContainer(`${path}/item/container`, cell.item.container, model.items)
       )
     }
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   },
 
   /**
@@ -151,7 +156,7 @@ module.exports = createFactory({
   _validateModelCell (path, cell, subModel) {
     const results = []
     if (subModel === undefined) {
-      utils.addErrorResult(results, `${path}/model`, `Invalid model reference "${cell.model}"`)
+      addErrorResult(results, `${path}/model`, `Invalid model reference "${cell.model}"`)
     } else if (isCustomCell(cell)) {
       results.push(
         this._validateCustomCell(path, cell)
@@ -166,7 +171,7 @@ module.exports = createFactory({
       )
     }
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   },
 
   /**
@@ -181,8 +186,8 @@ module.exports = createFactory({
     const dependencyModel = getSubModel(model, cell.dependsOn)
 
     if (dependencyModel === undefined) {
-      utils.addErrorResult(results, `${path}/dependsOn`, `Invalid model reference "${cell.dependsOn}"`)
-      return utils.aggregateResults(results)
+      addErrorResult(results, `${path}/dependsOn`, `Invalid model reference "${cell.dependsOn}"`)
+      return aggregateResults(results)
     }
 
     const parts = cell.model.split('.')
@@ -193,7 +198,7 @@ module.exports = createFactory({
       this._validateModelCell(path, cell, subModel)
     )
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   },
 
   /**
@@ -223,17 +228,17 @@ module.exports = createFactory({
         this._validateSubContainer(`${path}/container`, cell.container, model)
       )
     } else {
-      utils.addErrorResult(results, path, 'Either "model" or "container" must be defined for each cell.')
+      addErrorResult(results, path, 'Either "model" or "container" must be defined for each cell.')
     }
 
     const knownAttributes = _.keys(viewSchema.definitions.cell.properties)
     _.forEach(_.keys(cell), (attr) => {
       if (!_.includes(knownAttributes, attr)) {
-        utils.addWarningResult(results, path, `Unrecognized attribute "${attr}"`)
+        addWarningResult(results, path, `Unrecognized attribute "${attr}"`)
       }
     })
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   },
 
   /**
@@ -260,7 +265,7 @@ module.exports = createFactory({
       return this._validateCell(`${path}/${index}`, cell, model)
     })
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   },
 
   /**
@@ -306,6 +311,6 @@ module.exports = createFactory({
       )
     })
 
-    return utils.aggregateResults(results)
+    return aggregateResults(results)
   }
 })
