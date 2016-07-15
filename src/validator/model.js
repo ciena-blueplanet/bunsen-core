@@ -13,13 +13,20 @@ import {
 
 import {dereference} from '../dereference'
 
+import customFormats from './custom-formats'
+
+// Register custom formats with z-schema
+_.forIn(customFormats, (validator, name) => {
+  ZSchema.registerFormat(name, validator)
+})
+
 const validator = new ZSchema({
   noTypeless: true,
   forceItems: true
 })
 
 /** currently supported model types */
-const supportedTypes = ['string', 'object', 'array', 'number', 'boolean']
+const supportedTypes = ['string', 'object', 'array', 'integer', 'number', 'boolean']
 
 const lib = {
   /**

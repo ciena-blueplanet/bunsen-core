@@ -34,7 +34,7 @@ describe('model validator', () => {
 
       it('returns proper result', () => {
         const errorMsg = 'Invalid value "foo-bar" for "type" Valid options are ' +
-          '["string","object","array","number","boolean"]'
+          '["string","object","array","integer","number","boolean"]'
 
         expect(result).to.eql({
           errors: [
