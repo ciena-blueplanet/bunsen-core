@@ -156,3 +156,5 @@ export function validate (view, model, renderers, owner) {
 
   return aggregateResults(results)
 }
+
+export default validate
