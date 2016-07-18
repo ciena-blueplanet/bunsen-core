@@ -1,4 +1,4 @@
-import {isURL} from 'validator'
+import validator from 'validator'
 
 /**
  * Validate value as a URL
@@ -7,7 +7,7 @@ import {isURL} from 'validator'
  */
 export default function (value) {
   try {
-    return isURL(value)
+    return validator.isURL(value)
   } catch (err) {
     return false
   }
