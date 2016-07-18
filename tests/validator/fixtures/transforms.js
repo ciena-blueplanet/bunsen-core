@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  version: '1.0',
+  version: '2.0',
   type: 'form',
 
   containers: [
@@ -29,5 +29,5 @@ module.exports = {
     }
   ],
 
-  rootContainers: [{label: 'Main', container: 'main'}]
+  cells: [{label: 'Main', container: 'main'}]
 }

@@ -14,7 +14,7 @@ module.exports = {
     }
   ],
 
-  rootContainers: [
+  cells: [
     {
       label: 'Foo',
       container: 'foo'

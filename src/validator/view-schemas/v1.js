@@ -215,7 +215,7 @@ export default {
       },
       minItems: 1
     },
-    rootContainers: {
+    cells: {
       type: 'array',
       description: 'Top-level entry-point containers (i.e. tabs) currently only one is allowed',
       items: {
@@ -249,14 +249,14 @@ export default {
       type: 'string',
       description: 'This schema is just for v1',
       enum: [
-        '1.0'
+        '2.0'
       ]
     }
   },
   required: [
     'version',
     'type',
-    'rootContainers',
+    'cells',
     'containers'
   ]
 }

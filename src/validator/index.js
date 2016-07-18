@@ -33,40 +33,40 @@ export const builtInRenderers = {
 }
 
 /**
- * Make sure the rootContainers (if specified) are valid
+ * Make sure the cells (if specified) are valid
  * @param {BunsenView} view - the schema to validate
  * @param {BunsenModel} model - the JSON schema that the containers will reference
  * @param {ContainerValidator} containerValidator - the validator instance for a container in the current view
- * @returns {BunsenValidationResult} the result of validating the rootContainers
+ * @returns {BunsenValidationResult} the result of validating the cells
  */
-function _validateRootContainers (view, model, containerValidator) {
+function _validateCells (view, model, containerValidator) {
   // We should already have the error for it not existing at this point, so just fake success
   // this seems wrong, but I'm not sure of a better way to do it - ARM
-  if (!view.rootContainers) {
+  if (!view.cells) {
     return {
       errors: [],
       warnings: []
     }
   }
 
-  const results = _.map(view.rootContainers, (rootContainer, index) => {
-    const path = `#/rootContainers/${index}`
-    const containerId = rootContainer.container
+  const results = _.map(view.cells, (cell, index) => {
+    const path = `#/cells/${index}`
+    const containerId = cell.container
     const containerIndex = _.findIndex(view.containers, {id: containerId})
     const container = view.containers[containerIndex]
     const containerPath = `#/containers/${containerIndex}`
-    const rootContainerResults = [
-      validateRequiredAttribute(rootContainer, path, 'label'),
-      validateRequiredAttribute(rootContainer, path, 'container', _.map(view.containers, (c) => c.id))
+    const cellResults = [
+      validateRequiredAttribute(cell, path, 'label'),
+      validateRequiredAttribute(cell, path, 'container', _.map(view.containers, (c) => c.id))
     ]
 
     if (container !== undefined) {
-      rootContainerResults.push(
+      cellResults.push(
         containerValidator.validate(containerPath, container)
       )
     }
 
-    return aggregateResults(rootContainerResults)
+    return aggregateResults(cellResults)
   })
 
   return aggregateResults(results)
@@ -81,10 +81,10 @@ function _validateRootContainers (view, model, containerValidator) {
  */
 function _validateRootAttributes (view, model, containerValidator) {
   const results = [
-    _validateRootContainers(view, model, containerValidator)
+    _validateCells(view, model, containerValidator)
   ]
 
-  const knownAttributes = ['version', 'type', 'rootContainers', 'containers']
+  const knownAttributes = ['version', 'type', 'cells', 'containers']
   const unknownAttributes = _.difference(_.keys(view), knownAttributes)
   results.push({
     errors: [],

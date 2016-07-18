@@ -63,7 +63,7 @@
  */
 
 /**
- * @typedef {Object} BunsenRootContainer
+ * @typedef {Object} BunsenCell
  * @property {String} container - reference to the ID of a container defined in the containers array
  * @property {String} label - the user visible label for this root view (displayed as tab name if more than one)
  */
@@ -95,7 +95,7 @@
 /**
  * @typedef BunsenView
  * @property {BunsenContainer[]} containers - the containers for the config (layout)
- * @property {BunsenRootContainer[]} rootContainers - the top-level views (create tabs if more than one, not yet supported)
+ * @property {BunsenCell[]} cells - the top-level views (create tabs if more than one, not yet supported)
  * @property {String} type - the type of this schema (currently only "form" is supported)
  * @property {String} version - the version of this schema
  */
