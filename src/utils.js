@@ -1,5 +1,3 @@
-'use strict'
-
 import './typedefs'
 import _ from 'lodash'
 
@@ -104,8 +102,7 @@ export function getSubModel (model, reference, dependencyReference) {
  * @param {*} defaultValue - the default value to use if no other defaults are found
  * @returns {*} the initial value
  */
-export function getInitialValue (id, formValue, initialValue, model, defaultValue) {
-  defaultValue = defaultValue || ''
+export function getInitialValue (id, formValue, initialValue, model, defaultValue = '') {
   const values = [_.get(formValue, id), initialValue, model['default']]
   const value = _.find(values, (value) => value !== undefined)
 
@@ -123,8 +120,7 @@ export function getInitialValue (id, formValue, initialValue, model, defaultValu
  * @param {String} startPath - start path
  * @returns {String} the value
  */
-export function findValue (obj, valuePath, startPath) {
-  startPath = startPath || ''
+export function findValue (obj, valuePath, startPath = '') {
   const depths = startPath.split('.')
   const valueLevels = valuePath.split('./')
   const parentLevels = valueLevels.filter((element) => element === '.')
@@ -139,21 +135,25 @@ export function findValue (obj, valuePath, startPath) {
  * @param {Object} valueObj - the value object to mine for query values
  * @param {String} queryJSON - the stringified filter object to parse
  * @param {String} startPath - start path
+ * @param {Boolean} allowEmpty - allow empty values to be represented by ''
  * @returns {String} the populated filter
  * @throws Will throw when any value at the resolved path is empty
  */
-export function parseVariables (valueObj, queryJSON, startPath) {
-  startPath = startPath || ''
+export function parseVariables (valueObj, queryJSON, startPath = '', allowEmpty = false) {
   if (queryJSON.indexOf('${') !== -1) {
     const valueVariable = queryJSON.split('${')[1].split('}')[0]
-    const result = findValue(valueObj, valueVariable, startPath)
+    let result = findValue(valueObj, valueVariable, startPath)
 
     if (result === undefined || String(result) === '') {
-      throw new Error(`value at ${valueVariable} is empty`)
+      if (allowEmpty) {
+        result = ''
+      } else {
+        throw new Error(`value at ${valueVariable} is empty`)
+      }
     }
 
     const newQueryJson = queryJSON.split('${' + valueVariable + '}').join(result)
-    return parseVariables(valueObj, newQueryJson, startPath)
+    return parseVariables(valueObj, newQueryJson, startPath, allowEmpty)
   }
   return queryJSON
 }
@@ -165,7 +165,7 @@ export function parseVariables (valueObj, queryJSON, startPath) {
  * @param {String} startPath - start path
  * @returns {Object} the populated query
  */
-export function populateQuery (valueObj, query, startPath) {
+export function populateQuery (valueObj, query, startPath = '') {
   return JSON.parse(parseVariables(valueObj, JSON.stringify(query), startPath))
 }
 
