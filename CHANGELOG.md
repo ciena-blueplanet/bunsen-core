@@ -1,3 +1,12 @@
+# 0.4.0
+
+* **Added** conditions evaluation from `ember-frost-bunsen`.
+* **Added** generator from `ember-frost-bunsen`.
+* **Added** custom formats from `ember-frost-bunsen.
+* **Updated** validator code to contain latest changes from `ember-frost-bunsen`.
+* **Updated** dependencies to latest versions.
+
+
 # 0.3.0
 
 * Converted source code from CommonJS to ES6 modules. Published package still includes CommonJS code under `lib` directory but now also includes the ES6 modules under a new `src` directory.
