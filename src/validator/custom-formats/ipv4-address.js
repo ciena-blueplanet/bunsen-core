@@ -2,10 +2,7 @@
  * @reference https://en.wikipedia.org/wiki/IPv4
  */
 
-import _ from 'lodash'
-
-export const max = 255
-export const min = 0
+import {isIP} from 'validator'
 
 /**
  * Validate value as an IPv4 address
@@ -13,30 +10,13 @@ export const min = 0
  * @returns {Boolean} whether or not value is valid
  */
 export default function (value) {
-  if (!_.isString(value)) {
+  try {
+    return (
+      isIP(value, 4) &&
+      !/^0[1-9]/.test(value) && // Prevent leading 0's in first octect
+      !/\.0[1-9]/.test(value) // Prevent leading 0's in other octets
+    )
+  } catch (err) {
     return false
   }
-
-  const octets = value.split('.')
-
-  if (octets.length !== 4) {
-    return false
-  }
-
-  for (var i = 0; i < 4; i++) {
-    const octet = octets[i]
-    const number = parseInt(octet, 10)
-
-    // Make sure octet is within valid numeric range
-    if (number < min || number > max) {
-      return false
-    }
-
-    // If octet contains non-numeric characters it is invalid
-    if (number.toString() !== octet) {
-      return false
-    }
-  }
-
-  return true
 }

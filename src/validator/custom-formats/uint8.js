@@ -1,7 +1,7 @@
 import rangeFnFactory from './range-fn-factory'
 
-export const max = 255
-export const min = 0
+const max = 255
+const min = 0
 
 /**
  * Validate value as an unsigned 8-bit integer

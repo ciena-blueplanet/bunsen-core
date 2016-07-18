@@ -4,9 +4,9 @@
 
 import rangeFnFactory from './range-fn-factory'
 
-export const max = 4095
-export const min = 0
-export const reserved = [
+const max = 4095
+const min = 0
+const reserved = [
   0,
   4095
 ]

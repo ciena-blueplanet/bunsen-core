@@ -1,24 +1,24 @@
 const expect = require('chai').expect
 
 const customFormats = require('../../../lib/validator/custom-formats')
-const bgpAs = require('../../../lib/validator/custom-formats/bgp-as').default
+const bgpAs = require('../../../lib/validator/custom-formats/bgp-as')
 const date = require('../../../lib/validator/custom-formats/date')
 const hexString = require('../../../lib/validator/custom-formats/hex-string')
-const int8 = require('../../../lib/validator/custom-formats/int8').default
-const int16 = require('../../../lib/validator/custom-formats/int16').default
-const int32 = require('../../../lib/validator/custom-formats/int32').default
+const int8 = require('../../../lib/validator/custom-formats/int8')
+const int16 = require('../../../lib/validator/custom-formats/int16')
+const int32 = require('../../../lib/validator/custom-formats/int32')
 const int64 = require('../../../lib/validator/custom-formats/int64')
-const ipv4Address = require('../../../lib/validator/custom-formats/ipv4-address').default
-const ipv4Interface = require('../../../lib/validator/custom-formats/ipv4-interface').default
-const ipv4Prefix = require('../../../lib/validator/custom-formats/ipv4-prefix').default
+const ipv4Address = require('../../../lib/validator/custom-formats/ipv4-address')
+const ipv4Interface = require('../../../lib/validator/custom-formats/ipv4-interface')
+const ipv4Prefix = require('../../../lib/validator/custom-formats/ipv4-prefix')
 const netmask = require('../../../lib/validator/custom-formats/netmask')
 const portNumber = require('../../../lib/validator/custom-formats/port-number')
-const time = require('../../../lib/validator/custom-formats/time').default
-const uint8 = require('../../../lib/validator/custom-formats/uint8').default
-const uint16 = require('../../../lib/validator/custom-formats/uint16').default
-const uint32 = require('../../../lib/validator/custom-formats/uint32').default
+const time = require('../../../lib/validator/custom-formats/time')
+const uint8 = require('../../../lib/validator/custom-formats/uint8')
+const uint16 = require('../../../lib/validator/custom-formats/uint16')
+const uint32 = require('../../../lib/validator/custom-formats/uint32')
 const url = require('../../../lib/validator/custom-formats/url')
-const vlanId = require('../../../lib/validator/custom-formats/vlan-id').default
+const vlanId = require('../../../lib/validator/custom-formats/vlan-id')
 
 describe('custom formats', () => {
   it('includes bgp-as format', () => {

@@ -1,3 +1,5 @@
+import {isURL} from 'validator'
+
 /**
  * Validate value as a URL
  * @param {Any} value - value to validate
@@ -5,8 +7,7 @@
  */
 export default function (value) {
   try {
-    new URL(value) // eslint-disable-line no-new
-    return true
+    return isURL(value)
   } catch (err) {
     return false
   }

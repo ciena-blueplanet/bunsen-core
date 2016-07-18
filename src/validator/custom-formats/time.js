@@ -7,7 +7,7 @@ import _ from 'lodash'
  * @param {Number} max - end of range (inclusive)
  * @returns {Boolean} whether or not value is within range
  */
-export function inRange (value, min, max) {
+function inRange (value, min, max) {
   const int = parseInt(value, 10)
 
   return (

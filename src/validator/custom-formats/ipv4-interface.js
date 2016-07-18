@@ -6,7 +6,7 @@ import _ from 'lodash'
 import ipv4Address from './ipv4-address'
 import {ipAddressBits, networkMaskValid} from './utils'
 
-export const firstOctetMax = 253
+const firstOctetMax = 253
 
 /**
  * Validate value as an IPv4 interface

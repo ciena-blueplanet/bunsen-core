@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 
-const time = require('../../../lib/validator/custom-formats/time').default
+const time = require('../../../lib/validator/custom-formats/time')
 
 describe('time format', () => {
   it('returns false when value is undefined', () => {

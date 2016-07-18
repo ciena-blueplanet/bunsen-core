@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 
-const int32 = require('../../../lib/validator/custom-formats/int32').default
+const int32 = require('../../../lib/validator/custom-formats/int32')
 
 describe('int32 format', () => {
   it('returns false when value is undefined', () => {

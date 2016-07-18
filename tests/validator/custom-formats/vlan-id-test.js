@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 
-const vlanId = require('../../../lib/validator/custom-formats/vlan-id').default
+const vlanId = require('../../../lib/validator/custom-formats/vlan-id')
 
 describe('vlan-id format', () => {
   it('returns false when value is undefined', () => {

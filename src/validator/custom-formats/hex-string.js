@@ -1,5 +1,7 @@
 import _ from 'lodash'
 
+const regex = /^([\da-f][\da-f](:[\da-f][\da-f])*)?$/i
+
 /**
  * Validate value as a hex string
  * @param {Any} value - value to validate
@@ -10,5 +12,5 @@ export default function (value) {
     return false
   }
 
-  return /^([0-9a-fA-F][0-9a-fA-F](:[0-9a-fA-F][0-9a-fA-F])*)?$/.test(value)
+  return regex.test(value)
 }

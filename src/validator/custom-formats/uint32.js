@@ -1,7 +1,7 @@
 import rangeFnFactory from './range-fn-factory'
 
-export const max = 4294967295
-export const min = 0
+const max = 4294967295
+const min = 0
 
 /**
  * Validate value as an unsigned 32-bit integer

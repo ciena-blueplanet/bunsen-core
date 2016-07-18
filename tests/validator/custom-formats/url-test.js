@@ -2,7 +2,7 @@ const expect = require('chai').expect
 
 const url = require('../../../lib/validator/custom-formats/url')
 
-describe('hex-string format', () => {
+describe('url format', () => {
   it('returns false when value is undefined', () => {
     expect(url(undefined)).to.be.false
   })
