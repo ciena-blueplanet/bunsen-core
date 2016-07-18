@@ -7,7 +7,7 @@ const value = require('../../lib/validator/value')
 chai.use(chaiSubset)
 const expect = chai.expect
 
-describe('value', () => {
+describe('validator/value', () => {
   describe('.translateMissingRequiredPropertyErrors()', () => {
     let nonRequiredError, requiredError1, requiredError2
 

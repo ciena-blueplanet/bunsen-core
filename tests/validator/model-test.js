@@ -3,7 +3,7 @@
 const expect = require('chai').expect
 const lib = require('../../lib/validator/model')
 
-describe('model validator', () => {
+describe('validator/model', () => {
   let model, result
 
   describe('validateSubModel()', () => {
@@ -34,7 +34,7 @@ describe('model validator', () => {
 
       it('returns proper result', () => {
         const errorMsg = 'Invalid value "foo-bar" for "type" Valid options are ' +
-          '["string","object","array","number","boolean"]'
+          '["string","object","array","integer","number","boolean"]'
 
         expect(result).to.eql({
           errors: [

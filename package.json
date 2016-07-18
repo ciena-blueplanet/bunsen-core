@@ -27,15 +27,16 @@
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-es2015": "^6.9.0",
     "chai": "^3.5.0",
-    "chai-subset": "^1.2.2",
-    "eslint": "^2.11.1",
-    "eslint-config-frost-standard": "^2.0.0",
+    "chai-subset": "^1.3.0",
+    "eslint": "^3.1.0",
+    "eslint-config-frost-standard": "^3.0.0",
     "istanbul": "^0.4.3",
     "mocha": "^2.5.3",
     "sinon": "^1.17.4"
   },
   "dependencies": {
     "lodash": "^4.13.1",
+    "moment": "^2.14.1",
     "z-schema": "^3.17.0"
   }
 }

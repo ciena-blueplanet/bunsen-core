@@ -3,7 +3,7 @@
 const expect = require('chai').expect
 const utils = require('../../lib/validator/utils')
 
-describe('utils', () => {
+describe('validator/utils', () => {
   describe('.validateRequiredAttribute()', () => {
     let object, result
 
