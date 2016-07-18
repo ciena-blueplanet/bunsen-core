@@ -1,3 +1,10 @@
+# 0.5.0
+
+* **Added** Redux actions and reducer from `ember-frost-bunsen`.
+* **Added** all non-Ember utility functions from `ember-frost-bunsen`.
+* **Updated** `eslint` to latest version.
+
+
 # 0.4.0
 
 * **Added** conditions evaluation from `ember-frost-bunsen`.
