@@ -15,9 +15,9 @@ import {
 import containerValidatorFactory from './container'
 import viewSchema from './view-schemas/v1'
 
+export {validate as validateModel} from './model'
 import {validate as _validateValue} from './value'
 export const validateValue = _validateValue
-export const validateModel = validateValue
 
 export const builtInRenderers = {
   boolean: 'frost-bunsen-input-boolean',
@@ -130,7 +130,7 @@ export function validate (view, model, renderers, owner) {
 
   const derefModel = dereference(model).schema
   const containerValidator = containerValidatorFactory(view.containers, derefModel, renderers, owner)
-  const schemaResult = validateValue(view, viewSchema, true)
+  const schemaResult = _validateValue(view, viewSchema, true)
   if (schemaResult.errors.length !== 0) {
     return schemaResult
   }
