@@ -2,7 +2,7 @@ const expect = require('chai').expect
 
 const uint8 = require('../../../lib/validator/custom-formats/uint8')
 
-describe('uint8 format', () => {
+describe('validator/custom-formats/uint8', () => {
   it('returns false when value is undefined', () => {
     expect(uint8(undefined)).to.be.false
   })

@@ -2,7 +2,7 @@ const expect = require('chai').expect
 
 const date = require('../../../lib/validator/custom-formats/date')
 
-describe('date format', () => {
+describe('validator/custom-formats/date', () => {
   it('returns false when value is undefined', () => {
     expect(date(undefined)).to.be.false
   })

@@ -20,7 +20,7 @@ const uint32 = require('../../../lib/validator/custom-formats/uint32')
 const url = require('../../../lib/validator/custom-formats/url')
 const vlanId = require('../../../lib/validator/custom-formats/vlan-id')
 
-describe('custom formats', () => {
+describe('validator/custom-formats', () => {
   it('includes bgp-as format', () => {
     expect(customFormats['bgp-as']).to.equal(bgpAs)
   })

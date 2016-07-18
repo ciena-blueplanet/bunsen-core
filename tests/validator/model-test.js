@@ -3,7 +3,7 @@
 const expect = require('chai').expect
 const lib = require('../../lib/validator/model')
 
-describe('model validator', () => {
+describe('validator/model', () => {
   let model, result
 
   describe('validateSubModel()', () => {

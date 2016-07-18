@@ -2,7 +2,7 @@ const expect = require('chai').expect
 
 const ipv4Prefix = require('../../../lib/validator/custom-formats/ipv4-prefix')
 
-describe('ipv4-prefix format', () => {
+describe('validator/custom-formats/ipv4-prefix', () => {
   it('returns false when value is undefined', () => {
     expect(ipv4Prefix(undefined)).to.be.false
   })

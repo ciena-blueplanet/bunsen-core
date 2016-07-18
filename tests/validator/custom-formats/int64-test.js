@@ -2,7 +2,7 @@ const expect = require('chai').expect
 
 const int64 = require('../../../lib/validator/custom-formats/int64')
 
-describe('int64 format', () => {
+describe('validator/custom-formats/int64', () => {
   it('returns false when value is undefined', () => {
     expect(int64(undefined)).to.be.false
   })

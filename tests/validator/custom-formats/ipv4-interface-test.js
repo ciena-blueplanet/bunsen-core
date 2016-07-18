@@ -2,7 +2,7 @@ const expect = require('chai').expect
 
 const ipv4Interface = require('../../../lib/validator/custom-formats/ipv4-interface')
 
-describe('ipv4-interface format', () => {
+describe('validator/custom-formats/ipv4-interface', () => {
   it('returns false when value is undefined', () => {
     expect(ipv4Interface(undefined)).to.be.false
   })

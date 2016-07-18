@@ -2,7 +2,7 @@ const expect = require('chai').expect
 
 const bgpAs = require('../../../lib/validator/custom-formats/bgp-as')
 
-describe('bgp-as format', () => {
+describe('validator/custom-formats/bgp-as', () => {
   it('returns false when value is undefined', () => {
     expect(bgpAs(undefined)).to.be.false
   })

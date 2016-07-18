@@ -3,7 +3,7 @@
 const expect = require('chai').expect
 const validatorFactory = require('../../lib/validator/container')
 
-describe('containerValidator', () => {
+describe('validator/container', () => {
   let validator, container, result, containers, model, renderers
 
   beforeEach(() => {

@@ -2,7 +2,7 @@ const expect = require('chai').expect
 
 const portNumber = require('../../../lib/validator/custom-formats/port-number')
 
-describe('port-number format', () => {
+describe('validator/custom-formats/port-number', () => {
   it('returns false when value is undefined', () => {
     expect(portNumber(undefined)).to.be.false
   })

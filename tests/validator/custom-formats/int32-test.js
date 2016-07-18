@@ -2,7 +2,7 @@ const expect = require('chai').expect
 
 const int32 = require('../../../lib/validator/custom-formats/int32')
 
-describe('int32 format', () => {
+describe('validator/custom-formats/int32', () => {
   it('returns false when value is undefined', () => {
     expect(int32(undefined)).to.be.false
   })

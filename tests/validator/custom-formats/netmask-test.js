@@ -2,7 +2,7 @@ const expect = require('chai').expect
 
 const netmask = require('../../../lib/validator/custom-formats/netmask')
 
-describe('ipv4-address format', () => {
+describe('validator/custom-formats/ipv4-address', () => {
   it('returns false when value is undefined', () => {
     expect(netmask(undefined)).to.be.false
   })

@@ -2,7 +2,7 @@ const expect = require('chai').expect
 
 const time = require('../../../lib/validator/custom-formats/time')
 
-describe('time format', () => {
+describe('validator/custom-formats/time', () => {
   it('returns false when value is undefined', () => {
     expect(time(undefined)).to.be.false
   })

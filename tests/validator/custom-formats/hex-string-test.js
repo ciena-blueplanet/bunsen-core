@@ -2,7 +2,7 @@ const expect = require('chai').expect
 
 const hexString = require('../../../lib/validator/custom-formats/hex-string')
 
-describe('hex-string format', () => {
+describe('validator/custom-formats/hex-string', () => {
   it('returns false when value is undefined', () => {
     expect(hexString(undefined)).to.be.false
   })
