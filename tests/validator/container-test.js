@@ -104,7 +104,15 @@ describe('validator/container', () => {
       beforeEach(() => {
         container = {
           children: [
-            [{model: 'firstName'}, {model: 'lastName', renderer: 'BazComponent'}],
+            [
+              {model: 'firstName'},
+              {
+                model: 'lastName',
+                renderer: {
+                  name: 'BazComponent'
+                }
+              }
+            ],
             [
               {
                 classNames: {
@@ -115,9 +123,25 @@ describe('validator/container', () => {
                 model: 'bad-field-name'
               }
             ],
-            [{model: 'alias', renderer: 'FooComponent'}, {container: 'bad-container-name'}],
+            [
+              {
+                model: 'alias',
+                renderer: {
+                  name: 'FooComponent'
+                }
+              },
+              {container: 'bad-container-name'}
+            ],
             [{container: 'top'}, {container: 'bottom', bar: 'baz'}],
-            [{model: 'firstName'}, {model: 'lastName', renderer: 'foo-bar-renderer'}]
+            [
+              {model: 'firstName'},
+              {
+                model: 'lastName',
+                renderer: {
+                  name: 'foo-bar-renderer'
+                }
+              }
+            ]
           ]
         }
         result = validator.validate('#/containers/0', container, model)

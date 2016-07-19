@@ -1,10 +1,42 @@
-// The JSON Schema for a view definition (version 1.0)
+// The JSON Schema for a view definition (version 2.0)
 export default {
   additionalProperties: false,
   definitions: {
+
+    // boolean renderer options
+    booleanRenderer: {
+      additionalProperties: false,
+      properties: {
+        // name can only be 'boolean'
+        name: {
+          enum: ['boolean'],
+          type: 'string'
+        }
+
+        // no options yet
+      },
+      type: 'object'
+    },
+
+    // button-group renderer options
+    buttonGroupRenderer: {
+      additionalProperties: false,
+      properties: {
+        // name can only be 'button-group'
+        name: {
+          enum: ['button-group'],
+          type: 'string'
+        }
+
+        // no options yet
+      },
+      type: 'object'
+    },
+
+    // A cell is basically just a "div" it can wrap an array of other cells or it can be a leaf
+    // in which case it should define particular "renderer"
     cell: {
       additionalProperties: false,
-      description: 'A single cell in the grid system, "model" or "container" is required',
       properties: {
         // class names to put on DOM elements
         classNames: {
@@ -98,10 +130,19 @@ export default {
               type: 'object',
               description: 'Properties to pass to custom renderers'
             },
+
+            // Configuration for rendering a portion of the model
             renderer: {
-              type: 'string',
-              description: 'Name of a custom renderer for the model'
+              oneOf: [
+                {'$ref': '#/definitions/booleanRenderer'},
+                {'$ref': '#/definitions/buttonGroupRenderer'},
+                {'$ref': '#/definitions/customRenderer'},
+                {'$ref': '#/definitions/numberRenderer'},
+                {'$ref': '#/definitions/selectRenderer'},
+                {'$ref': '#/definitions/stringRenderer'}
+              ]
             },
+
             showLabel: {
               type: 'boolean',
               description: 'When true, show label for each item',
@@ -134,10 +175,19 @@ export default {
           '$ref': '#/definitions/transforms',
           type: 'array'
         },
+
+        // Configuration for rendering a portion of the model
         renderer: {
-          type: 'string',
-          description: 'Name of a custom renderer for the model'
+          oneOf: [
+            {'$ref': '#/definitions/booleanRenderer'},
+            {'$ref': '#/definitions/buttonGroupRenderer'},
+            {'$ref': '#/definitions/customRenderer'},
+            {'$ref': '#/definitions/numberRenderer'},
+            {'$ref': '#/definitions/selectRenderer'},
+            {'$ref': '#/definitions/stringRenderer'}
+          ]
         },
+
         writeTransforms: {
           '$ref': '#/definitions/transforms',
           type: 'array'
@@ -145,6 +195,41 @@ export default {
       },
       type: 'object'
     },
+
+    // custom renderer options
+    customRenderer: {
+      additionalProperties: false,
+      properties: {
+        // name can be anything that's not builtin
+        name: {
+          type: 'string',
+          pattern: '^(?!boolean$|button-group$|multi-select$|number$|select$|string$).*'
+        },
+
+        // the opaque options passed to a custom renderer
+        options: {
+          additionalProperties: true,
+          type: 'object'
+        }
+      },
+      type: 'object'
+    },
+
+    // number renderer options
+    numberRenderer: {
+      additionalProperties: false,
+      properties: {
+        // name can only be 'number'
+        name: {
+          enum: ['number'],
+          type: 'string'
+        }
+
+        // no options yet
+      },
+      type: 'object'
+    },
+
     objectTransform: {
       additionalProperties: false,
       properties: {
@@ -155,6 +240,66 @@ export default {
       },
       type: 'object'
     },
+
+    // select renderer options
+    selectRenderer: {
+      additionalProperties: false,
+      properties: {
+
+        // the only valid names for a select are 'select' and 'multi-select'
+        name: {
+          enum: ['select', 'multi-select'],
+          type: 'string'
+        },
+
+        // the options specific to a select renderer
+        options: {
+          additionalProperties: false,
+          properties: {
+            // the attribute of the listed items to use as a label
+            labelAttribute: {
+              type: 'string'
+            },
+
+            // description: the type of Ember model to fetch for list-based inputs
+            modelType: {
+              type: 'string'
+            },
+
+            // description: a hash of key/value pairs to use as query string to fetch values for list-based inputs
+            query: {
+              additionalProperties: {
+                type: 'string'
+              },
+              type: 'object'
+            },
+
+            // the attribute of the listed items to use as a value
+            valueAttribute: {
+              type: 'string'
+            }
+          },
+          type: 'object'
+        }
+      },
+      type: 'object'
+    },
+
+    // string renderer options
+    stringRenderer: {
+      additionalProperties: false,
+      properties: {
+        // name can only be 'string'
+        name: {
+          enum: ['string'],
+          type: 'string'
+        }
+
+        // no options yet
+      },
+      type: 'object'
+    },
+
     stringTransform: {
       additionalProperties: false,
       properties: {
@@ -275,9 +420,9 @@ export default {
     }
   },
   required: [
-    'version',
-    'type',
     'cells',
-    'containers'
+    'containers',
+    'type',
+    'version'
   ]
 }

@@ -106,7 +106,7 @@ export default createFactory({
       }
     ]
 
-    let rendererName = cell.renderer
+    let rendererName = _.get(cell, 'renderer.name')
     let rendererPathExt = 'renderer'
     if (rendererName === undefined) {
       rendererName = cell.itemRenderer
