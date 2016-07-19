@@ -111,6 +111,11 @@ export default {
           type: 'array'
         },
 
+        // Whether or not cell can be expanded/collapsed by user
+        collapsible: {
+          type: 'boolean'
+        },
+
         // conditionals are triggered by particular values within the data passed into bunsen as a 'value' or entered
         // by the user
         conditions: {
@@ -147,6 +152,15 @@ export default {
           type: 'array'
         },
 
+        dependsOn: {
+          type: 'string'
+        },
+
+        // Sub text to render beneath label
+        description: {
+          type: 'string'
+        },
+
         // Pass through a disabled state to the input of the cell
         disabled: {
           type: 'boolean'
@@ -157,100 +171,21 @@ export default {
           type: 'string'
         },
 
-        dependsOn: {
+        // The user-visible label for this cell
+        label: {
           type: 'string'
         },
-        item: {
-          additionalProperties: false,
-          type: 'object',
-          properties: {
-            autoAdd: {
-              type: 'boolean',
-              default: false
-            },
 
-            // class names to put on DOM elements
-            classNames: {
-              additionalProperties: false,
-              properties: {
-                // the class name for the div that is the cell itself
-                cell: {
-                  type: 'string'
-                },
-
-                // the class name for the label of the cell
-                label: {
-                  type: 'string'
-                },
-
-                // the class name for the value of the cell (generally an input)
-                value: {
-                  type: 'string'
-                }
-              },
-              type: 'object'
-            },
-
-            compact: {
-              type: 'boolean',
-              default: false
-            },
-            extends: {
-              type: 'string'
-            },
-            inline: {
-              type: 'boolean',
-              description: 'When true, use inline item rendering instead of tabs'
-            },
-            label: {
-              type: 'string',
-              description: 'The user-visible label for this cell'
-            },
-            placeholder: {
-              type: 'string',
-              description: 'Text to display when no value is set'
-            },
-            properties: {
-              type: 'object',
-              description: 'Properties to pass to custom renderers'
-            },
-
-            // Configuration for rendering a portion of the model
-            renderer: {
-              oneOf: [
-                {'$ref': '#/definitions/booleanRenderer'},
-                {'$ref': '#/definitions/buttonGroupRenderer'},
-                {'$ref': '#/definitions/customRenderer'},
-                {'$ref': '#/definitions/numberRenderer'},
-                {'$ref': '#/definitions/selectRenderer'},
-                {'$ref': '#/definitions/stringRenderer'}
-              ]
-            },
-
-            showLabel: {
-              type: 'boolean',
-              description: 'When true, show label for each item',
-              default: true
-            },
-            sortable: {
-              type: 'boolean',
-              description: 'When true, array items can be sorted',
-              default: false
-            }
-          }
-        },
-        label: {
-          type: 'string',
-          description: 'The user-visible label for this cell'
-        },
+        // Dotted notation reference to a property in the Model
         model: {
-          type: 'string',
-          description: 'Dotted notation reference to a property in the Model'
+          type: 'string'
         },
+
+        // Text to display when no value is set
         placeholder: {
-          type: 'string',
-          description: 'Text to display when no value is set'
+          type: 'string'
         },
+
         properties: {
           type: 'object',
           description: 'Properties to pass to custom renderers'

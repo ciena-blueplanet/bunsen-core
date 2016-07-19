@@ -29,7 +29,7 @@ function createFactory (proto) {
  * @returns {Boolean} true if the cell specifies a custom renderer
  */
 function isCustomCell (cell) {
-  return (cell.renderer !== undefined) || (cell.itemRenderer !== undefined)
+  return cell.renderer !== undefined
 }
 
 /**
@@ -105,12 +105,8 @@ export default createFactory({
       }
     ]
 
-    let rendererName = _.get(cell, 'renderer.name')
-    let rendererPathExt = 'renderer'
-    if (rendererName === undefined) {
-      rendererName = cell.itemRenderer
-      rendererPathExt = 'itemRenderer'
-    }
+    const rendererName = _.get(cell, 'renderer.name')
+    const rendererPathExt = 'renderer'
     const rendererPath = `${path}/${rendererPathExt}`
 
     // If rendererName is not in renderers mapping and is not a registered component
@@ -136,9 +132,9 @@ export default createFactory({
     if (cell.extends) {
       const msg = 'Cells on arrays not currently supported. Maybe you want it on the item sub-object?'
       addErrorResult(results, path, msg)
-    } else if (cell.item.extends) {
+    } else if (_.get(cell, 'arrayOptions.itemCell.extends')) {
       results.push(
-        this._validateSubCell(`${path}/item/extends`, cell.item.extends, model.items)
+        this._validateSubCell(`${path}/arrayOptions/itemCell/extends`, cell.arrayOptions.itemCell.extends, model.items)
       )
     }
 

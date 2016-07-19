@@ -111,6 +111,11 @@ export default {
           type: 'array'
         },
 
+        // Whether or not cell can be expanded/collapsed by user
+        collapsible: {
+          type: 'boolean'
+        },
+
         // conditionals are triggered by particular values within the data passed into bunsen as a 'value' or entered
         // by the user
         conditions: {
@@ -147,6 +152,11 @@ export default {
           type: 'array'
         },
 
+        // Sub text to render beneath label
+        description: {
+          type: 'string'
+        },
+
         // Pass through a disabled state to the input of the cell
         disabled: {
           type: 'boolean'
@@ -164,6 +174,11 @@ export default {
 
         // Dotted notation reference to a property in the Model
         model: {
+          type: 'string'
+        },
+
+        // Text to display when no value is set
+        placeholder: {
           type: 'string'
         },
 

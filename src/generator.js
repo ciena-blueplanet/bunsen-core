@@ -80,7 +80,11 @@ function addModel (propertyName, model, children, cellDefinitions) {
     const subModel = isArray ? model.items : model
     const cellId = addModelCell(propertyName, subModel, cellDefinitions)
     if (isArray) {
-      cell.item = {extends: cellId}
+      cell.arrayOptions = {
+        itemCell: {
+          extends: cellId
+        }
+      }
     } else {
       cell.extends = cellId
     }
@@ -109,7 +113,11 @@ function addDependentModel (propertyName, dependencyName, model, children, cellD
     const subModel = isArray ? model.items : model
     const cellId = addModelCell(propertyName, subModel, cellDefinitions)
     if (isArray) {
-      cell.item = {extends: cellId}
+      cell.arrayOptions = {
+        itemCell: {
+          extends: cellId
+        }
+      }
     } else {
       cell.extends = cellId
     }

@@ -32,8 +32,10 @@ module.exports = {
         },
         {
           model: 'addresses',
-          item: {
-            extends: 'addresses'
+          arrayOptions: {
+            itemCell: {
+              extends: 'addresses'
+            }
           }
         }
       ]
