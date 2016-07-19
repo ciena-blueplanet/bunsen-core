@@ -1,10 +1,10 @@
 /**
  * @typedef {Object} BunsenCell
  *
- * NOTE: One of container or model is required
+ * NOTE: One of extends or model is required
  *
- * @property {String} [classNames] - class names to apply to container
- * @property {String} [container] - reference to the ID of a container defined in the containers array
+ * @property {String} [classNames] - class names to apply to cell
+ * @property {String} [extends] - reference to the ID of a cell defined in the cellDefinitions array
  * @property {String} [model] - reference to the ID of a model defined in the ModelSet (use dot notation for children)
  */
 
@@ -15,18 +15,18 @@
  */
 
 /**
- * @typedef {Object} BunsenContainer
- * @property {Object} [classNames] - class names to apply to container
- * @property {Boolean} [collapsible=false] - whether or not container should be collapsible
+ * @typedef {Object} BunsenCell
+ * @property {Object} [classNames] - class names to apply to cell
+ * @property {Boolean} [collapsible=false] - whether or not cell should be collapsible
  * @property {String} [defaultClassName] - a CSS class (or space-separated classes) to apply to all cells
- * @property {String} id - the unique ID for the container, used to generate a BunsenContainerSet
- * @property {String} [instructions] - instructions for container
- * @property {BunsenRow[]} children - the children in the container
+ * @property {String} id - the unique ID for the cell, used to generate a BunsenCellSet
+ * @property {String} [instructions] - instructions for cell
+ * @property {BunsenRow[]} children - the children in the cell
  */
 
 /**
- * @typedef BunsenContainerSet
- * A key-value pair of ID => BunsenContainer
+ * @typedef BunsenCellSet
+ * A key-value pair of ID => BunsenCell
  */
 
 /**
@@ -64,7 +64,7 @@
 
 /**
  * @typedef {Object} BunsenCell
- * @property {String} container - reference to the ID of a container defined in the containers array
+ * @property {String} extends - reference to the ID of a cell defined in the cellDefinitions array
  * @property {String} label - the user visible label for this root view (displayed as tab name if more than one)
  */
 
@@ -94,7 +94,7 @@
 
 /**
  * @typedef BunsenView
- * @property {BunsenContainer[]} containers - the containers for the config (layout)
+ * @property {BunsenCell[]} cellDefinitions - cells for the config (layout)
  * @property {BunsenCell[]} cells - the top-level views (create tabs if more than one, not yet supported)
  * @property {String} type - the type of this schema (currently only "form" is supported)
  * @property {String} version - the version of this schema

@@ -4,7 +4,7 @@ module.exports = {
   version: '2.0',
   type: 'form',
 
-  containers: [
+  cellDefinitions: [
     {
       id: 'name',
       children: [
@@ -21,7 +21,7 @@ module.exports = {
   ],
 
   cells: [
-    {label: 'Name', container: 'name'},
-    {label: 'Alias', container: 'alias'}
+    {label: 'Name', extends: 'name'},
+    {label: 'Alias', extends: 'alias'}
   ]
 }

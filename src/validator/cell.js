@@ -46,25 +46,25 @@ function isObjectArray (model) {
  */
 export default createFactory({
 
-  /** attributes required by every container */
-  REQUIRED_CONTAINER_ATTRS: ['id', 'children'],
+  /** attributes required by every cell */
+  REQUIRED_CELL_ATTRS: ['id', 'children'],
 
-  /** optional top-level container attributes */
-  OPTIONAL_CONTAINER_ATTRS: ['classNames', 'defaultClassName'],
+  /** optional top-level cell attributes */
+  OPTIONAL_CELL_ATTRS: ['classNames', 'defaultClassName'],
 
   /**
    * Initialize the validator
-   * @param {BunsenContainer[]} containers - the Containers to validate container references against
+   * @param {BunsenCell[]} cellDefinitions - the cells to validate cell references against
    * @param {BunsenModel} model - the Model to validate model references against
    * @param {String[]} [renderers] - the list of available custom renderers to validate renderer references against
    * @param {Ember.ApplicationInstance} owner - application instance
    * @returns {validator} the instance
    */
-  init (containers, model, renderers, owner) {
+  init (cellDefinitions, model, renderers, owner) {
     renderers = renderers || []
     return _.assign(this, {
-      containers,
-      containersValidated: [],
+      cellDefinitions,
+      cellsValidated: [],
       model,
       renderers,
       owner
@@ -72,21 +72,21 @@ export default createFactory({
   },
 
   /**
-   * Validate the sub-container, giving it it's appropriate sub-model
+   * Validate the sub-cell, giving it it's appropriate sub-model
    * @param {String} path - the path the given row
-   * @param {String} containerId - the id of the sub-container
+   * @param {String} cellId - the id of the sub-cell
    * @param {BunsenModel} model - the model to use to verify references against
-   * @returns {BunsenValidationResult} the results of the sub-container validation
+   * @returns {BunsenValidationResult} the results of the sub-cell validation
    */
-  _validateSubContainer (path, containerId, model) {
+  _validateSubCell (path, cellId, model) {
     const results = []
-    const containerIndex = _.findIndex(this.containers, {id: containerId})
-    const container = this.containers[containerIndex]
-    if (container === undefined) {
-      addErrorResult(results, path, `Invalid container reference "${containerId}"`)
+    const cellIndex = _.findIndex(this.cellDefinitions, {id: cellId})
+    const cell = this.cellDefinitions[cellIndex]
+    if (cell === undefined) {
+      addErrorResult(results, path, `Invalid extends reference "${cellId}"`)
     } else {
       results.push(
-        this.validate(`#/containers/${containerIndex}`, container, model)
+        this.validate(`#/cellDefinitions/${cellIndex}`, cell, model)
       )
     }
 
@@ -134,12 +134,12 @@ export default createFactory({
    */
   _validateArrayCell (path, cell, model) {
     const results = []
-    if (cell.container) {
-      const msg = 'Containers on arrays not currently supported. Maybe you want it on the item sub-object?'
+    if (cell.extends) {
+      const msg = 'Cells on arrays not currently supported. Maybe you want it on the item sub-object?'
       addErrorResult(results, path, msg)
-    } else if (cell.item.container) {
+    } else if (cell.item.extends) {
       results.push(
-        this._validateSubContainer(`${path}/item/container`, cell.item.container, model.items)
+        this._validateSubCell(`${path}/item/extends`, cell.item.extends, model.items)
       )
     }
 
@@ -167,7 +167,7 @@ export default createFactory({
       )
     } else if (subModel.type === 'object') {
       results.push(
-        this._validateSubContainer(`${path}/container`, cell.container, subModel)
+        this._validateSubCell(`${path}/extends`, cell.extends, subModel)
       )
     }
 
@@ -223,12 +223,12 @@ export default createFactory({
       results.push(
         this._validateModelCell(path, cell, subModel)
       )
-    } else if (cell.container) {
+    } else if (cell.extends) {
       results.push(
-        this._validateSubContainer(`${path}/container`, cell.container, model)
+        this._validateSubCell(`${path}/extends`, cell.extends, model)
       )
     } else {
-      addErrorResult(results, path, 'Either "model" or "container" must be defined for each cell.')
+      addErrorResult(results, path, 'Either "model" or "extends" must be defined for each cell.')
     }
 
     const knownAttributes = _.keys(viewSchema.definitions.cell.properties)
@@ -270,14 +270,14 @@ export default createFactory({
 
   /**
    * Validate the given config
-   * @param {String} path - the path to the container from the root of the config
-   * @param {BunsenContainer} container - the container to validate
+   * @param {String} path - the path to the cell from the root of the config
+   * @param {BunsenCell} cell - the cell to validate
    * @param {BunsenModel} [model] - the Model to validate model references against
-   * @returns {BunsenValidationResult} the results of the container validation
+   * @returns {BunsenValidationResult} the results of the cell validation
    */
-  validate (path, container, model) {
+  validate (path, cell, model) {
     // keep track of which paths we've validated
-    this.containersValidated.push(path)
+    this.cellsValidated.push(path)
 
     if (model === undefined) {
       model = this.model
@@ -285,10 +285,10 @@ export default createFactory({
 
     const results = []
 
-    const attrs = _.keys(container)
+    const attrs = _.keys(cell)
 
     const warnings = []
-    const knownAttributes = _.union(this.REQUIRED_CONTAINER_ATTRS, this.OPTIONAL_CONTAINER_ATTRS)
+    const knownAttributes = _.union(this.REQUIRED_CELL_ATTRS, this.OPTIONAL_CELL_ATTRS)
     _.forEach(attrs, (attr) => {
       if (!_.includes(knownAttributes, attr)) {
         warnings.push({
@@ -305,7 +305,7 @@ export default createFactory({
       })
     }
 
-    _.forEach(container.children, (child, index) => {
+    _.forEach(cell.children, (child, index) => {
       results.push(
         this._validateRow(`${path}/children/${index}`, child, model)
       )

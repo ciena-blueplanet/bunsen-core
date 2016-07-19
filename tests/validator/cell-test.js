@@ -1,13 +1,13 @@
 'use strict'
 
 const expect = require('chai').expect
-const validatorFactory = require('../../lib/validator/container')
+const validatorFactory = require('../../lib/validator/cell')
 
-describe('validator/container', () => {
-  let validator, container, result, containers, model, renderers
+describe('validator/cell', () => {
+  let validator, cell, result, cellDefinitions, model, renderers
 
   beforeEach(() => {
-    containers = [
+    cellDefinitions = [
       {
         id: 'main',
         children: []
@@ -46,20 +46,20 @@ describe('validator/container', () => {
       }
     }
 
-    validator = validatorFactory(containers, model, renderers, ownerMock)
+    validator = validatorFactory(cellDefinitions, model, renderers, ownerMock)
   })
 
   describe('.validate()', () => {
     describe('when valid', () => {
       beforeEach(() => {
-        container = {
+        cell = {
           children: [
             [{model: 'firstName'}],
             [{model: 'lastName'}],
             [{model: 'alias'}]
           ]
         }
-        result = validator.validate('#/containers/0', container, model)
+        result = validator.validate('#/cellDefinitions/0', cell, model)
       })
 
       it('returns proper result', () => {
@@ -72,7 +72,7 @@ describe('validator/container', () => {
 
     describe('when extra attributes are given', () => {
       beforeEach(() => {
-        container = {
+        cell = {
           children: [
             [{model: 'firstName'}],
             [{model: 'lastName'}],
@@ -84,7 +84,7 @@ describe('validator/container', () => {
           defaultClassName: 'col-sm-4',
           foo: 'bar'
         }
-        result = validator.validate('#/containers/0', container, model)
+        result = validator.validate('#/cellDefinitions/0', cell, model)
       })
 
       it('returns proper result', () => {
@@ -92,7 +92,7 @@ describe('validator/container', () => {
           errors: [],
           warnings: [
             {
-              path: '#/containers/0',
+              path: '#/cellDefinitions/0',
               message: 'Unrecognized attribute "foo"'
             }
           ]
@@ -102,7 +102,7 @@ describe('validator/container', () => {
 
     describe('when cells have bad references', () => {
       beforeEach(() => {
-        container = {
+        cell = {
           children: [
             [
               {model: 'firstName'},
@@ -130,9 +130,9 @@ describe('validator/container', () => {
                   name: 'FooComponent'
                 }
               },
-              {container: 'bad-container-name'}
+              {extends: 'bad-cell-name'}
             ],
-            [{container: 'top'}, {container: 'bottom', bar: 'baz'}],
+            [{extends: 'top'}, {extends: 'bottom', bar: 'baz'}],
             [
               {model: 'firstName'},
               {
@@ -144,32 +144,32 @@ describe('validator/container', () => {
             ]
           ]
         }
-        result = validator.validate('#/containers/0', container, model)
+        result = validator.validate('#/cellDefinitions/0', cell, model)
       })
 
       it('returns proper result', () => {
         expect(result).deep.equal({
           errors: [
             {
-              path: '#/containers/0/children/0/1/renderer',
+              path: '#/cellDefinitions/0/children/0/1/renderer',
               message: 'Invalid renderer reference "BazComponent"'
             },
             {
-              path: '#/containers/0/children/1/0',
-              message: 'Either "model" or "container" must be defined for each cell.'
+              path: '#/cellDefinitions/0/children/1/0',
+              message: 'Either "model" or "extends" must be defined for each cell.'
             },
             {
-              path: '#/containers/0/children/1/1/model',
+              path: '#/cellDefinitions/0/children/1/1/model',
               message: 'Invalid model reference "bad-field-name"'
             },
             {
-              path: '#/containers/0/children/2/1/container',
-              message: 'Invalid container reference "bad-container-name"'
+              path: '#/cellDefinitions/0/children/2/1/extends',
+              message: 'Invalid extends reference "bad-cell-name"'
             }
           ],
           warnings: [
             {
-              path: '#/containers/0/children/3/1',
+              path: '#/cellDefinitions/0/children/3/1',
               message: 'Unrecognized attribute "bar"'
             }
           ]

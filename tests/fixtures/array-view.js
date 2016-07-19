@@ -4,24 +4,24 @@ module.exports = {
   cells: [
     {
       label: 'Main',
-      container: 'main'
+      extends: 'main'
     }
   ],
-  containers: [
+  cellDefinitions: [
     {
       id: 'main',
       children: [
         [
           {
             model: 'name',
-            container: 'name'
+            extends: 'name'
           }
         ],
         [
           {
             model: 'addresses',
             item: {
-              container: 'addresses'
+              extends: 'addresses'
             }
           }
         ]

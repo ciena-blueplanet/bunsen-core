@@ -103,13 +103,11 @@ export default {
           type: 'object'
         },
 
-        container: {
-          type: 'string',
-          description: 'The "id" of a container in the "containers" array'
+        extends: {
+          type: 'string'
         },
         dependsOn: {
-          type: 'string',
-          description: 'Dotted notation reference to a property in the model that this property depends on'
+          type: 'string'
         },
         disabled: {
           type: 'boolean',
@@ -118,11 +116,9 @@ export default {
         item: {
           additionalProperties: false,
           type: 'object',
-          description: 'The configuration for a particular item when the parent is an array',
           properties: {
             autoAdd: {
               type: 'boolean',
-              description: 'When true, an empty item will always be added to the end of the array',
               default: false
             },
 
@@ -150,12 +146,10 @@ export default {
 
             compact: {
               type: 'boolean',
-              description: 'When true, render input(s) on same line as remove button',
               default: false
             },
-            container: {
-              type: 'string',
-              description: 'The "id" of a container in the "containers" array'
+            extends: {
+              type: 'string'
             },
             inline: {
               type: 'boolean',
@@ -406,28 +400,43 @@ export default {
 
   type: 'object',
   properties: {
-    containers: {
+    cellDefinitions: {
       type: 'array',
       items: {
         type: 'object',
         properties: {
-          className: {
-            type: 'string',
-            description: 'A CSS className for the container div itself'
+          // class names to put on DOM elements
+          classNames: {
+            additionalProperties: false,
+            properties: {
+              // the class name for the div that is the cell itself
+              cell: {
+                type: 'string'
+              },
+
+              // the class name for the label of the cell
+              label: {
+                type: 'string'
+              },
+
+              // the class name for the value of the cell (generally an input)
+              value: {
+                type: 'string'
+              }
+            },
+            type: 'object'
           },
+
           defaultClassName: {
-            type: 'string',
-            description: 'A default "className" to use on all cells that do not specify one'
+            type: 'string'
           },
           id: {
-            type: 'string',
-            description: 'A unique identifier for this container (used as a reference to it)'
+            type: 'string'
           },
           children: {
             type: 'array',
             items: {
               type: 'array',
-              description: 'A representation of a row in a grid layout, defined as an array of cells',
               items: {
                 '$ref': '#/definitions/cell'
               }
@@ -444,13 +453,12 @@ export default {
     },
     cells: {
       type: 'array',
-      description: 'Top-level entry-point containers (i.e. tabs) currently only one is allowed',
       items: {
         type: 'object',
         properties: {
-          container: {
+          extends: {
             type: 'string',
-            description: 'The "id" of a container in the "containers" array'
+            description: 'The "id" of a cell in the "cellDefinitions" array'
           },
           label: {
             type: 'string',
@@ -458,7 +466,7 @@ export default {
           }
         },
         required: [
-          'container',
+          'extends',
           'label'
         ]
       },
@@ -480,7 +488,7 @@ export default {
 
   required: [
     'cells',
-    'containers',
+    'cellDefinitions',
     'type',
     'version'
   ]
