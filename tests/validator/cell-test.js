@@ -41,7 +41,7 @@ describe('validator/cell', () => {
     ]
 
     const ownerMock = {
-      lookup (id) {
+      hasRegistration (id) {
         return id === 'component:foo-bar-renderer'
       }
     }

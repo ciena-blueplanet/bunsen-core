@@ -117,7 +117,7 @@ export default createFactory({
     // If rendererName is not in renderers mapping and is not a registered component
     if (
       !_.includes(this.renderers, rendererName) &&
-      !this.owner.lookup(`component:${rendererName}`)
+      !this.owner.hasRegistration(`component:${rendererName}`)
     ) {
       addErrorResult(results, rendererPath, `Invalid renderer reference "${rendererName}"`)
     }
