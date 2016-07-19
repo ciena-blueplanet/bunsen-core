@@ -12,18 +12,20 @@ module.exports = {
         [{model: 'lastName'}],
         [{
           model: 'alias',
-          readTransforms: [
-            {
-              from: '@kernelthekat',
-              to: 'Cutest Cat Ever!'
-            }
-          ],
-          writeTransforms: [
-            {
-              from: 'Cute Cat',
-              to: '@kernelthekat'
-            }
-          ]
+          transforms: {
+            read: [
+              {
+                from: '@kernelthekat',
+                to: 'Cutest Cat Ever!'
+              }
+            ],
+            write: [
+              {
+                from: 'Cute Cat',
+                to: '@kernelthekat'
+              }
+            ]
+          }
         }]
       ]
     }

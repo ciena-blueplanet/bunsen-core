@@ -3,6 +3,43 @@ export default {
   additionalProperties: false,
   definitions: {
 
+    // Specific options for array renderers
+    arrayOptions: {
+      additionalProperties: false,
+      type: 'object',
+      properties: {
+
+        // When true, an empty item will always be added to the end of the array
+        autoAdd: {
+          type: 'boolean',
+          default: false
+        },
+
+        // When true, render input(s) on same line as remove button
+        compact: {
+          type: 'boolean',
+          default: false
+        },
+
+        // the cell config for individual items in the array
+        itemCell: {
+          '$ref': '#/definitions/cell'
+        },
+
+        // When true, show label for each item in the array
+        showLabel: {
+          type: 'boolean',
+          default: true
+        },
+
+        // When true, array items can be sorted via drag-n-drop
+        sortable: {
+          type: 'boolean',
+          default: false
+        }
+      }
+    },
+
     // boolean renderer options
     booleanRenderer: {
       additionalProperties: false,
@@ -38,6 +75,12 @@ export default {
     cell: {
       additionalProperties: false,
       properties: {
+
+        // Specific options for if the model this cell is rendering is an array (ignored if the model is not an array)
+        arrayOptions: {
+          '$ref': '#/definitions/arrayOptions'
+        },
+
         // class names to put on DOM elements
         classNames: {
           additionalProperties: false,
@@ -171,10 +214,6 @@ export default {
           type: 'object',
           description: 'Properties to pass to custom renderers'
         },
-        readTransforms: {
-          '$ref': '#/definitions/transforms',
-          type: 'array'
-        },
 
         // Configuration for rendering a portion of the model
         renderer: {
@@ -188,12 +227,47 @@ export default {
           ]
         },
 
-        writeTransforms: {
-          '$ref': '#/definitions/transforms',
-          type: 'array'
+        // Transforms to perform on read/write
+        transforms: {
+          additionalProperties: false,
+          properties: {
+            // transforms that happen when we read data in from the UI
+            read: {
+              '$ref': '#/definitions/transformArray'
+            },
+
+            // transforms that happen when we write data out to the UI
+            write: {
+              '$ref': '#/definitions/transformArray'
+            }
+          },
+          type: 'object'
         }
       },
       type: 'object'
+    },
+
+    // a condition that can use the value (or parts of it) to trigger schema changes
+    // each key will be AND'd together, so if you specify more than one condition within the
+    // condition object, they must all be satisfied for the condition to be met.
+    condition: {
+      additionalProperties: {
+        properties: {
+          contains: {
+            type: 'string'
+          },
+          equals: {
+            oneOf: [
+              {type: 'array'},
+              {type: 'boolean'},
+              {type: 'number'},
+              {type: 'string'},
+              {type: 'object'}
+            ]
+          }
+        },
+        type: 'object'
+      }
     },
 
     // custom renderer options
@@ -230,6 +304,7 @@ export default {
       type: 'object'
     },
 
+    // Transform something to an object
     objectTransform: {
       additionalProperties: false,
       properties: {
@@ -300,6 +375,7 @@ export default {
       type: 'object'
     },
 
+    // Transform a string to another string
     stringTransform: {
       additionalProperties: false,
       properties: {
@@ -311,40 +387,25 @@ export default {
       required: ['from', 'to'],
       type: 'object'
     },
-    transforms: {
+
+    // An array of transforms
+    transformArray: {
       items: {
         oneOf: [
           {
-            '$ref': '#/definitions/objectTransform',
-            type: 'object'
+            '$ref': '#/definitions/objectTransform'
           },
           {
-            '$ref': '#/definitions/stringTransform',
-            type: 'object'
+            '$ref': '#/definitions/stringTransform'
           }
         ]
       },
       type: 'array'
     }
   },
+
   type: 'object',
-  description: 'The JSON Schema for a view definition',
   properties: {
-    buttonLabels: {
-      type: 'object',
-      properties: {
-        cancel: {
-          type: 'string',
-          description: 'The user-visible label for the cancel button',
-          default: 'Cancel'
-        },
-        submit: {
-          type: 'string',
-          description: 'The user-visible label for the submit button',
-          default: 'Submit'
-        }
-      }
-    },
     containers: {
       type: 'array',
       items: {
@@ -419,6 +480,7 @@ export default {
       ]
     }
   },
+
   required: [
     'cells',
     'containers',
