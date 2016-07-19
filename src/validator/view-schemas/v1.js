@@ -464,20 +464,17 @@ export default {
       },
       minItems: 1
     },
+
+    // What kind of view is this? A form that requests information, or detail that displays it?
     type: {
-      type: 'string',
-      description: 'What kind of view is this? A form that requests information, or detail that displays it?',
-      enum: [
-        'form',
-        'detail'
-      ]
+      enum: ['detail', 'form'],
+      type: 'string'
     },
+
+    // This schema is just for v2
     version: {
-      type: 'string',
-      description: 'This schema is just for v1',
-      enum: [
-        '2.0'
-      ]
+      enum: ['2.0'],
+      type: 'string'
     }
   },
 
