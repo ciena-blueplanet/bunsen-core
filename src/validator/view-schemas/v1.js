@@ -6,10 +6,28 @@ export default {
       additionalProperties: false,
       description: 'A single cell in the grid system, "model" or "container" is required',
       properties: {
-        className: {
-          type: 'string',
-          description: 'CSS "className" for this cell'
+        // class names to put on DOM elements
+        classNames: {
+          additionalProperties: false,
+          properties: {
+            // the class name for the div that is the cell itself
+            cell: {
+              type: 'string'
+            },
+
+            // the class name for the label of the cell
+            label: {
+              type: 'string'
+            },
+
+            // the class name for the value of the cell (generally an input)
+            value: {
+              type: 'string'
+            }
+          },
+          type: 'object'
         },
+
         container: {
           type: 'string',
           description: 'The "id" of a container in the "containers" array'
@@ -22,10 +40,6 @@ export default {
           type: 'boolean',
           description: 'True to disable the input'
         },
-        inputClassName: {
-          type: 'string',
-          description: 'CSS "className" for the input itself'
-        },
         item: {
           additionalProperties: false,
           type: 'object',
@@ -36,10 +50,29 @@ export default {
               description: 'When true, an empty item will always be added to the end of the array',
               default: false
             },
-            className: {
-              type: 'string',
-              description: 'CSS "className" for this cell'
+
+            // class names to put on DOM elements
+            classNames: {
+              additionalProperties: false,
+              properties: {
+                // the class name for the div that is the cell itself
+                cell: {
+                  type: 'string'
+                },
+
+                // the class name for the label of the cell
+                label: {
+                  type: 'string'
+                },
+
+                // the class name for the value of the cell (generally an input)
+                value: {
+                  type: 'string'
+                }
+              },
+              type: 'object'
             },
+
             compact: {
               type: 'boolean',
               description: 'When true, render input(s) on same line as remove button',
@@ -53,17 +86,9 @@ export default {
               type: 'boolean',
               description: 'When true, use inline item rendering instead of tabs'
             },
-            inputClassName: {
-              type: 'string',
-              description: 'CSS "className" for the input itself'
-            },
             label: {
               type: 'string',
               description: 'The user-visible label for this cell'
-            },
-            labelClassName: {
-              type: 'string',
-              description: 'CSS "className" for the label of the input'
             },
             placeholder: {
               type: 'string',
@@ -92,10 +117,6 @@ export default {
         label: {
           type: 'string',
           description: 'The user-visible label for this cell'
-        },
-        labelClassName: {
-          type: 'string',
-          description: 'CSS "className" for the label of the input'
         },
         model: {
           type: 'string',

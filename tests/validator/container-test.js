@@ -78,7 +78,9 @@ describe('validator/container', () => {
             [{model: 'lastName'}],
             [{model: 'alias'}]
           ],
-          className: 'col-sm-12',
+          classNames: {
+            cell: 'col-sm-12'
+          },
           defaultClassName: 'col-sm-4',
           foo: 'bar'
         }
@@ -103,7 +105,16 @@ describe('validator/container', () => {
         container = {
           children: [
             [{model: 'firstName'}, {model: 'lastName', renderer: 'BazComponent'}],
-            [{className: 'col-sm-4'}, {model: 'bad-field-name'}],
+            [
+              {
+                classNames: {
+                  cell: 'col-sm-4'
+                }
+              },
+              {
+                model: 'bad-field-name'
+              }
+            ],
             [{model: 'alias', renderer: 'FooComponent'}, {container: 'bad-container-name'}],
             [{container: 'top'}, {container: 'bottom', bar: 'baz'}],
             [{model: 'firstName'}, {model: 'lastName', renderer: 'foo-bar-renderer'}]

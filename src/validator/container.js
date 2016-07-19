@@ -50,7 +50,7 @@ export default createFactory({
   REQUIRED_CONTAINER_ATTRS: ['id', 'children'],
 
   /** optional top-level container attributes */
-  OPTIONAL_CONTAINER_ATTRS: ['className', 'defaultClassName'],
+  OPTIONAL_CONTAINER_ATTRS: ['classNames', 'defaultClassName'],
 
   /**
    * Initialize the validator

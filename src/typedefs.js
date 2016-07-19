@@ -3,7 +3,7 @@
  *
  * NOTE: One of container or model is required
  *
- * @property {String} [className] - a CSS class (or space-separated classes) to apply to the cell
+ * @property {String} [classNames] - class names to apply to container
  * @property {String} [container] - reference to the ID of a container defined in the containers array
  * @property {String} [model] - reference to the ID of a model defined in the ModelSet (use dot notation for children)
  */
@@ -16,7 +16,7 @@
 
 /**
  * @typedef {Object} BunsenContainer
- * @property {String} [className] - a CSS class (or space-separated classes) to apply to the container
+ * @property {Object} [classNames] - class names to apply to container
  * @property {Boolean} [collapsible=false] - whether or not container should be collapsible
  * @property {String} [defaultClassName] - a CSS class (or space-separated classes) to apply to all cells
  * @property {String} id - the unique ID for the container, used to generate a BunsenContainerSet
