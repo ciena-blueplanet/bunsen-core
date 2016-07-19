@@ -7,26 +7,19 @@ module.exports = {
       extends: 'main'
     }
   ],
-  cellDefinitions: [
-    {
-      id: 'main',
+  cellDefinitions: {
+    main: {
       children: [
-        [
-          {
-            model: 'firstName'
-          }
-        ],
-        [
-          {
-            model: 'lastName'
-          }
-        ],
-        [
-          {
-            model: 'alias'
-          }
-        ]
+        {
+          model: 'firstName'
+        },
+        {
+          model: 'lastName'
+        },
+        {
+          model: 'alias'
+        }
       ]
     }
-  ]
+  }
 }

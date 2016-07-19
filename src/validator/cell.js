@@ -80,13 +80,12 @@ export default createFactory({
    */
   _validateSubCell (path, cellId, model) {
     const results = []
-    const cellIndex = _.findIndex(this.cellDefinitions, {id: cellId})
-    const cell = this.cellDefinitions[cellIndex]
+    const cell = this.cellDefinitions[cellId]
     if (cell === undefined) {
       addErrorResult(results, path, `Invalid extends reference "${cellId}"`)
     } else {
       results.push(
-        this.validate(`#/cellDefinitions/${cellIndex}`, cell, model)
+        this.validate(`#/cellDefinitions/${cellId}`, cell, model)
       )
     }
 
@@ -242,33 +241,6 @@ export default createFactory({
   },
 
   /**
-   * Validate the given row
-   * @param {String} path - the path the given row
-   * @param {BunsenCell[]} cells - the cells within the row
-   * @param {BunsenModel} [model] - the Model to validate model references against
-   * @returns {BunsenValidationResult} the results of the row validation
-   */
-  _validateRow (path, cells, model) {
-    if (!_.isArray(cells)) {
-      return {
-        errors: [
-          {
-            path,
-            message: 'Children must consist of Arrays of Cells'
-          }
-        ],
-        warnings: []
-      }
-    }
-
-    const results = _.map(cells, (cell, index) => {
-      return this._validateCell(`${path}/${index}`, cell, model)
-    })
-
-    return aggregateResults(results)
-  },
-
-  /**
    * Validate the given config
    * @param {String} path - the path to the cell from the root of the config
    * @param {BunsenCell} cell - the cell to validate
@@ -307,7 +279,7 @@ export default createFactory({
 
     _.forEach(cell.children, (child, index) => {
       results.push(
-        this._validateRow(`${path}/children/${index}`, child, model)
+        this._validateCell(`${path}/children/${index}`, child, model)
       )
     })
 

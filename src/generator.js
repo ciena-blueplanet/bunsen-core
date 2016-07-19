@@ -5,28 +5,6 @@ import _ from 'lodash'
 import {dereference} from './dereference'
 
 /**
- * Get a unique cell name starting with name
- * @param {String} id - the ID to start with
- * @param {BunsenCell[]} cellDefinitions - the existing cells (used to avoid duplicates)
- * @returns {String} the unique ID
- */
-function getCellId (id, cellDefinitions) {
-  if (_.find(cellDefinitions, {id}) === undefined) {
-    return id
-  }
-
-  let count = 0
-  let uniqueId = ''
-
-  do {
-    count += 1
-    uniqueId = `${id}-${count}`
-  } while (_.find(cellDefinitions, {id: uniqueId}) !== undefined)
-
-  return uniqueId
-}
-
-/**
  * Take the properties of an object and put primitive types above non-primitive types
  * @param {BunsenModelSet} properties - the properties for the model (key-value)
  * @returns {String[]} an array of property names in the order we should display them
@@ -54,13 +32,11 @@ function getPropertyOrder (properties) {
  * @returns {String} the cell name
  */
 function addModelCell (propertyName, model, cellDefinitions) {
-  const cellId = getCellId(propertyName, cellDefinitions)
   const cell = {
-    id: cellId,
     children: []
   }
 
-  cellDefinitions.push(cell)
+  cellDefinitions[propertyName] = cell
 
   const props = getPropertyOrder(model.properties)
   props.forEach((propName) => {
@@ -82,7 +58,7 @@ function addModelCell (propertyName, model, cellDefinitions) {
     })
   }
 
-  return cellId
+  return propertyName
 }
 
 /**
@@ -109,7 +85,7 @@ function addModel (propertyName, model, children, cellDefinitions) {
       cell.extends = cellId
     }
   }
-  children.push([cell])
+  children.push(cell)
 }
 
 /**
@@ -138,7 +114,7 @@ function addDependentModel (propertyName, dependencyName, model, children, cellD
       cell.extends = cellId
     }
   }
-  children.push([cell])
+  children.push(cell)
 }
 
 /**
@@ -153,17 +129,16 @@ export function getDefaultView (schema) {
     version: '2.0',
     type: 'form',
     cells: [{label: 'Main', extends: 'main'}],
-    cellDefinitions: [
-      {
-        id: 'main',
+    cellDefinitions: {
+      main: {
         children: []
       }
-    ]
+    }
   }
 
   const props = getPropertyOrder(model.properties)
   props.forEach((propName) => {
-    addModel(propName, model.properties[propName], view.cellDefinitions[0].children, view.cellDefinitions)
+    addModel(propName, model.properties[propName], view.cellDefinitions['main'].children, view.cellDefinitions)
   })
 
   return view

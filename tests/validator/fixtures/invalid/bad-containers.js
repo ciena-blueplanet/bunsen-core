@@ -4,15 +4,12 @@ module.exports = {
   version: '1.0',
   type: 'form',
 
-  cellDefinitions: [
-    {
-      id: 'foo',
+  cellDefinitions: {
+    foo: {
       children: []
     },
-    {
-      id: 'bar'
-    }
-  ],
+    bar: {}
+  },
 
   cells: [
     {

@@ -7,83 +7,57 @@ module.exports = {
       extends: 'main'
     }
   ],
-  cellDefinitions: [
-    {
-      id: 'main',
+  cellDefinitions: {
+    main: {
       children: [
-        [
-          {
-            model: 'name'
-          }
-        ],
-        [
-          {
-            model: 'email'
-          }
-        ],
-        [
-          {
-            model: 'paymentInfo',
-            extends: 'paymentInfo'
-          }
-        ]
+        {
+          model: 'name'
+        },
+        {
+          model: 'email'
+        },
+        {
+          model: 'paymentInfo',
+          extends: 'paymentInfo'
+        }
       ]
     },
-    {
-      id: 'paymentInfo',
+    paymentInfo: {
       children: [
-        [
-          {
-            model: 'useEft'
-          }
-        ],
-        [
-          {
-            model: 'useCreditCard'
-          }
-        ],
-        [
-          {
-            model: 'usePayPal'
-          }
-        ],
-        [
-          {
-            model: 'routingNumber',
-            dependsOn: 'useEft'
-          }
-        ],
-        [
-          {
-            model: 'accountNumber',
-            dependsOn: 'useEft'
-          }
-        ],
-        [
-          {
-            model: 'creditCardNumber',
-            dependsOn: 'useCreditCard'
-          }
-        ],
-        [
-          {
-            model: 'ccv',
-            dependsOn: 'useCreditCard'
-          }
-        ],
-        [
-          {
-            model: 'payPalUsername',
-            dependsOn: 'usePayPal'
-          }
-        ],
-        [
-          {
-            model: 'payPalPassword',
-            dependsOn: 'usePayPal'
-          }
-        ]
+        {
+          model: 'useEft'
+        },
+        {
+          model: 'useCreditCard'
+        },
+        {
+          model: 'usePayPal'
+        },
+        {
+          model: 'routingNumber',
+          dependsOn: 'useEft'
+        },
+        {
+          model: 'accountNumber',
+          dependsOn: 'useEft'
+        },
+        {
+          model: 'creditCardNumber',
+          dependsOn: 'useCreditCard'
+        },
+        {
+          model: 'ccv',
+          dependsOn: 'useCreditCard'
+        },
+        {
+          model: 'payPalUsername',
+          dependsOn: 'usePayPal'
+        },
+        {
+          model: 'payPalPassword',
+          dependsOn: 'usePayPal'
+        }
       ]
     }
-  ]
+  }
 }

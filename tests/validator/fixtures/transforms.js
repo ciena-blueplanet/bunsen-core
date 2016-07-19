@@ -4,13 +4,12 @@ module.exports = {
   version: '2.0',
   type: 'form',
 
-  cellDefinitions: [
-    {
-      id: 'main',
+  cellDefinitions: {
+    main: {
       children: [
-        [{model: 'firstName'}],
-        [{model: 'lastName'}],
-        [{
+        {model: 'firstName'},
+        {model: 'lastName'},
+        {
           model: 'alias',
           transforms: {
             read: [
@@ -26,10 +25,10 @@ module.exports = {
               }
             ]
           }
-        }]
+        }
       ]
     }
-  ],
+  },
 
   cells: [{label: 'Main', extends: 'main'}]
 }

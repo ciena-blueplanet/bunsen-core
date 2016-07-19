@@ -52,12 +52,11 @@ function _validateCells (view, model, cellValidator) {
   const results = _.map(view.cells, (rootCell, index) => {
     const path = `#/cells/${index}`
     const cellId = rootCell.extends
-    const cellIndex = _.findIndex(view.cellDefinitions, {id: cellId})
-    const cell = view.cellDefinitions[cellIndex]
-    const cellPath = `#/cellDefinitions/${cellIndex}`
+    const cell = view.cellDefinitions[cellId]
+    const cellPath = `#/cellDefinitions/${cellId}`
     const cellResults = [
       validateRequiredAttribute(rootCell, path, 'label'),
-      validateRequiredAttribute(rootCell, path, 'extends', _.map(view.cellDefinitions, (c) => c.id))
+      validateRequiredAttribute(rootCell, path, 'extends', Object.keys(view.cellDefinitions))
     ]
 
     if (cell !== undefined) {

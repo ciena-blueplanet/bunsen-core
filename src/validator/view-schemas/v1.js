@@ -103,15 +103,62 @@ export default {
           type: 'object'
         },
 
+        // cells that are nested within this cell
+        children: {
+          items: {
+            '$ref': '#/definitions/cell'
+          },
+          type: 'array'
+        },
+
+        // conditionals are triggered by particular values within the data passed into bunsen as a 'value' or entered
+        // by the user
+        conditions: {
+          items: {
+            additionalProperties: false,
+            properties: {
+              // if any of the condition instances in the array are met, the "then" block will be considered
+              // in this way, the individual instances in this array are all OR'd together
+              if: {
+                items: {
+                  '$ref': '#/definitions/condition'
+                },
+                type: 'array'
+              },
+
+              // This is the negation of the "if" property.
+              // if any of the condition instances in the array are *not* met, the "then" block will be considered
+              // in this way, the individual instances in this array are all OR'd together
+              // NOTE: if an "if" is specified, the "unless" will be ignored, only one at a time is valid
+              unless: {
+                items: {
+                  '$ref': '#/definitions/condition'
+                },
+                type: 'array'
+              },
+
+              // once conditions are met, the contents of the this "then" block are applied to the parent "cell"
+              then: {
+                '$ref': '#/definitions/cell'
+              }
+            },
+            type: 'object'
+          },
+          type: 'array'
+        },
+
+        // Pass through a disabled state to the input of the cell
+        disabled: {
+          type: 'boolean'
+        },
+
+        // name of a cell to extend, must be the name of a cell (a key in the "cellDefinitions" object)
         extends: {
           type: 'string'
         },
+
         dependsOn: {
           type: 'string'
-        },
-        disabled: {
-          type: 'boolean',
-          description: 'True to disable the input'
         },
         item: {
           additionalProperties: false,
@@ -400,77 +447,24 @@ export default {
 
   type: 'object',
   properties: {
+
+    // The property names inside cellDefinitions are the names of the cells they define, and can be referenced
+    // in the "extends" property of any cell to inherit all the properties of that cellDefinition, allowing the
+    // cell doing the extending to override anything from the cellDefinition that is being extended
     cellDefinitions: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          // class names to put on DOM elements
-          classNames: {
-            additionalProperties: false,
-            properties: {
-              // the class name for the div that is the cell itself
-              cell: {
-                type: 'string'
-              },
-
-              // the class name for the label of the cell
-              label: {
-                type: 'string'
-              },
-
-              // the class name for the value of the cell (generally an input)
-              value: {
-                type: 'string'
-              }
-            },
-            type: 'object'
-          },
-
-          defaultClassName: {
-            type: 'string'
-          },
-          id: {
-            type: 'string'
-          },
-          children: {
-            type: 'array',
-            items: {
-              type: 'array',
-              items: {
-                '$ref': '#/definitions/cell'
-              }
-            },
-            minItems: 1
-          }
-        },
-        required: [
-          'id',
-          'children'
-        ]
+      additionalProperties: {
+        '$ref': '#/definitions/cell'
       },
-      minItems: 1
+      type: 'object'
     },
+
+    // top-level entry-point cells (if more than one is given, they are displayed as tabs)
     cells: {
-      type: 'array',
       items: {
-        type: 'object',
-        properties: {
-          extends: {
-            type: 'string',
-            description: 'The "id" of a cell in the "cellDefinitions" array'
-          },
-          label: {
-            type: 'string',
-            description: 'User-visible label for the entry-point (i.e. tab)'
-          }
-        },
-        required: [
-          'extends',
-          'label'
-        ]
+        '$ref': '#/definitions/cell'
       },
-      minItems: 1
+      minItems: 1,
+      type: 'array'
     },
 
     // What kind of view is this? A form that requests information, or detail that displays it?
@@ -488,7 +482,6 @@ export default {
 
   required: [
     'cells',
-    'cellDefinitions',
     'type',
     'version'
   ]

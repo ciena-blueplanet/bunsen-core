@@ -4,21 +4,19 @@ module.exports = {
   version: '2.0',
   type: 'form',
 
-  cellDefinitions: [
-    {
-      id: 'name',
+  cellDefinitions: {
+    alias: {
       children: [
-        [{model: 'firstName'}],
-        [{model: 'lastName'}]
+        {model: 'alias'}
       ]
     },
-    {
-      id: 'alias',
+    name: {
       children: [
-        [{model: 'alias'}]
+        {model: 'firstName'},
+        {model: 'lastName'}
       ]
     }
-  ],
+  },
 
   cells: [
     {label: 'Name', extends: 'name'},

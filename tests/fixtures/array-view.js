@@ -7,65 +7,46 @@ module.exports = {
       extends: 'main'
     }
   ],
-  cellDefinitions: [
-    {
-      id: 'main',
+  cellDefinitions: {
+    addresses: {
       children: [
-        [
-          {
-            model: 'name',
-            extends: 'name'
-          }
-        ],
-        [
-          {
-            model: 'addresses',
-            item: {
-              extends: 'addresses'
-            }
-          }
-        ]
+        {
+          model: 'street'
+        },
+        {
+          model: 'city'
+        },
+        {
+          model: 'state'
+        },
+        {
+          model: 'zip'
+        }
       ]
     },
-    {
-      id: 'name',
+    main: {
       children: [
-        [
-          {
-            model: 'first'
+        {
+          model: 'name',
+          extends: 'name'
+        },
+        {
+          model: 'addresses',
+          item: {
+            extends: 'addresses'
           }
-        ],
-        [
-          {
-            model: 'last'
-          }
-        ]
+        }
       ]
     },
-    {
-      id: 'addresses',
+    name: {
       children: [
-        [
-          {
-            model: 'street'
-          }
-        ],
-        [
-          {
-            model: 'city'
-          }
-        ],
-        [
-          {
-            model: 'state'
-          }
-        ],
-        [
-          {
-            model: 'zip'
-          }
-        ]
+        {
+          model: 'first'
+        },
+        {
+          model: 'last'
+        }
       ]
     }
-  ]
+  }
 }

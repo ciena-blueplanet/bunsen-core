@@ -7,24 +7,20 @@ describe('validator/cell', () => {
   let validator, cell, result, cellDefinitions, model, renderers
 
   beforeEach(() => {
-    cellDefinitions = [
-      {
-        id: 'main',
+    cellDefinitions = {
+      bottom: {
         children: []
       },
-      {
-        id: 'top',
+      main: {
         children: []
       },
-      {
-        id: 'middle',
+      middle: {
         children: []
       },
-      {
-        id: 'bottom',
+      top: {
         children: []
       }
-    ]
+    }
 
     model = {
       type: 'object',
@@ -54,9 +50,9 @@ describe('validator/cell', () => {
       beforeEach(() => {
         cell = {
           children: [
-            [{model: 'firstName'}],
-            [{model: 'lastName'}],
-            [{model: 'alias'}]
+            {model: 'firstName'},
+            {model: 'lastName'},
+            {model: 'alias'}
           ]
         }
         result = validator.validate('#/cellDefinitions/0', cell, model)
@@ -74,9 +70,9 @@ describe('validator/cell', () => {
       beforeEach(() => {
         cell = {
           children: [
-            [{model: 'firstName'}],
-            [{model: 'lastName'}],
-            [{model: 'alias'}]
+            {model: 'firstName'},
+            {model: 'lastName'},
+            {model: 'alias'}
           ],
           classNames: {
             cell: 'col-sm-12'
@@ -104,44 +100,36 @@ describe('validator/cell', () => {
       beforeEach(() => {
         cell = {
           children: [
-            [
-              {model: 'firstName'},
-              {
-                model: 'lastName',
-                renderer: {
-                  name: 'BazComponent'
-                }
+            {model: 'firstName'},
+            {
+              model: 'lastName',
+              renderer: {
+                name: 'BazComponent'
               }
-            ],
-            [
-              {
-                classNames: {
-                  cell: 'col-sm-4'
-                }
-              },
-              {
-                model: 'bad-field-name'
+            },
+            {
+              classNames: {
+                cell: 'col-sm-4'
               }
-            ],
-            [
-              {
-                model: 'alias',
-                renderer: {
-                  name: 'FooComponent'
-                }
-              },
-              {extends: 'bad-cell-name'}
-            ],
-            [{extends: 'top'}, {extends: 'bottom', bar: 'baz'}],
-            [
-              {model: 'firstName'},
-              {
-                model: 'lastName',
-                renderer: {
-                  name: 'foo-bar-renderer'
-                }
+            },
+            {
+              model: 'bad-field-name'
+            },
+            {
+              model: 'alias',
+              renderer: {
+                name: 'FooComponent'
               }
-            ]
+            },
+            {extends: 'bad-cell-name'},
+            {extends: 'top'}, {extends: 'bottom', bar: 'baz'},
+            {model: 'firstName'},
+            {
+              model: 'lastName',
+              renderer: {
+                name: 'foo-bar-renderer'
+              }
+            }
           ]
         }
         result = validator.validate('#/cellDefinitions/0', cell, model)
@@ -151,25 +139,25 @@ describe('validator/cell', () => {
         expect(result).deep.equal({
           errors: [
             {
-              path: '#/cellDefinitions/0/children/0/1/renderer',
+              path: '#/cellDefinitions/0/children/1/renderer',
               message: 'Invalid renderer reference "BazComponent"'
             },
             {
-              path: '#/cellDefinitions/0/children/1/0',
+              path: '#/cellDefinitions/0/children/2',
               message: 'Either "model" or "extends" must be defined for each cell.'
             },
             {
-              path: '#/cellDefinitions/0/children/1/1/model',
+              path: '#/cellDefinitions/0/children/3/model',
               message: 'Invalid model reference "bad-field-name"'
             },
             {
-              path: '#/cellDefinitions/0/children/2/1/extends',
+              path: '#/cellDefinitions/0/children/5/extends',
               message: 'Invalid extends reference "bad-cell-name"'
             }
           ],
           warnings: [
             {
-              path: '#/cellDefinitions/0/children/3/1',
+              path: '#/cellDefinitions/0/children/7',
               message: 'Unrecognized attribute "bar"'
             }
           ]
