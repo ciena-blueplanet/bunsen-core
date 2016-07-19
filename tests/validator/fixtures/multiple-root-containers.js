@@ -7,14 +7,14 @@ module.exports = {
   containers: [
     {
       id: 'name',
-      rows: [
+      children: [
         [{model: 'firstName'}],
         [{model: 'lastName'}]
       ]
     },
     {
       id: 'alias',
-      rows: [
+      children: [
         [{model: 'alias'}]
       ]
     }

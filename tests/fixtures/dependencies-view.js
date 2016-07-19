@@ -10,7 +10,7 @@ module.exports = {
   containers: [
     {
       id: 'main',
-      rows: [
+      children: [
         [
           {
             model: 'name'
@@ -31,7 +31,7 @@ module.exports = {
     },
     {
       id: 'paymentInfo',
-      rows: [
+      children: [
         [
           {
             model: 'useEft'

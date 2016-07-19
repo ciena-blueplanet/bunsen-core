@@ -57,7 +57,7 @@ function addModelContainer (propertyName, model, containers) {
   const containerId = getContainerId(propertyName, containers)
   const container = {
     id: containerId,
-    rows: []
+    children: []
   }
 
   containers.push(container)
@@ -66,7 +66,7 @@ function addModelContainer (propertyName, model, containers) {
   props.forEach((propName) => {
     // we have a circular dependency
     /* eslint-disable no-use-before-define */
-    addModel(propName, model.properties[propName], container.rows, containers)
+    addModel(propName, model.properties[propName], container.children, containers)
     /* eslint-enable no-use-before-define */
   })
 
@@ -76,7 +76,7 @@ function addModelContainer (propertyName, model, containers) {
       depProps.forEach((propName) => {
         // we have a circular dependency
         /* eslint-disable no-use-before-define */
-        addDependentModel(propName, depName, dep.properties[propName], container.rows, containers)
+        addDependentModel(propName, depName, dep.properties[propName], container.children, containers)
         /* eslint-enable no-use-before-define */
       })
     })
@@ -89,10 +89,10 @@ function addModelContainer (propertyName, model, containers) {
  * Add a property to default layout
  * @param {String} propertyName - the name of the property that holds this model
  * @param {BunsenModel} model - the actual model
- * @param {BunsenRow[]} rows - the rows we're adding the given model wrapper to
+ * @param {BunsenRow[]} children - the children we're adding the given model wrapper to
  * @param {BunsenContainer[]} containers - the set of all containers
  */
-function addModel (propertyName, model, rows, containers) {
+function addModel (propertyName, model, children, containers) {
   const cell = {
     model: propertyName
   }
@@ -109,7 +109,7 @@ function addModel (propertyName, model, rows, containers) {
       cell.container = containerId
     }
   }
-  rows.push([cell])
+  children.push([cell])
 }
 
 /**
@@ -117,10 +117,10 @@ function addModel (propertyName, model, rows, containers) {
  * @param {String} propertyName - the name of the property that holds this model
  * @param {String} dependencyName - the name of the dependency of this model
  * @param {BunsenModel} model - the actual model
- * @param {BunsenRow[]} rows - the rows we're adding the given model wrapper to
+ * @param {BunsenRow[]} children - the children we're adding the given model wrapper to
  * @param {BunsenContainer[]} containers - the set of all containers
  */
-function addDependentModel (propertyName, dependencyName, model, rows, containers) {
+function addDependentModel (propertyName, dependencyName, model, children, containers) {
   const cell = {
     model: propertyName,
     dependsOn: dependencyName
@@ -138,7 +138,7 @@ function addDependentModel (propertyName, dependencyName, model, rows, container
       cell.container = containerId
     }
   }
-  rows.push([cell])
+  children.push([cell])
 }
 
 /**
@@ -156,14 +156,14 @@ export function getDefaultView (schema) {
     containers: [
       {
         id: 'main',
-        rows: []
+        children: []
       }
     ]
   }
 
   const props = getPropertyOrder(model.properties)
   props.forEach((propName) => {
-    addModel(propName, model.properties[propName], view.containers[0].rows, view.containers)
+    addModel(propName, model.properties[propName], view.containers[0].children, view.containers)
   })
 
   return view

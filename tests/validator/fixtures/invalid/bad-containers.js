@@ -7,7 +7,7 @@ module.exports = {
   containers: [
     {
       id: 'foo',
-      rows: []
+      children: []
     },
     {
       id: 'bar'

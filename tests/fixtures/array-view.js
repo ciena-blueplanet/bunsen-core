@@ -10,7 +10,7 @@ module.exports = {
   containers: [
     {
       id: 'main',
-      rows: [
+      children: [
         [
           {
             model: 'name',
@@ -29,7 +29,7 @@ module.exports = {
     },
     {
       id: 'name',
-      rows: [
+      children: [
         [
           {
             model: 'first'
@@ -44,7 +44,7 @@ module.exports = {
     },
     {
       id: 'addresses',
-      rows: [
+      children: [
         [
           {
             model: 'street'

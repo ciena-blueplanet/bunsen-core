@@ -21,7 +21,7 @@
  * @property {String} [defaultClassName] - a CSS class (or space-separated classes) to apply to all cells
  * @property {String} id - the unique ID for the container, used to generate a BunsenContainerSet
  * @property {String} [instructions] - instructions for container
- * @property {BunsenRow[]} rows - the rows in the container
+ * @property {BunsenRow[]} children - the children in the container
  */
 
 /**

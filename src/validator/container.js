@@ -47,7 +47,7 @@ function isObjectArray (model) {
 export default createFactory({
 
   /** attributes required by every container */
-  REQUIRED_CONTAINER_ATTRS: ['id', 'rows'],
+  REQUIRED_CONTAINER_ATTRS: ['id', 'children'],
 
   /** optional top-level container attributes */
   OPTIONAL_CONTAINER_ATTRS: ['className', 'defaultClassName'],
@@ -254,7 +254,7 @@ export default createFactory({
         errors: [
           {
             path,
-            message: 'Rows must consist of Arrays of Cells'
+            message: 'Children must consist of Arrays of Cells'
           }
         ],
         warnings: []
@@ -305,9 +305,9 @@ export default createFactory({
       })
     }
 
-    _.forEach(container.rows, (row, index) => {
+    _.forEach(container.children, (child, index) => {
       results.push(
-        this._validateRow(`${path}/rows/${index}`, row, model)
+        this._validateRow(`${path}/children/${index}`, child, model)
       )
     })
 

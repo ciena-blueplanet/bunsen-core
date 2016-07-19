@@ -10,19 +10,19 @@ describe('validator/container', () => {
     containers = [
       {
         id: 'main',
-        rows: []
+        children: []
       },
       {
         id: 'top',
-        rows: []
+        children: []
       },
       {
         id: 'middle',
-        rows: []
+        children: []
       },
       {
         id: 'bottom',
-        rows: []
+        children: []
       }
     ]
 
@@ -53,7 +53,7 @@ describe('validator/container', () => {
     describe('when valid', () => {
       beforeEach(() => {
         container = {
-          rows: [
+          children: [
             [{model: 'firstName'}],
             [{model: 'lastName'}],
             [{model: 'alias'}]
@@ -73,7 +73,7 @@ describe('validator/container', () => {
     describe('when extra attributes are given', () => {
       beforeEach(() => {
         container = {
-          rows: [
+          children: [
             [{model: 'firstName'}],
             [{model: 'lastName'}],
             [{model: 'alias'}]
@@ -101,7 +101,7 @@ describe('validator/container', () => {
     describe('when cells have bad references', () => {
       beforeEach(() => {
         container = {
-          rows: [
+          children: [
             [{model: 'firstName'}, {model: 'lastName', renderer: 'BazComponent'}],
             [{className: 'col-sm-4'}, {model: 'bad-field-name'}],
             [{model: 'alias', renderer: 'FooComponent'}, {container: 'bad-container-name'}],
@@ -116,25 +116,25 @@ describe('validator/container', () => {
         expect(result).deep.equal({
           errors: [
             {
-              path: '#/containers/0/rows/0/1/renderer',
+              path: '#/containers/0/children/0/1/renderer',
               message: 'Invalid renderer reference "BazComponent"'
             },
             {
-              path: '#/containers/0/rows/1/0',
+              path: '#/containers/0/children/1/0',
               message: 'Either "model" or "container" must be defined for each cell.'
             },
             {
-              path: '#/containers/0/rows/1/1/model',
+              path: '#/containers/0/children/1/1/model',
               message: 'Invalid model reference "bad-field-name"'
             },
             {
-              path: '#/containers/0/rows/2/1/container',
+              path: '#/containers/0/children/2/1/container',
               message: 'Invalid container reference "bad-container-name"'
             }
           ],
           warnings: [
             {
-              path: '#/containers/0/rows/3/1',
+              path: '#/containers/0/children/3/1',
               message: 'Unrecognized attribute "bar"'
             }
           ]

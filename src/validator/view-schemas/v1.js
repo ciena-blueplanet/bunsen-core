@@ -196,7 +196,7 @@ export default {
             type: 'string',
             description: 'A unique identifier for this container (used as a reference to it)'
           },
-          rows: {
+          children: {
             type: 'array',
             items: {
               type: 'array',
@@ -210,7 +210,7 @@ export default {
         },
         required: [
           'id',
-          'rows'
+          'children'
         ]
       },
       minItems: 1
