@@ -63,9 +63,12 @@ export default {
         name: {
           enum: ['button-group'],
           type: 'string'
-        }
+        },
 
-        // no options yet
+        // Size of buttons (small, large, etc)
+        size: {
+          type: 'string'
+        }
       },
       type: 'object'
     },
@@ -186,11 +189,6 @@ export default {
           type: 'string'
         },
 
-        properties: {
-          type: 'object',
-          description: 'Properties to pass to custom renderers'
-        },
-
         // Configuration for rendering a portion of the model
         renderer: {
           oneOf: [
@@ -199,7 +197,8 @@ export default {
             {'$ref': '#/definitions/customRenderer'},
             {'$ref': '#/definitions/numberRenderer'},
             {'$ref': '#/definitions/selectRenderer'},
-            {'$ref': '#/definitions/stringRenderer'}
+            {'$ref': '#/definitions/stringRenderer'},
+            {'$ref': '#/definitions/textareaRenderer'}
           ]
         },
 
@@ -344,9 +343,12 @@ export default {
         name: {
           enum: ['string'],
           type: 'string'
-        }
+        },
 
-        // no options yet
+        // Input type (text, password, datetime, etc)
+        type: {
+          type: 'string'
+        }
       },
       type: 'object'
     },
@@ -361,6 +363,27 @@ export default {
         to: {type: 'string'}
       },
       required: ['from', 'to'],
+      type: 'object'
+    },
+
+    // textarea renderer options
+    textareaRenderer: {
+      additionalProperties: false,
+      properties: {
+        cols: {
+          type: 'integer'
+        },
+
+        // name can only be 'string'
+        name: {
+          enum: ['string'],
+          type: 'string'
+        },
+
+        rows: {
+          type: 'integer'
+        }
+      },
       type: 'object'
     },
 
