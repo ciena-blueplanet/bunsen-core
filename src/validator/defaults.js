@@ -2,19 +2,7 @@
 
 import '../typedefs'
 import _ from 'lodash'
-import viewSchema from './view-schemas/v1'
-
-/**
- * Get the default button labels from the schema
- * @returns {Object} key-value pairs of the button and it's default label
- */
-export function getButtonLabelDefaults () {
-  const labels = {}
-  _.forIn(viewSchema.properties.buttonLabels.properties, (value, key) => {
-    labels[key] = value['default']
-  })
-  return labels
-}
+import viewSchema from './view-schemas/v2'
 
 /**
  * Get the default values for properties on a Cell

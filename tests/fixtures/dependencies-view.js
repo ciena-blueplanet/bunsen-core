@@ -1,89 +1,63 @@
 module.exports = {
-  version: '1.0',
+  version: '2.0',
   type: 'form',
-  rootContainers: [
+  cells: [
     {
       label: 'Main',
-      container: 'main'
+      extends: 'main'
     }
   ],
-  containers: [
-    {
-      id: 'main',
-      rows: [
-        [
-          {
-            model: 'name'
-          }
-        ],
-        [
-          {
-            model: 'email'
-          }
-        ],
-        [
-          {
-            model: 'paymentInfo',
-            container: 'paymentInfo'
-          }
-        ]
+  cellDefinitions: {
+    main: {
+      children: [
+        {
+          model: 'name'
+        },
+        {
+          model: 'email'
+        },
+        {
+          model: 'paymentInfo',
+          extends: 'paymentInfo'
+        }
       ]
     },
-    {
-      id: 'paymentInfo',
-      rows: [
-        [
-          {
-            model: 'useEft'
-          }
-        ],
-        [
-          {
-            model: 'useCreditCard'
-          }
-        ],
-        [
-          {
-            model: 'usePayPal'
-          }
-        ],
-        [
-          {
-            model: 'routingNumber',
-            dependsOn: 'useEft'
-          }
-        ],
-        [
-          {
-            model: 'accountNumber',
-            dependsOn: 'useEft'
-          }
-        ],
-        [
-          {
-            model: 'creditCardNumber',
-            dependsOn: 'useCreditCard'
-          }
-        ],
-        [
-          {
-            model: 'ccv',
-            dependsOn: 'useCreditCard'
-          }
-        ],
-        [
-          {
-            model: 'payPalUsername',
-            dependsOn: 'usePayPal'
-          }
-        ],
-        [
-          {
-            model: 'payPalPassword',
-            dependsOn: 'usePayPal'
-          }
-        ]
+    paymentInfo: {
+      children: [
+        {
+          model: 'useEft'
+        },
+        {
+          model: 'useCreditCard'
+        },
+        {
+          model: 'usePayPal'
+        },
+        {
+          model: 'routingNumber',
+          dependsOn: 'useEft'
+        },
+        {
+          model: 'accountNumber',
+          dependsOn: 'useEft'
+        },
+        {
+          model: 'creditCardNumber',
+          dependsOn: 'useCreditCard'
+        },
+        {
+          model: 'ccv',
+          dependsOn: 'useCreditCard'
+        },
+        {
+          model: 'payPalUsername',
+          dependsOn: 'usePayPal'
+        },
+        {
+          model: 'payPalPassword',
+          dependsOn: 'usePayPal'
+        }
       ]
     }
-  ]
+  }
 }

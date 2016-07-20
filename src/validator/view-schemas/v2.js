@@ -63,9 +63,12 @@ export default {
         name: {
           enum: ['button-group'],
           type: 'string'
-        }
+        },
 
-        // no options yet
+        // Size of buttons (small, large, etc)
+        size: {
+          type: 'string'
+        }
       },
       type: 'object'
     },
@@ -111,6 +114,11 @@ export default {
           type: 'array'
         },
 
+        // Whether or not cell can be expanded/collapsed by user
+        collapsible: {
+          type: 'boolean'
+        },
+
         // conditionals are triggered by particular values within the data passed into bunsen as a 'value' or entered
         // by the user
         conditions: {
@@ -147,6 +155,15 @@ export default {
           type: 'array'
         },
 
+        dependsOn: {
+          type: 'string'
+        },
+
+        // Sub text to render beneath label
+        description: {
+          type: 'string'
+        },
+
         // Pass through a disabled state to the input of the cell
         disabled: {
           type: 'boolean'
@@ -167,6 +184,11 @@ export default {
           type: 'string'
         },
 
+        // Text to display when no value is set
+        placeholder: {
+          type: 'string'
+        },
+
         // Configuration for rendering a portion of the model
         renderer: {
           oneOf: [
@@ -175,7 +197,8 @@ export default {
             {'$ref': '#/definitions/customRenderer'},
             {'$ref': '#/definitions/numberRenderer'},
             {'$ref': '#/definitions/selectRenderer'},
-            {'$ref': '#/definitions/stringRenderer'}
+            {'$ref': '#/definitions/stringRenderer'},
+            {'$ref': '#/definitions/textareaRenderer'}
           ]
         },
 
@@ -224,18 +247,12 @@ export default {
 
     // custom renderer options
     customRenderer: {
-      additionalProperties: false,
+      additionalProperties: true,
       properties: {
         // name can be anything that's not builtin
         name: {
           type: 'string',
           pattern: '^(?!boolean$|button-group$|multi-select$|number$|select$|string$).*'
-        },
-
-        // the opaque options passed to a custom renderer
-        options: {
-          additionalProperties: true,
-          type: 'object'
         }
       },
       type: 'object'
@@ -320,9 +337,12 @@ export default {
         name: {
           enum: ['string'],
           type: 'string'
-        }
+        },
 
-        // no options yet
+        // Input type (text, password, datetime, etc)
+        type: {
+          type: 'string'
+        }
       },
       type: 'object'
     },
@@ -337,6 +357,27 @@ export default {
         to: {type: 'string'}
       },
       required: ['from', 'to'],
+      type: 'object'
+    },
+
+    // textarea renderer options
+    textareaRenderer: {
+      additionalProperties: false,
+      properties: {
+        cols: {
+          type: 'integer'
+        },
+
+        // name can only be 'string'
+        name: {
+          enum: ['string'],
+          type: 'string'
+        },
+
+        rows: {
+          type: 'integer'
+        }
+      },
       type: 'object'
     },
 

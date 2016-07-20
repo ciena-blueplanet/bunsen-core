@@ -1,32 +1,25 @@
 module.exports = {
-  version: '1.0',
+  version: '2.0',
   type: 'form',
-  rootContainers: [
+  cells: [
     {
       label: 'Main',
-      container: 'main'
+      extends: 'main'
     }
   ],
-  containers: [
-    {
-      id: 'main',
-      rows: [
-        [
-          {
-            model: 'firstName'
-          }
-        ],
-        [
-          {
-            model: 'lastName'
-          }
-        ],
-        [
-          {
-            model: 'alias'
-          }
-        ]
+  cellDefinitions: {
+    main: {
+      children: [
+        {
+          model: 'firstName'
+        },
+        {
+          model: 'lastName'
+        },
+        {
+          model: 'alias'
+        }
       ]
     }
-  ]
+  }
 }

@@ -1,4 +1,3 @@
-// The JSON Schema for a view definition (version 1.0)
 export default {
   additionalProperties: false,
   definitions: {
@@ -247,7 +246,7 @@ export default {
     },
     version: {
       type: 'string',
-      description: 'This schema is just for v1',
+      description: 'For future use',
       enum: [
         '1.0'
       ]

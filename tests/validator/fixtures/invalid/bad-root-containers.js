@@ -1,31 +1,29 @@
 'use strict'
 
 module.exports = {
-  version: '1.0',
+  version: '2.0',
   type: 'form',
 
-  containers: [
-    {
-      id: 'foo',
-      rows: [[]]
+  cellDefinitions: {
+    bar: {
+      children: []
     },
-    {
-      id: 'bar',
-      rows: [[]]
+    foo: {
+      children: []
     }
-  ],
+  },
 
-  rootContainers: [
+  cells: [
     {
       label: 'Foo',
-      container: 'foo'
+      extends: 'foo'
     },
     {
-      container: 'bar'
+      extends: 'bar'
     },
     {
       label: 'Baz',
-      container: 'baz'
+      extends: 'baz'
     }
   ]
 }

@@ -12,8 +12,8 @@ import {
   validateRequiredAttribute
 } from './utils'
 
-import containerValidatorFactory from './container'
-import viewSchema from './view-schemas/v1'
+import cellValidatorFactory from './cell'
+import viewSchema from './view-schemas/v2'
 
 export {validate as validateModel} from './model'
 import {validate as _validateValue} from './value'
@@ -33,40 +33,39 @@ export const builtInRenderers = {
 }
 
 /**
- * Make sure the rootContainers (if specified) are valid
+ * Make sure the cells (if specified) are valid
  * @param {BunsenView} view - the schema to validate
- * @param {BunsenModel} model - the JSON schema that the containers will reference
- * @param {ContainerValidator} containerValidator - the validator instance for a container in the current view
- * @returns {BunsenValidationResult} the result of validating the rootContainers
+ * @param {BunsenModel} model - the JSON schema that the cells will reference
+ * @param {CellValidator} cellValidator - the validator instance for a cell in the current view
+ * @returns {BunsenValidationResult} the result of validating the cells
  */
-function _validateRootContainers (view, model, containerValidator) {
+function _validateCells (view, model, cellValidator) {
   // We should already have the error for it not existing at this point, so just fake success
   // this seems wrong, but I'm not sure of a better way to do it - ARM
-  if (!view.rootContainers) {
+  if (!view.cells) {
     return {
       errors: [],
       warnings: []
     }
   }
 
-  const results = _.map(view.rootContainers, (rootContainer, index) => {
-    const path = `#/rootContainers/${index}`
-    const containerId = rootContainer.container
-    const containerIndex = _.findIndex(view.containers, {id: containerId})
-    const container = view.containers[containerIndex]
-    const containerPath = `#/containers/${containerIndex}`
-    const rootContainerResults = [
-      validateRequiredAttribute(rootContainer, path, 'label'),
-      validateRequiredAttribute(rootContainer, path, 'container', _.map(view.containers, (c) => c.id))
+  const results = _.map(view.cells, (rootCell, index) => {
+    const path = `#/cells/${index}`
+    const cellId = rootCell.extends
+    const cell = view.cellDefinitions[cellId]
+    const cellPath = `#/cellDefinitions/${cellId}`
+    const cellResults = [
+      validateRequiredAttribute(rootCell, path, 'label'),
+      validateRequiredAttribute(rootCell, path, 'extends', Object.keys(view.cellDefinitions))
     ]
 
-    if (container !== undefined) {
-      rootContainerResults.push(
-        containerValidator.validate(containerPath, container)
+    if (cell !== undefined) {
+      cellResults.push(
+         cellValidator.validate(cellPath, cell)
       )
     }
 
-    return aggregateResults(rootContainerResults)
+    return aggregateResults(cellResults)
   })
 
   return aggregateResults(results)
@@ -75,16 +74,16 @@ function _validateRootContainers (view, model, containerValidator) {
 /**
  * Validate the root attributes of the view
  * @param {BunsenView} view - the view to validate
- * @param {BunsenModel} model - the JSON schema that the containers will reference
- * @param {ContainerValidator} containerValidator - the validator instance for a container in the current view
+ * @param {BunsenModel} model - the JSON schema that the cells will reference
+ * @param {CellValidator} cellValidator - the validator instance for a cell in the current view
  * @returns {BunsenValidationResult} any errors found
  */
-function _validateRootAttributes (view, model, containerValidator) {
+function _validateRootAttributes (view, model, cellValidator) {
   const results = [
-    _validateRootContainers(view, model, containerValidator)
+    _validateCells(view, model, cellValidator)
   ]
 
-  const knownAttributes = ['version', 'type', 'rootContainers', 'containers']
+  const knownAttributes = ['version', 'type', 'cells', 'cellDefinitions']
   const unknownAttributes = _.difference(_.keys(view), knownAttributes)
   results.push({
     errors: [],
@@ -102,7 +101,7 @@ function _validateRootAttributes (view, model, containerValidator) {
 /**
  * Validate the given view
  * @param {String|View} view - the view to validate (as an object or JSON string)
- * @param {BunsenModel} model - the JSON schema that the containers will reference
+ * @param {BunsenModel} model - the JSON schema that the cells will reference
  * @param {String[]} renderers - the list of available custom renderers to validate renderer references against
  * @param {Ember.ApplicationInstance} owner - application instance
  * @returns {BunsenValidationResult} the results of the view validation
@@ -129,7 +128,7 @@ export function validate (view, model, renderers, owner) {
   }
 
   const derefModel = dereference(model).schema
-  const containerValidator = containerValidatorFactory(view.containers, derefModel, renderers, owner)
+  const cellValidator = cellValidatorFactory(view.cellDefinitions, derefModel, renderers, owner)
   const schemaResult = _validateValue(view, viewSchema, true)
   if (schemaResult.errors.length !== 0) {
     return schemaResult
@@ -137,17 +136,17 @@ export function validate (view, model, renderers, owner) {
 
   const results = [
     schemaResult,
-    _validateRootAttributes(view, derefModel, containerValidator)
+    _validateRootAttributes(view, derefModel, cellValidator)
   ]
 
-  const allContainerPaths = _.map(view.containers, (container, index) => {
-    return `#/containers/${index}`
+  const allCellPaths = _.map(view.cellDefinitions, (cell, index) => {
+    return `#/cellDefinitions/${index}`
   })
 
-  const validatedPaths = containerValidator.containersValidated
-  const missedPaths = _.difference(allContainerPaths, validatedPaths)
+  const validatedPaths = cellValidator.cellsValidated
+  const missedPaths = _.difference(allCellPaths, validatedPaths)
   missedPaths.forEach((path) => {
-    addWarningResult(results, path, 'Unused container was not validated')
+    addWarningResult(results, path, 'Unused cell was not validated')
   })
 
   if (strResult !== null) {

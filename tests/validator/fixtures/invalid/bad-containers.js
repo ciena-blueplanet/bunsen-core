@@ -4,24 +4,21 @@ module.exports = {
   version: '1.0',
   type: 'form',
 
-  containers: [
-    {
-      id: 'foo',
-      rows: []
+  cellDefinitions: {
+    foo: {
+      children: []
     },
-    {
-      id: 'bar'
-    }
-  ],
+    bar: {}
+  },
 
-  rootContainers: [
+  cells: [
     {
       label: 'Foo',
-      container: 'foo'
+      extends: 'foo'
     },
     {
       label: 'Bar',
-      container: 'bar'
+      extends: 'bar'
     }
   ]
 }
