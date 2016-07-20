@@ -243,18 +243,12 @@ export default {
 
     // custom renderer options
     customRenderer: {
-      additionalProperties: false,
+      additionalProperties: true,
       properties: {
         // name can be anything that's not builtin
         name: {
           type: 'string',
           pattern: '^(?!boolean$|button-group$|multi-select$|number$|select$|string$).*'
-        },
-
-        // the opaque options passed to a custom renderer
-        options: {
-          additionalProperties: true,
-          type: 'object'
         }
       },
       type: 'object'
