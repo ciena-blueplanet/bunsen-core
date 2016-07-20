@@ -13,7 +13,7 @@ import {
 } from './utils'
 
 import cellValidatorFactory from './cell'
-import viewSchema from './view-schemas/v1'
+import viewSchema from './view-schemas/v2'
 
 export {validate as validateModel} from './model'
 import {validate as _validateValue} from './value'

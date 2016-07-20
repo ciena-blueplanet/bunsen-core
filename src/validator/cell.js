@@ -4,7 +4,7 @@ import '../typedefs'
 import _ from 'lodash'
 
 import {getSubModel} from '../utils'
-import viewSchema from './view-schemas/v1'
+import viewSchema from './view-schemas/v2'
 
 import {
   addErrorResult,

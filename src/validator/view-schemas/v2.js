@@ -155,6 +155,10 @@ export default {
           type: 'array'
         },
 
+        dependsOn: {
+          type: 'string'
+        },
+
         // Sub text to render beneath label
         description: {
           type: 'string'

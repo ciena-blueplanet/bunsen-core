@@ -2,7 +2,7 @@
 
 import '../typedefs'
 import _ from 'lodash'
-import viewSchema from './view-schemas/v1'
+import viewSchema from './view-schemas/v2'
 
 /**
  * Get the default values for properties on a Cell
