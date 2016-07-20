@@ -1,3 +1,8 @@
+# 0.6.0
+
+* **Updated** validator to validate version 2 of the view schema.
+
+
 # 0.5.0
 
 * **Added** Redux actions and reducer from `ember-frost-bunsen`.
