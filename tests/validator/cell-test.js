@@ -77,7 +77,6 @@ describe('validator/cell', () => {
           classNames: {
             cell: 'col-sm-12'
           },
-          defaultClassName: 'col-sm-4',
           foo: 'bar'
         }
         result = validator.validate('#/cellDefinitions/0', cell, model)

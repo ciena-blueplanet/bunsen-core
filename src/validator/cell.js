@@ -50,7 +50,7 @@ export default createFactory({
   REQUIRED_CELL_ATTRS: ['id', 'children'],
 
   /** optional top-level cell attributes */
-  OPTIONAL_CELL_ATTRS: ['classNames', 'defaultClassName'],
+  OPTIONAL_CELL_ATTRS: ['classNames'],
 
   /**
    * Initialize the validator

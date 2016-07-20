@@ -18,7 +18,6 @@
  * @typedef {Object} BunsenCell
  * @property {Object} [classNames] - class names to apply to cell
  * @property {Boolean} [collapsible=false] - whether or not cell should be collapsible
- * @property {String} [defaultClassName] - a CSS class (or space-separated classes) to apply to all cells
  * @property {String} id - the unique ID for the cell, used to generate a BunsenCellSet
  * @property {String} [instructions] - instructions for cell
  * @property {BunsenRow[]} children - the children in the cell
