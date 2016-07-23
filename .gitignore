@@ -11,3 +11,4 @@
 /libpeerconnection.log
 npm-debug.log
 .idea
+.vscode
