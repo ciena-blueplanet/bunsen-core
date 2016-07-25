@@ -3,6 +3,7 @@ var conversion = require('../../lib/conversion/view-v1-to-v2')
 var _ = require('lodash')
 
 var generateCellDefinitions = conversion.generateCellDefinitions
+var generateCell = conversion.generateCell
 
 describe('Bunsen view version 1 to view version 2 conversion', function () {
   it('', function () {
