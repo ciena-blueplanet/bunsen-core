@@ -36,8 +36,8 @@ const CELL_DEF_TEST1 = {
     }
   }
 }
-const CELL_DEF_TEST2 = {
-  description: 'converts array array containers',
+const CELL_TEST1 = {
+  description: 'converts array containers to cells',
   inputs: [
     [{
       id: 'array',
@@ -63,7 +63,6 @@ const CELL_DEF_TEST2 = {
   }
 }
 
-
 function runTest (unitUnderTest, {expectedResult, description, input}, testNumber) {
   it(description, function () {
     const actualResult = unitUnderTest.apply(this, input)
@@ -76,9 +75,14 @@ function runTest (unitUnderTest, {expectedResult, description, input}, testNumbe
 
 describe('generateCellDefinitions', function () {
   const tests = [
-    CELL_DEF_TEST1,
-    CELL_DEF_TEST2,
-    CELL_DEF_TEST3
+    CELL_DEF_TEST1
   ]
   _.each(tests, _.partial(runTest, generateCellDefinitions))
+})
+
+describe('generateCell', function () {
+  const tests = [
+    CELL_TEST1
+  ]
+  _.each(tests, _.partial(runTest, generateCell))
 })

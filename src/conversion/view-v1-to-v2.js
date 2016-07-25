@@ -4,9 +4,33 @@ function generateCells () {
 
 }
 
+function convertObjectCell(cell) {
+  
+}
+
+function convertArrayCell(cell) {
+  const {item} = cell
+  const arrayOptions = _.chain(item)
+  .pick(['autoAdd', 'compact', 'showLabel', 'sortable'])
+  .assign({
+    itemCell: _.assign({
+      extends: item.container
+    }, _.pick(item, ['label', '']))
+  })
+  .value()
+  return {
+    arrayOptions
+  }
+}
+
+function convertBasicCell (cell) {
+
+}
+
 export function convertCell (cell) {
   return {
-    extends: cell.container
+    extends: cell.container,
+    classNames: cell.className
   }
 }
 
