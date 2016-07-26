@@ -34,8 +34,29 @@ function convertArrayCell (cell) {
   }
 }
 
-function convertRenderer (rendererName) {
+function customRenderer (renderer, cell) {
+  return _.assign({
+    name: renderer
+  }, cell.properties)
+}
 
+function convertRenderer (cell) {
+  const {renderer} = cell 
+  if (renderer === undefined) {
+    return
+  }
+  switch (renderer) {
+    case 'boolean':
+    case 'string':
+    case 'number':
+      return {name: renderer}
+    case 'button-group':
+    case 'select':
+    case 'multi-select':
+    case 'textarea':
+    default:
+      return customRenderer(renderer, cell)
+    }
 }
 
 function grabClassNames (cell) {
