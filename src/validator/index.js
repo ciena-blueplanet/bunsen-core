@@ -55,7 +55,6 @@ function _validateCells (view, model, cellValidator) {
     const cell = view.cellDefinitions[cellId]
     const cellPath = `#/cellDefinitions/${cellId}`
     const cellResults = [
-      validateRequiredAttribute(rootCell, path, 'label'),
       validateRequiredAttribute(rootCell, path, 'extends', Object.keys(view.cellDefinitions))
     ]
 
