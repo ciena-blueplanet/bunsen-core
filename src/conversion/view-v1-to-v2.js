@@ -1,17 +1,29 @@
 import _ from 'lodash'
 
-function generateCells () {
+const CARRY_OVER_PROPERTIES = ['label', 'dependsOn', 'description', 'disabled', 'model', 'placeholder']
+const ARRAY_CELL_PROPERTIES = ['autoAdd', 'compact', 'showLabel', 'sortable']
 
+export function generateCells (rootContainers) {
+  return _.chain(rootContainers).flattenDeep().map(convertCell).filter().value()
 }
 
 function convertObjectCell (cell) {
-
+  return _.chain(cell.rows)
+  .map(function (row) {
+    const flatRows = _.chain(row).flattenDeep().map(convertCell).filter().value()
+    return {
+      children: flatRows
+    }
+  })
+  .fromPairs()
+  .assign(_.pick(cell, CARRY_OVER_PROPERTIES))
+  .value()
 }
 
 function convertArrayCell (cell) {
   const {item} = cell
   const arrayOptions = _.chain(item)
-  .pick(['autoAdd', 'compact', 'showLabel', 'sortable'])
+  .pick(ARRAY_CELL_PROPERTIES)
   .assign({
     itemCell: convertCell(item)
   })
@@ -27,22 +39,25 @@ function convertRenderer (rendererName) {
 }
 
 function grabClassNames (cell) {
-  return {
+  const classNames = _.pickBy({
     cell: cell.className,
     value: cell.inputClassName,
     label: cell.labelClassName
+  })
+  if (_.size(classNames) > 0) {
+    return classNames
   }
 }
 
 function convertBasicCell (cell) {
-  return _.assign({
+  return _.pickBy(_.assign({
     renderer: convertRenderer(cell)
-  }, _.pick(cell, ['label', 'dependsOn', 'description', 'disabled', 'model', 'placeholder']))
+  }, _.pick(cell, CARRY_OVER_PROPERTIES)))
 }
 
 export function convertCell (cell) {
   let cellConverter
-  if (cell.arrayOptions) {
+  if (cell.item) {
     cellConverter = convertArrayCell
   } else if (cell.rows) {
     cellConverter = convertObjectCell
@@ -50,17 +65,17 @@ export function convertCell (cell) {
     cellConverter = convertBasicCell
   }
 
-  return _.assign({
+  return _.pickBy(_.assign({
     extends: cell.container,
     classNames: grabClassNames(cell)
-  }, cellConverter(cell))
+  }, cellConverter(cell)))
 }
 
 export function generateCellDefinitions (containers) {
   return _.chain(containers)
   .map(function (container) {
     const {rows, id} = container
-    const flatRows = _.flatMap(rows, convertCell)
+    const flatRows = _.chain(rows).flattenDeep().map(convertCell).filter().value()
     return [id, {
       children: flatRows
     }]
