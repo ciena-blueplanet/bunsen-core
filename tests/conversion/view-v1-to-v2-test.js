@@ -7,11 +7,13 @@ var generateCellDefinitions = conversion.generateCellDefinitions
 var convertCell = conversion.convertCell
 var viewV1toV2 = conversion.default
 
-describe('Bunsen view version 1 to view version 2 conversion', function () {
-  it('', function () {
-    expect(true).to.be.true
-  })
-})
+function resultFixture (fixtureName) {
+  return require(`../fixtures/${fixtureName}`)
+}
+
+function inputFixture (fixtureName) {
+  return require(`../fixtures/v1-views/${fixtureName}-v1`)
+}
 
 const CELL_DEF_TEST1 = {
   description: 'converts a list of containers to cells',
@@ -62,192 +64,14 @@ const CELL_TEST1 = {
 
 const FULL_TEST1 = {
   description: 'converts a v1 view into a v2 view',
-  inputs: [{
-    version: '1.0',
-    type: 'form',
-    rootContainers: [
-      {
-        label: 'Main',
-        container: 'main'
-      }
-    ],
-    containers: [
-      {
-        id: 'main',
-        rows: [
-          [
-            {
-              model: 'firstName'
-            }
-          ],
-          [
-            {
-              model: 'lastName'
-            }
-          ],
-          [
-            {
-              model: 'alias'
-            }
-          ]
-        ]
-      }
-    ]
-  }],
-  expectedResult: {
-    version: '2.0',
-    type: 'form',
-    cells: [
-      {
-        label: 'Main',
-        extends: 'main'
-      }
-    ],
-    cellDefinitions: {
-      main: {
-        children: [
-          {
-            model: 'firstName'
-          },
-          {
-            model: 'lastName'
-          },
-          {
-            model: 'alias'
-          }
-        ]
-      }
-    }
-  }
+  inputs: [inputFixture('simple-view')],
+  expectedResult: resultFixture('simple-view')
 }
 
 const FULL_TEST2 = {
   description: 'handles more complex views',
-  inputs: [{
-    version: '1.0',
-    type: 'form',
-    rootContainers: [
-      {
-        label: 'Main',
-        container: 'main'
-      }
-    ],
-    containers: [
-      {
-        id: 'main',
-        rows: [
-          [
-            {
-              model: 'name',
-              container: 'name'
-            }
-          ],
-          [
-            {
-              model: 'addresses',
-              item: {
-                container: 'addresses'
-              }
-            }
-          ]
-        ]
-      },
-      {
-        id: 'name',
-        rows: [
-          [
-            {
-              model: 'first'
-            }
-          ],
-          [
-            {
-              model: 'last'
-            }
-          ]
-        ]
-      },
-      {
-        id: 'addresses',
-        rows: [
-          [
-            {
-              model: 'street'
-            }
-          ],
-          [
-            {
-              model: 'city'
-            }
-          ],
-          [
-            {
-              model: 'state'
-            }
-          ],
-          [
-            {
-              model: 'zip'
-            }
-          ]
-        ]
-      }
-    ]
-  }],
-  expectedResult: {
-    version: '2.0',
-    type: 'form',
-    cells: [
-      {
-        label: 'Main',
-        extends: 'main'
-      }
-    ],
-    cellDefinitions: {
-      addresses: {
-        children: [
-          {
-            model: 'street'
-          },
-          {
-            model: 'city'
-          },
-          {
-            model: 'state'
-          },
-          {
-            model: 'zip'
-          }
-        ]
-      },
-      main: {
-        children: [
-          {
-            model: 'name',
-            extends: 'name'
-          },
-          {
-            model: 'addresses',
-            arrayOptions: {
-              itemCell: {
-                extends: 'addresses'
-              }
-            }
-          }
-        ]
-      },
-      name: {
-        children: [
-          {
-            model: 'first'
-          },
-          {
-            model: 'last'
-          }
-        ]
-      }
-    }
-  }
+  inputs: [inputFixture('array-view')],
+  expectedResult: resultFixture('array-view')
 }
 
 function runTest (unitUnderTest, testData, testNumber) {
@@ -278,7 +102,7 @@ describe('generateCell', function () {
   _.each(tests, _.partial(runTest, convertCell))
 })
 
-describe('viewV1toV2 function', function () {
+describe('Bunsen view version 1 to view version 2 conversion', function () {
   const tests = [
     FULL_TEST1,
     FULL_TEST2
