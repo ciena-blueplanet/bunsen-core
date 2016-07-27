@@ -1,3 +1,9 @@
+# 0.8.0
+
+* **Removed** remaining Ember specific code by refactoring it out to consumer.
+
+
+
 # 0.7.2
 
 * **Fixed** `textarea` renderer in view schema 2.
