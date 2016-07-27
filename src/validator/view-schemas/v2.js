@@ -370,7 +370,7 @@ export default {
 
         // name can only be 'string'
         name: {
-          enum: ['string'],
+          enum: ['textarea'],
           type: 'string'
         },
 
