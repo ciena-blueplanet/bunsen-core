@@ -1,3 +1,9 @@
+# 0.7.2
+
+* **Fixed** `textarea` renderer in view schema 2.
+
+
+
 # 0.7.1
 
 * **Fixed** some issues with validator being overly strict on format of view.
