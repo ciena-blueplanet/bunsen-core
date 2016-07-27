@@ -4,6 +4,7 @@ const expect = require('chai').expect
 const validator = require('../../lib/validator')
 
 describe('validator', () => {
+  // Testing various ways to define cells
   ;[
     {
       cells: [
