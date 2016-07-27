@@ -1,3 +1,7 @@
+# 0.7.0
+Added utility function to convert version 1 views to version 2 views.
+
+
 # 0.6.0
 
 * **Updated** validator to validate version 2 of the view schema.
