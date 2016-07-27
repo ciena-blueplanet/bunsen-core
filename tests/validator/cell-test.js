@@ -36,13 +36,11 @@ describe('validator/cell', () => {
       'BarComponent'
     ]
 
-    const ownerMock = {
-      hasRegistration (id) {
-        return id === 'component:foo-bar-renderer'
-      }
+    function validateRenderer (rendererName) {
+      return rendererName === 'foo-bar-renderer'
     }
 
-    validator = validatorFactory(cellDefinitions, model, renderers, ownerMock)
+    validator = validatorFactory(cellDefinitions, model, renderers, validateRenderer)
   })
 
   describe('.validate()', () => {
