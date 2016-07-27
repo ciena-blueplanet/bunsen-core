@@ -305,7 +305,7 @@ export default {
               type: 'string'
             },
 
-            // description: the type of Ember model to fetch for list-based inputs
+            // description: the type of model to fetch for list-based inputs
             modelType: {
               type: 'string'
             },

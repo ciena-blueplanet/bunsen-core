@@ -95,15 +95,13 @@ describe('validator', () => {
             type: 'object'
           }
 
-          const ownerMock = {
-            hasRegistration (id) {
-              return id === 'component:foo-bar-renderer'
-            }
-          }
-
           const renderers = []
 
-          result = validator.validate(view, model, renderers, ownerMock)
+          function validateRenderer (rendererName) {
+            return rendererName === 'foo-bar-renderer'
+          }
+
+          result = validator.validate(view, model, renderers, validateRenderer)
         })
 
         it('returns proper result', () => {
