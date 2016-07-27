@@ -252,7 +252,7 @@ export default {
         // name can be anything that's not builtin
         name: {
           type: 'string',
-          pattern: '^(?!boolean$|button-group$|multi-select$|number$|select$|string$).*'
+          pattern: '^(?!boolean$|button-group$|multi-select$|number$|select$|string|textarea$).*'
         }
       },
       type: 'object'
