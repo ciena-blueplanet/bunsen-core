@@ -1,3 +1,8 @@
+# 0.7.1
+
+* **Fixed** some issues with validator being overly strict on format of view.
+
+
 # 0.7.0
 Added utility function to convert version 1 views to version 2 views.
 
