@@ -61,18 +61,20 @@ const CELL_TEST1 = {
     }
   }
 }
-
-const FULL_TEST1 = {
-  description: 'converts a v1 view into a v2 view',
-  inputs: [inputFixture('simple-view')],
-  expectedResult: resultFixture('simple-view')
+const FULL_TESTS = []
+function addFullTest (description, fixtureName) {
+  FULL_TESTS.push({
+    description,
+    inputs: [inputFixture(fixtureName)],
+    expectedResult: resultFixture(fixtureName)
+  })
 }
 
-const FULL_TEST2 = {
-  description: 'handles more complex views',
-  inputs: [inputFixture('array-view')],
-  expectedResult: resultFixture('array-view')
-}
+addFullTest('converts a v1 view into a v2 view', 'simple-view')
+
+addFullTest('handles more complex views', 'array-view')
+
+addFullTest('converts renderer info', 'custom-renderers-view')
 
 function runTest (unitUnderTest, testData, testNumber) {
   var expectedResult = testData.expectedResult
@@ -103,9 +105,5 @@ describe('generateCell', function () {
 })
 
 describe('Bunsen view version 1 to view version 2 conversion', function () {
-  const tests = [
-    FULL_TEST1,
-    FULL_TEST2
-  ]
-  _.each(tests, _.partial(runTest, viewV1toV2))
+  _.each(FULL_TESTS, _.partial(runTest, viewV1toV2))
 })

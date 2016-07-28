@@ -41,7 +41,7 @@ function customRenderer (renderer, cell) {
 }
 
 function convertRenderer (cell) {
-  const {renderer} = cell 
+  const {renderer} = cell
   if (renderer === undefined) {
     return
   }
@@ -56,7 +56,7 @@ function convertRenderer (cell) {
     case 'textarea':
     default:
       return customRenderer(renderer, cell)
-    }
+  }
 }
 
 function grabClassNames (cell) {
