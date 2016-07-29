@@ -1,28 +1,7 @@
 import _ from 'lodash'
+import immutable from 'seamless-immutable'
 import {CHANGE_VALUE, VALIDATION_RESOLVED, CHANGE_MODEL} from './actions'
 import evaluateConditions from './evaluate-conditions'
-
-function ensureParent (stateValue, id) {
-  // If id does not have a parent the nothing to do
-  if (_.isEmpty(id) || id.indexOf('.') === -1) {
-    return
-  }
-
-  const segments = id.split('.')
-  const idLastSegment = segments.pop()
-  const relativePath = segments.join('.')
-
-  const relativeObject = _.get(stateValue, relativePath)
-  const isArrayItem = /^\d+$/.test(idLastSegment)
-
-  if (isArrayItem && !_.isArray(relativeObject)) {
-    ensureParent(stateValue, segments.join('.'))
-    _.set(stateValue, relativePath, [])
-  } else if (!isArrayItem && !_.isPlainObject(relativeObject)) {
-    ensureParent(stateValue, segments.join('.'))
-    _.set(stateValue, relativePath, {})
-  }
-}
 
 const INITIAL_VALUE = {
   errors: {},
@@ -33,13 +12,6 @@ const INITIAL_VALUE = {
 }
 export function initialState (state) {
   return _.defaults(state, INITIAL_VALUE)
-}
-
-// TODO: replace with _.unset() once we are on lodash 4.x (currently ember-lodash is pinning lodash to 3.x)
-function unset (obj, path) {
-  _.set(obj, path, undefined)
-  const obStr = JSON.stringify(obj)
-  return JSON.parse(obStr)
 }
 
 /**
@@ -65,20 +37,25 @@ function recursiveClean (value) {
 }
 
 export function reducer (state, action) {
+  // state = immutable(state)
+
   switch (action.type) {
     case CHANGE_VALUE:
       const {value, bunsenId} = action
       let newValue
 
       if (bunsenId === null) {
-        newValue = recursiveClean(value)
+        newValue = immutable(recursiveClean(value))
       } else {
-        newValue = _.cloneDeep(state.value)
+        // Ensure immutable object
+        if (!('setIn' in state.value)) {
+          state.value = immutable(state.value)
+        }
+
         if (_.includes([null, ''], value) || (_.isArray(value) && value.length === 0)) {
-          newValue = unset(newValue, bunsenId)
+          newValue = state.value.without(bunsenId.split('.'))
         } else {
-          ensureParent(newValue, bunsenId)
-          _.set(newValue, bunsenId, value)
+          newValue = state.value.setIn(bunsenId.split('.'), value)
         }
       }
       const newModel = evaluateConditions(state.baseModel, newValue)
@@ -90,7 +67,7 @@ export function reducer (state, action) {
       }
 
       return _.defaults({
-        value: newValue,
+        value: immutable(newValue),
         model
       }, state)
 
@@ -113,7 +90,10 @@ export function reducer (state, action) {
         // for value changes
         state.value = undefined
       }
-      return initialState(state || {})
+
+      const newState = initialState(state || {})
+      newState.value = immutable(newState.value)
+      return newState
 
     default:
       // TODO: allow consumer to pass in logger class other than console

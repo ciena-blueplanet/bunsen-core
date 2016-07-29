@@ -37,6 +37,7 @@
   "dependencies": {
     "lodash": "^4.13.1",
     "moment": "^2.14.1",
+    "seamless-immutable": "^6.1.1",
     "z-schema": "^3.17.0"
   }
 }
