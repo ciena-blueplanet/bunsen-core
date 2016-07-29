@@ -37,8 +37,6 @@ function recursiveClean (value) {
 }
 
 export function reducer (state, action) {
-  // state = immutable(state)
-
   switch (action.type) {
     case CHANGE_VALUE:
       const {value, bunsenId} = action
