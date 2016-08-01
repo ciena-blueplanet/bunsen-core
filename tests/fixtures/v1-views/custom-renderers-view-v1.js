@@ -4,7 +4,11 @@ module.exports = {
   containers: [
     {
       id: 'foo',
-      renderer: 'select'
+      rows: [[
+        {
+          renderer: 'select'
+        }
+      ]]
     },
     {
       id: 'bar',
@@ -52,12 +56,14 @@ module.exports = {
     },
     {
       id: 'baz',
-      model: 'baz',
-      renderer: 'custom-renderer',
-      properties: {
-        someProp: 45,
-        otherProp: false
-      }
+      rows: [[{
+        model: 'baz',
+        renderer: 'custom-renderer',
+        properties: {
+          someProp: 45,
+          otherProp: false
+        }
+      }]]
     }
   ],
   rootContainers: [
@@ -68,6 +74,10 @@ module.exports = {
     {
       container: 'bar',
       model: 'bar'
+    },
+    {
+      container: 'baz',
+      model: 'baz'
     }
   ]
 }

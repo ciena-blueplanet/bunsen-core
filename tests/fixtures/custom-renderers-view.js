@@ -10,51 +10,39 @@ module.exports = {
     bar: {
       children: [
         {
-          extends: 'barChild1'
+          model: 'barChild1',
+          renderer: {
+            name: 'textarea'
+          }
         },
         {
           extends: 'barChild2'
         }
       ]
     },
-    barChild1: {
-      model: 'barChild1',
-      renderer: {
-        name: 'textarea'
-      }
-    },
     barChild2: {
-      model: 'barChild2',
       children: [
         {
-          extends: 'barGrandChild'
-        },
-        {
-          extends: 'barOtherGrandChild'
+          model: 'barChild2',
+          extends: 'barGrandChildren'
         }
       ]
     },
     barGrandChildren: {
       children: [
         {
-          extends: 'barGrandChild'
+          model: 'barGrandChild',
+          renderer: {
+            name: 'custom1'
+          }
         },
         {
-          extends: 'barOtherGrandChild'
+          model: 'barOtherGrandChild',
+          renderer: {
+            name: 'custom2'
+          }
         }
       ]
-    },
-    barGrandChild: {
-      model: 'barGrandChild',
-      renderer: {
-        name: 'custom1'
-      }
-    },
-    otherGrandChild: {
-      model: 'barOtherGrandChild',
-      renderer: {
-        name: 'custom2'
-      }
     },
     baz: {
       model: 'baz',
@@ -73,6 +61,10 @@ module.exports = {
     {
       extends: 'bar',
       model: 'bar'
+    },
+    {
+      extends: 'baz',
+      model: 'baz'
     }
   ]
 }
