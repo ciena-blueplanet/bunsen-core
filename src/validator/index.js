@@ -14,6 +14,7 @@ import {
 
 import cellValidatorFactory from './cell'
 import viewSchema from './view-schemas/v2'
+import viewV1ToV2 from '../conversion/view-v1-to-v2'
 
 export {validate as validateModel} from './model'
 import {validate as _validateValue} from './value'
@@ -100,6 +101,10 @@ function _validateRootAttributes (view, model, cellValidator) {
  * @returns {BunsenValidationResult} the results of the view validation
  */
 export function validate (view, model, renderers, validateRenderer) {
+  if (view.version === '1.0') {
+    view = viewV1ToV2(view)
+  }
+
   let strResult = null
   const temp = ensureJsonObject(view)
   view = temp[0]

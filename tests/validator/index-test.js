@@ -79,6 +79,28 @@ describe('validator', () => {
       ],
       type: 'form',
       version: '2.0'
+    },
+    {
+      containers: [
+        {
+          id: 'main',
+          rows: [
+            [
+              {
+                model: 'foo'
+              }
+            ]
+          ]
+        }
+      ],
+      rootContainers: [
+        {
+          container: 'main',
+          label: 'Main'
+        }
+      ],
+      type: 'form',
+      version: '1.0'
     }
   ]
     .forEach((view) => {
