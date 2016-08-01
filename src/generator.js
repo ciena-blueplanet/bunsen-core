@@ -73,22 +73,24 @@ function addModel (propertyName, model, children, cellDefinitions) {
     model: propertyName
   }
 
-  const isObject = (model.type === 'object')
-  const isArray = (model.type === 'array') && (model.items.type === 'object')
-
-  if (isObject || isArray) {
-    const subModel = isArray ? model.items : model
-    const cellId = addModelCell(propertyName, subModel, cellDefinitions)
-    if (isArray) {
-      cell.arrayOptions = {
-        itemCell: {
-          extends: cellId
+  switch (model.type) {
+    case 'array':
+      if (model.items) {
+        const cellId = addModelCell(propertyName, model.items, cellDefinitions)
+        cell.arrayOptions = {
+          itemCell: {
+            extends: cellId
+          }
         }
       }
-    } else {
+      break
+
+    case 'object':
+      const cellId = addModelCell(propertyName, model, cellDefinitions)
       cell.extends = cellId
-    }
+      break
   }
+
   children.push(cell)
 }
 

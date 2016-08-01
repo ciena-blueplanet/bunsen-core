@@ -14,6 +14,57 @@ export function initialState (state) {
   return _.defaults(state, INITIAL_VALUE)
 }
 
+function set (item, path, value) {
+  const segments = path.split('.')
+  const segment = segments.shift()
+  const segmentIsArrayIndex = /^\d+$/.test(segment)
+
+  if (segmentIsArrayIndex) {
+    const array = item && 'asMutable' in item ? item.asMutable() : item || []
+    const index = parseInt(segment)
+
+    for (let i = 0; i < index + 1; i++) {
+      if (array.length < (i + 1)) {
+        array.push(null)
+      }
+    }
+
+    if (segments.length > 0) {
+      array[index] = set(array[index], segments.join('.'), value)
+    } else {
+      array[index] = value
+    }
+
+    return immutable(array)
+  }
+
+  const object = item && 'asMutable' in item ? item.asMutable() : item || {}
+
+  if (segments.length > 0) {
+    object[segment] = set(object[segment], segments.join('.'), value)
+  } else {
+    object[segment] = value
+  }
+
+  return immutable(object)
+}
+
+function unset (obj, path) {
+  const segments = path.split('.')
+  const lastSegment = segments.pop()
+  const relativePath = segments.join('.')
+  let relativeItem = _.get(obj, relativePath)
+
+  if (_.isArray(relativeItem)) {
+    const array = relativeItem.asMutable()
+    relativeItem = array.splice(parseInt(lastSegment), 1)
+  } else {
+    relativeItem = relativeItem.without(lastSegment)
+  }
+
+  return set(obj, relativePath, relativeItem)
+}
+
 /**
  * We want to go through a state.value object and pull out any references to null
  * @param {Object} value - our current value POJO
@@ -45,15 +96,12 @@ export function reducer (state, action) {
       if (bunsenId === null) {
         newValue = immutable(recursiveClean(value))
       } else {
-        // Ensure immutable object
-        if (!('setIn' in state.value)) {
-          state.value = immutable(state.value)
-        }
+        newValue = 'asMutable' in state.value ? state.value : immutable(state.value)
 
         if (_.includes([null, ''], value) || (_.isArray(value) && value.length === 0)) {
-          newValue = state.value.without(bunsenId.split('.'))
+          newValue = unset(newValue, bunsenId)
         } else {
-          newValue = state.value.setIn(bunsenId.split('.'), value)
+          newValue = set(newValue, bunsenId, value)
         }
       }
       const newModel = evaluateConditions(state.baseModel, newValue)

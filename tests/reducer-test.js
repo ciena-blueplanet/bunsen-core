@@ -43,7 +43,7 @@ describe('value manipulation', function () {
       baseModel: {}
     }
     var changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: '', bunsenId: 'bar.qux'})
-    expect(changedState.value).to.eql({foo: 12})
+    expect(changedState.value).to.eql({foo: 12, bar: {}})
   })
 
   it('can set the entire value', function () {
