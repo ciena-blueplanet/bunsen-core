@@ -56,8 +56,8 @@ function unset (obj, path) {
   let relativeItem = _.get(obj, relativePath)
 
   if (_.isArray(relativeItem)) {
-    const array = relativeItem.asMutable()
-    relativeItem = array.splice(parseInt(lastSegment), 1)
+    relativeItem = relativeItem.asMutable()
+    relativeItem.splice(parseInt(lastSegment), 1)
   } else {
     relativeItem = relativeItem.without(lastSegment)
   }
