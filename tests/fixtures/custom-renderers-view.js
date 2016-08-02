@@ -10,23 +10,22 @@ module.exports = {
     bar: {
       children: [
         {
-          model: 'barChild1',
-          renderer: {
-            name: 'textarea'
-          }
+          extends: 'barChild1'
         },
         {
           extends: 'barChild2'
         }
       ]
     },
+    barChild1: {
+      model: 'barChild1',
+      renderer: {
+        name: 'textarea'
+      }
+    },
     barChild2: {
-      children: [
-        {
-          model: 'barChild2',
-          extends: 'barGrandChildren'
-        }
-      ]
+      model: 'barChild2',
+      extends: 'barGrandChildren'
     },
     barGrandChildren: {
       children: [

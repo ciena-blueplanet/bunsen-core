@@ -32,12 +32,8 @@ const CELL_DEF_TEST1 = {
   ],
   expectedResult: {
     test: {
-      children: [
-        {
-          model: 'some-property',
-          extends: 'someContainer'
-        }
-      ]
+      model: 'some-property',
+      extends: 'someContainer'
     }
   }
 }

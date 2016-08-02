@@ -28,7 +28,7 @@ module.exports = {
       rows: [
         [{
           model: 'barChild1',
-          render: 'textArea'
+          renderer: 'textarea'
         }]
       ]
     },

@@ -56,6 +56,12 @@ module.exports = {
       }], [{
         model: 'item-4'
       }]]
+    },
+    {
+      id: 'total-collapse',
+      rows: [[{
+        model: 'top-level-item'
+      }]]
     }
   ],
   rootContainers: [
@@ -67,6 +73,9 @@ module.exports = {
     },
     {
       container: 'multi-row-collapse'
+    },
+    {
+      container: 'total-collapse'
     }
   ]
 }

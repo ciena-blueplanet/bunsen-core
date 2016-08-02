@@ -20,7 +20,7 @@ module.exports = {
         {
           children: [
             {
-              model: 'item-2-2'
+              model: 'item-2-1'
             }
           ]
         },
@@ -67,6 +67,9 @@ module.exports = {
           model: 'item-4'
         }
       ]
+    },
+    'total-collapse': {
+      model: 'top-level-item'
     }
   },
   cells: [
@@ -78,6 +81,9 @@ module.exports = {
     },
     {
       extends: 'multi-row-collapse'
+    },
+    {
+      extends: 'total-collapse'
     }
   ]
 }

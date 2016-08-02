@@ -9,13 +9,7 @@ export function generateCells (rootContainers) {
 
 function convertObjectCell (cell) {
   return _.chain(cell.rows)
-  .map(function (row) {
-    const flatRows = _.chain(row).flattenDeep().map(convertCell).filter().value()
-    return {
-      children: flatRows
-    }
-  })
-  .fromPairs()
+  .map(rowsToCells)
   .assign(_.pick(cell, CARRY_OVER_PROPERTIES))
   .value()
 }
@@ -92,14 +86,35 @@ export function convertCell (cell) {
   }, cellConverter(cell)))
 }
 
+function rowsToCells (rows) {
+  const collapseRows = !_.some(rows, function (row) {
+    return row.length > 1
+  })
+  const collapseColumns = rows.length <= 1
+  let rowChain = _.chain(rows)
+  if (collapseRows && collapseColumns) {
+    return rowChain.flattenDeep().map(convertCell).filter().first().value()
+  }
+  let children
+  if (collapseRows || collapseColumns) {
+    children = rowChain.flattenDeep().map(convertCell).filter().value()
+  } else {
+    children = rowChain.map((row) => {
+      return {
+        children: _.map(row, convertCell)
+      }
+    }).filter().value()
+  }
+  return {
+    children
+  }
+}
+
 export function generateCellDefinitions (containers) {
   return _.chain(containers)
   .map(function (container) {
     const {rows, id} = container
-    const flatRows = _.chain(rows).flattenDeep().map(convertCell).filter().value()
-    return [id, {
-      children: flatRows
-    }]
+    return [id, rowsToCells(rows)]
   })
   .fromPairs()
   .value()
