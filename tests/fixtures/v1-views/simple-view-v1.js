@@ -6,7 +6,8 @@ module.exports = {
       label: 'Main',
       container: 'main'
     }
-  ], containers: [
+  ],
+  containers: [
     {
       id: 'main',
       rows: [
