@@ -19,19 +19,6 @@ export {validate as validateModel} from './model'
 import {validate as _validateValue} from './value'
 export const validateValue = _validateValue
 
-export const builtInRenderers = {
-  boolean: 'frost-bunsen-input-boolean',
-  'button-group': 'frost-bunsen-input-button-group',
-  integer: 'frost-bunsen-input-number',
-  'multi-select': 'frost-bunsen-input-multi-select',
-  number: 'frost-bunsen-input-number',
-  password: 'frost-bunsen-input-password',
-  'property-chooser': 'frost-bunsen-property-chooser',
-  select: 'frost-bunsen-input-select',
-  string: 'frost-bunsen-input-text',
-  textarea: 'frost-bunsen-input-textarea'
-}
-
 /**
  * Make sure the cells (if specified) are valid
  * @param {BunsenView} view - the schema to validate
@@ -52,20 +39,26 @@ function _validateCells (view, model, cellValidator) {
   const results = _.map(view.cells, (rootCell, index) => {
     const path = `#/cells/${index}`
     const cellId = rootCell.extends
-    const cell = view.cellDefinitions[cellId]
-    const cellPath = `#/cellDefinitions/${cellId}`
-    const cellResults = [
-      validateRequiredAttribute(rootCell, path, 'label'),
-      validateRequiredAttribute(rootCell, path, 'extends', Object.keys(view.cellDefinitions))
-    ]
 
-    if (cell !== undefined) {
-      cellResults.push(
-         cellValidator.validate(cellPath, cell)
-      )
+    if (cellId) {
+      const cell = view.cellDefinitions[cellId]
+      const cellPath = `#/cellDefinitions/${cellId}`
+      const cellResults = [
+        validateRequiredAttribute(rootCell, path, 'extends', Object.keys(view.cellDefinitions))
+      ]
+
+      if (cell !== undefined) {
+        cellResults.push(
+           cellValidator.validate(cellPath, cell)
+        )
+      }
+
+      return aggregateResults(cellResults)
     }
 
-    return aggregateResults(cellResults)
+    return [
+      cellValidator.validate(`#/cells/${index}`, rootCell)
+    ]
   })
 
   return aggregateResults(results)
@@ -103,11 +96,10 @@ function _validateRootAttributes (view, model, cellValidator) {
  * @param {String|View} view - the view to validate (as an object or JSON string)
  * @param {BunsenModel} model - the JSON schema that the cells will reference
  * @param {String[]} renderers - the list of available custom renderers to validate renderer references against
- * @param {Ember.ApplicationInstance} owner - application instance
+ * @param {Function} validateRenderer - function to validate a renderer
  * @returns {BunsenValidationResult} the results of the view validation
  */
-export function validate (view, model, renderers, owner) {
-  renderers = renderers || Object.keys(builtInRenderers)
+export function validate (view, model, renderers, validateRenderer) {
   let strResult = null
   const temp = ensureJsonObject(view)
   view = temp[0]
@@ -128,7 +120,7 @@ export function validate (view, model, renderers, owner) {
   }
 
   const derefModel = dereference(model).schema
-  const cellValidator = cellValidatorFactory(view.cellDefinitions, derefModel, renderers, owner)
+  const cellValidator = cellValidatorFactory(view.cellDefinitions, derefModel, renderers, validateRenderer)
   const schemaResult = _validateValue(view, viewSchema, true)
   if (schemaResult.errors.length !== 0) {
     return schemaResult

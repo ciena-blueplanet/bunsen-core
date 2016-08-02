@@ -252,7 +252,7 @@ export default {
         // name can be anything that's not builtin
         name: {
           type: 'string',
-          pattern: '^(?!boolean$|button-group$|multi-select$|number$|select$|string$).*'
+          pattern: '^(?!boolean$|button-group$|multi-select$|number$|select$|string|textarea$).*'
         }
       },
       type: 'object'
@@ -305,7 +305,7 @@ export default {
               type: 'string'
             },
 
-            // description: the type of Ember model to fetch for list-based inputs
+            // description: the type of model to fetch for list-based inputs
             modelType: {
               type: 'string'
             },

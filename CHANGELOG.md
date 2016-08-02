@@ -1,3 +1,24 @@
+# 0.8.0
+
+* **Removed** remaining Ember specific code by refactoring it out to consumer.
+
+
+
+# 0.7.2
+
+* **Fixed** `textarea` renderer in view schema 2.
+
+
+
+# 0.7.1
+
+* **Fixed** some issues with validator being overly strict on format of view.
+
+
+# 0.7.0
+Added utility function to convert version 1 views to version 2 views.
+
+
 # 0.6.0
 
 * **Updated** validator to validate version 2 of the view schema.

@@ -57,17 +57,17 @@ export default createFactory({
    * @param {BunsenCell[]} cellDefinitions - the cells to validate cell references against
    * @param {BunsenModel} model - the Model to validate model references against
    * @param {String[]} [renderers] - the list of available custom renderers to validate renderer references against
-   * @param {Ember.ApplicationInstance} owner - application instance
+   * @param {Function} validateRenderer - function to validate a renderer
    * @returns {validator} the instance
    */
-  init (cellDefinitions, model, renderers, owner) {
+  init (cellDefinitions, model, renderers, validateRenderer) {
     renderers = renderers || []
     return _.assign(this, {
       cellDefinitions,
       cellsValidated: [],
       model,
       renderers,
-      owner
+      validateRenderer
     })
   },
 
@@ -112,7 +112,7 @@ export default createFactory({
     // If rendererName is not in renderers mapping and is not a registered component
     if (
       !_.includes(this.renderers, rendererName) &&
-      !this.owner.hasRegistration(`component:${rendererName}`)
+      !this.validateRenderer(rendererName)
     ) {
       addErrorResult(results, rendererPath, `Invalid renderer reference "${rendererName}"`)
     }
