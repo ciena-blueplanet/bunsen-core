@@ -1,3 +1,9 @@
+# 0.9.0
+
+* **Changed** store to use `seamless-immutable` instead of `_.cloneDeep()` for performance improvements as well as immutability.
+
+
+
 # 0.8.0
 
 * **Removed** remaining Ember specific code by refactoring it out to consumer.
