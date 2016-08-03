@@ -20,33 +20,25 @@ function set (item, path, value) {
   const segmentIsArrayIndex = /^\d+$/.test(segment)
 
   if (segmentIsArrayIndex) {
-    const array = item && 'asMutable' in item ? item.asMutable() : item || []
+    item = item || []
     const index = parseInt(segment)
 
     for (let i = 0; i < index + 1; i++) {
-      if (array.length < (i + 1)) {
-        array.push(null)
+      if (item.length < (i + 1)) {
+        item.concat(null)
       }
     }
 
-    if (segments.length > 0) {
-      array[index] = set(array[index], segments.join('.'), value)
-    } else {
-      array[index] = value
-    }
+    const newValue = segments.length > 0 ? set(item[index], segments.join('.'), value) : value
 
-    return immutable(array)
+    // Return immutable array with item at index updated
+    return item.slice(0, index).concat(newValue).concat(item.slice(index + 1))
   }
 
-  const object = item && 'asMutable' in item ? item.asMutable() : item || {}
+  const object = item || immutable({})
+  const newValue = segments.length > 0 ? set(object[segment], segments.join('.'), value) : value
 
-  if (segments.length > 0) {
-    object[segment] = set(object[segment], segments.join('.'), value)
-  } else {
-    object[segment] = value
-  }
-
-  return immutable(object)
+  return object.set(segment, newValue)
 }
 
 function unset (obj, path) {
@@ -56,9 +48,12 @@ function unset (obj, path) {
   let relativeItem = _.get(obj, relativePath)
 
   if (_.isArray(relativeItem)) {
-    relativeItem = relativeItem.asMutable()
-    relativeItem.splice(parseInt(lastSegment), 1)
+    const index = parseInt(lastSegment)
+
+    // Remove item from array
+    relativeItem = relativeItem.slice(0, index).concat(relativeItem.slice(index + 1))
   } else {
+    // Remove item from object
     relativeItem = relativeItem.without(lastSegment)
   }
 
@@ -96,7 +91,7 @@ export function reducer (state, action) {
       if (bunsenId === null) {
         newValue = immutable(recursiveClean(value))
       } else {
-        newValue = 'asMutable' in state.value ? state.value : immutable(state.value)
+        newValue = immutable(state.value)
 
         if (_.includes([null, ''], value) || (_.isArray(value) && value.length === 0)) {
           newValue = unset(newValue, bunsenId)
