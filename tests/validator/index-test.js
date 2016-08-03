@@ -15,7 +15,6 @@ describe('validator', () => {
       type: 'form',
       version: '2.0'
     },
-    /* FIXME: get below view working
     {
       cellDefinitions: {
         foo: {
@@ -30,7 +29,6 @@ describe('validator', () => {
       type: 'form',
       version: '2.0'
     },
-    */
     {
       cells: [
         {
@@ -79,6 +77,28 @@ describe('validator', () => {
       ],
       type: 'form',
       version: '2.0'
+    },
+    {
+      containers: [
+        {
+          id: 'main',
+          rows: [
+            [
+              {
+                model: 'foo'
+              }
+            ]
+          ]
+        }
+      ],
+      rootContainers: [
+        {
+          container: 'main',
+          label: 'Main'
+        }
+      ],
+      type: 'form',
+      version: '1.0'
     }
   ]
     .forEach((view) => {

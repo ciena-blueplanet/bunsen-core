@@ -1,28 +1,7 @@
 import _ from 'lodash'
+import immutable from 'seamless-immutable'
 import {CHANGE_VALUE, VALIDATION_RESOLVED, CHANGE_MODEL} from './actions'
 import evaluateConditions from './evaluate-conditions'
-
-function ensureParent (stateValue, id) {
-  // If id does not have a parent the nothing to do
-  if (_.isEmpty(id) || id.indexOf('.') === -1) {
-    return
-  }
-
-  const segments = id.split('.')
-  const idLastSegment = segments.pop()
-  const relativePath = segments.join('.')
-
-  const relativeObject = _.get(stateValue, relativePath)
-  const isArrayItem = /^\d+$/.test(idLastSegment)
-
-  if (isArrayItem && !_.isArray(relativeObject)) {
-    ensureParent(stateValue, segments.join('.'))
-    _.set(stateValue, relativePath, [])
-  } else if (!isArrayItem && !_.isPlainObject(relativeObject)) {
-    ensureParent(stateValue, segments.join('.'))
-    _.set(stateValue, relativePath, {})
-  }
-}
 
 const INITIAL_VALUE = {
   errors: {},
@@ -35,11 +14,50 @@ export function initialState (state) {
   return _.defaults(state, INITIAL_VALUE)
 }
 
-// TODO: replace with _.unset() once we are on lodash 4.x (currently ember-lodash is pinning lodash to 3.x)
+function set (item, path, value) {
+  const segments = path.split('.')
+  const segment = segments.shift()
+  const segmentIsArrayIndex = /^\d+$/.test(segment)
+
+  if (segmentIsArrayIndex) {
+    item = item || []
+    const index = parseInt(segment)
+
+    for (let i = 0; i < index + 1; i++) {
+      if (item.length < (i + 1)) {
+        item.concat(null)
+      }
+    }
+
+    const newValue = segments.length > 0 ? set(item[index], segments.join('.'), value) : value
+
+    // Return immutable array with item at index updated
+    return item.slice(0, index).concat(newValue).concat(item.slice(index + 1))
+  }
+
+  const object = item || immutable({})
+  const newValue = segments.length > 0 ? set(object[segment], segments.join('.'), value) : value
+
+  return object.set(segment, newValue)
+}
+
 function unset (obj, path) {
-  _.set(obj, path, undefined)
-  const obStr = JSON.stringify(obj)
-  return JSON.parse(obStr)
+  const segments = path.split('.')
+  const lastSegment = segments.pop()
+  const relativePath = segments.join('.')
+  let relativeItem = _.get(obj, relativePath)
+
+  if (_.isArray(relativeItem)) {
+    const index = parseInt(lastSegment)
+
+    // Remove item from array
+    relativeItem = relativeItem.slice(0, index).concat(relativeItem.slice(index + 1))
+  } else {
+    // Remove item from object
+    relativeItem = relativeItem.without(lastSegment)
+  }
+
+  return set(obj, relativePath, relativeItem)
 }
 
 /**
@@ -52,7 +70,7 @@ function recursiveClean (value) {
   if (_.isArray(value)) {
     output = []
   }
-  _.each(value, (subValue, key) => {
+  _.forEach(value, (subValue, key) => {
     if (!_.isEmpty(subValue) || _.isNumber(subValue) || _.isBoolean(subValue)) {
       if (_.isObject(subValue) || _.isArray(subValue)) {
         output[key] = recursiveClean(subValue)
@@ -71,14 +89,14 @@ export function reducer (state, action) {
       let newValue
 
       if (bunsenId === null) {
-        newValue = recursiveClean(value)
+        newValue = immutable(recursiveClean(value))
       } else {
-        newValue = _.cloneDeep(state.value)
+        newValue = immutable(state.value)
+
         if (_.includes([null, ''], value) || (_.isArray(value) && value.length === 0)) {
           newValue = unset(newValue, bunsenId)
         } else {
-          ensureParent(newValue, bunsenId)
-          _.set(newValue, bunsenId, value)
+          newValue = set(newValue, bunsenId, value)
         }
       }
       const newModel = evaluateConditions(state.baseModel, newValue)
@@ -90,7 +108,7 @@ export function reducer (state, action) {
       }
 
       return _.defaults({
-        value: newValue,
+        value: immutable(newValue),
         model
       }, state)
 
@@ -113,7 +131,10 @@ export function reducer (state, action) {
         // for value changes
         state.value = undefined
       }
-      return initialState(state || {})
+
+      const newState = initialState(state || {})
+      newState.value = immutable(newState.value)
+      return newState
 
     default:
       // TODO: allow consumer to pass in logger class other than console
