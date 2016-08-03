@@ -75,7 +75,7 @@ function recursiveClean (value) {
   if (_.isArray(value)) {
     output = []
   }
-  _.each(value, (subValue, key) => {
+  _.forEach(value, (subValue, key) => {
     if (!_.isEmpty(subValue) || _.isNumber(subValue) || _.isBoolean(subValue)) {
       if (_.isObject(subValue) || _.isArray(subValue)) {
         output[key] = recursiveClean(subValue)

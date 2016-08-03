@@ -62,7 +62,7 @@ export default function evaluate (model, value, getPreviousValue) {
       const potentialSchemas = _.map(value, function (val) {
         return evaluate(model.items, val, getPreviousValue)
       })
-      _.each(potentialSchemas, function (schema) {
+      _.forEach(potentialSchemas, function (schema) {
         if (!_.some(itemSchemas, _.partial(_.isEqual, schema))) {
           itemSchemas.push(schema)
         }
@@ -93,7 +93,7 @@ export default function evaluate (model, value, getPreviousValue) {
 
   const getValue = pathFinder(value, getPreviousValue)
 
-  _.each(retModel.properties, function (subSchema, propName) {
+  _.forEach(retModel.properties, function (subSchema, propName) {
     retModel.properties[propName] = evaluate(subSchema, _.get(value, propName), pathFinder(value, getValue))
   })
   let conditionalProperties = _.transform(model.properties, function (result, schema, key) {
@@ -101,7 +101,7 @@ export default function evaluate (model, value, getPreviousValue) {
       result[key] = schema
     }
   })
-  _.each(conditionalProperties, function (depSchema, key) {
+  _.forEach(conditionalProperties, function (depSchema, key) {
     depsMet[key] = _.some(depSchema.conditions, function (enableConditions) {
       const hasDependencyMet = _.some(enableConditions.if, function (conditionList) {
         return _.every(conditionList, function (conditionValue, dependencyKey) {
@@ -115,7 +115,7 @@ export default function evaluate (model, value, getPreviousValue) {
       return hasDependencyMet
     })
   })
-  _.each(depsMet, function (dependencyMet, depName) {
+  _.forEach(depsMet, function (dependencyMet, depName) {
     const baseSchema = retModel.properties[depName]
     if (dependencyMet && !baseSchema.set || !dependencyMet && baseSchema.set) {
       retModel.properties[depName] = _.omit(_.defaults(props[depName] || {}, baseSchema), ['conditions', 'set'])

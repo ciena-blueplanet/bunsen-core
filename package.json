@@ -31,7 +31,7 @@
     "eslint": "^3.2.1",
     "eslint-config-frost-standard": "^3.0.0",
     "istanbul": "^0.4.3",
-    "mocha": "^2.5.3",
+    "mocha": "^3.0.0",
     "sinon": "^1.17.4"
   },
   "dependencies": {

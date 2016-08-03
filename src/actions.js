@@ -27,7 +27,7 @@ export function updateValidationResults (validationResult) {
   const errorsByInput = _.groupBy(validationResult.errors, 'path')
   const errorsFilteredToMessagesOnly = _.mapValues(
     errorsByInput,
-    (fieldErrors, bunsenId) => _.pluck(fieldErrors, 'message')
+    (fieldErrors, bunsenId) => _.map(fieldErrors, 'message')
   )
   const errorsMappedToDotNotation = _.mapKeys(errorsFilteredToMessagesOnly, (value, key) => getPath(key))
 
@@ -102,7 +102,7 @@ function findDefaults (value, path, model, resolveRef) {
   if (model.type === 'object' || model.properties) { // Recursing only makes sense for objects
     let subSchemaDefaults = {}
     let hasDefaults = false
-    _.each(schema.properties, function (subSchema, propName) {
+    _.forEach(schema.properties, function (subSchema, propName) {
       const defaults = findDefaults(value && value[propName], null, subSchema, resolveRef)
       if (defaults !== undefined) {
         subSchemaDefaults[propName] = defaults
@@ -160,7 +160,7 @@ export function validate (bunsenId, inputValue, renderModel, validators, all = P
 
     all(promises)
       .then((snapshots) => {
-        const results = _.pluck(snapshots, 'value')
+        const results = _.map(snapshots, 'value')
         results.push(result)
 
         const aggregatedResult = aggregateResults(results)

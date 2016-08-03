@@ -45,13 +45,6 @@ function isObjectArray (model) {
  * @alias validator
  */
 export default createFactory({
-
-  /** attributes required by every cell */
-  REQUIRED_CELL_ATTRS: ['id', 'children'],
-
-  /** optional top-level cell attributes */
-  OPTIONAL_CELL_ATTRS: ['classNames'],
-
   /**
    * Initialize the validator
    * @param {BunsenCell[]} cellDefinitions - the cells to validate cell references against
@@ -256,7 +249,7 @@ export default createFactory({
     const attrs = _.keys(cell)
 
     const warnings = []
-    const knownAttributes = _.union(this.REQUIRED_CELL_ATTRS, this.OPTIONAL_CELL_ATTRS)
+    const knownAttributes = _.keys(viewSchema.definitions.cell.properties)
     _.forEach(attrs, (attr) => {
       if (!_.includes(knownAttributes, attr)) {
         warnings.push({

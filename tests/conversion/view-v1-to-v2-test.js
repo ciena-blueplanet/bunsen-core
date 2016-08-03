@@ -92,16 +92,16 @@ describe('generateCellDefinitions', function () {
   const tests = [
     CELL_DEF_TEST1
   ]
-  _.each(tests, _.partial(runTest, generateCellDefinitions))
+  _.forEach(tests, _.partial(runTest, generateCellDefinitions))
 })
 
 describe('generateCell', function () {
   const tests = [
     CELL_TEST1
   ]
-  _.each(tests, _.partial(runTest, convertCell))
+  _.forEach(tests, _.partial(runTest, convertCell))
 })
 
 describe('Bunsen view version 1 to view version 2 conversion', function () {
-  _.each(FULL_TESTS, _.partial(runTest, viewV1toV2))
+  _.forEach(FULL_TESTS, _.partial(runTest, viewV1toV2))
 })
