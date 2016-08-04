@@ -215,8 +215,8 @@ export default createFactory({
       results.push(
         this._validateSubCell(`${path}/extends`, cell.extends, model)
       )
-    } else {
-      addErrorResult(results, path, 'Either "model" or "extends" must be defined for each cell.')
+    } else if (!cell.children) {
+      addErrorResult(results, path, '"children", "extends", or "model" must be defined for each cell.')
     }
 
     const knownAttributes = _.keys(viewSchema.definitions.cell.properties)
