@@ -1,3 +1,9 @@
+# 0.9.1
+
+* **Fixed** bug where a cell was being marked invalid when it had the `children` property but not `extends` or `model`.
+
+
+
 # 0.9.0
 
 * **Changed** store to use `seamless-immutable` instead of `_.cloneDeep()` for performance improvements as well as immutability.
