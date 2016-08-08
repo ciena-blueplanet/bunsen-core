@@ -75,5 +75,6 @@ describe('validator/custom-formats/ipv4-prefix', () => {
 
   it('returns true when valid IPv4 prefix', () => {
     expect(ipv4Prefix('192.168.0.0/16')).to.be.true
+    expect(ipv4Prefix('192.168.104.0/24')).to.be.true
   })
 })
