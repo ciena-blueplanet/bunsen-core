@@ -1,3 +1,7 @@
+# 0.9.3
+- Fixed ipv4-prefix format validation
+
+
 # 0.9.2
 Please add a description of your change here, it will be automatically prepended to the `CHANGELOG.md` file.
 - The `collapsible` property will now be preserved from a container definition in v1 to v2 conversion
