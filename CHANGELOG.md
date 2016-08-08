@@ -1,3 +1,8 @@
+# 0.9.2
+Please add a description of your change here, it will be automatically prepended to the `CHANGELOG.md` file.
+- The `collapsible` property will now be preserved from a container definition in v1 to v2 conversion
+- Class names for containers will now be preserved in v1 to v2 conversion
+
 # 0.9.1
 
 * **Fixed** bug where a cell was being marked invalid when it had the `children` property but not `extends` or `model`.
