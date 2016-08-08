@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   'version': '2.0',
   'type': 'form',
   'cells': [

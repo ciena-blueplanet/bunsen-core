@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   'version': '2.0',
   'type': 'form',
   'cells': [
@@ -9,13 +9,18 @@ export default {
   ],
   'cellDefinitions': {
     'main': {
-      'extends': 'search'
-    },
-    'search': {
       classNames: {
         cell: 'facets'
       },
-      'model': 'p'
+      'extends': 'search'
+    },
+    'search': {
+      'model': 'p',
+      classNames: {
+        cell: 'test-class',
+        label: 'label-test-class',
+        value: 'input-test-class'
+      }
     }
   }
 }

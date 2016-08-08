@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   containers: [
     {
       className: 'facets',
@@ -12,7 +12,10 @@ export default {
       label: 'Search',
       rows: [
         [{
-          model: 'p'
+          model: 'p',
+          className: 'test-class',
+          labelClassName: 'label-test-class',
+          inputClassName: 'input-test-class'
         }]
       ]
     }
