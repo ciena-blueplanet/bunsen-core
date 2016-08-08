@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-const CARRY_OVER_PROPERTIES = ['label', 'dependsOn', 'description', 'disabled', 'model', 'placeholder', 'collapsible']
+const CARRY_OVER_PROPERTIES = ['label', 'dependsOn', 'description', 'disabled', 'model', 'placeholder']
 const ARRAY_CELL_PROPERTIES = ['autoAdd', 'compact', 'showLabel', 'sortable']
 
 /**
@@ -177,12 +177,15 @@ function rowsToCells (rows) {
 export function generateCellDefinitions (containers) {
   return _.chain(containers)
   .map(function (container) {
-    const {rows, id, className} = container
+    const {collapsible, rows, id, className} = container
     const cells = rowsToCells(rows)
     if (className !== undefined) {
       cells.classNames = {
         cell: className
       }
+    }
+    if (collapsible !== undefined) {
+      cells.collapsible = collapsible
     }
     return [id, cells]
   })
