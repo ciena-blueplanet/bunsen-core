@@ -74,6 +74,10 @@ addFullTest('converts renderer info', 'custom-renderers-view')
 
 addFullTest('collapses rows when possible', 'collapsed-rows-view')
 
+addFullTest('correctly handles className conversion', 'class-name-view')
+
+addFullTest('preserves collapsible property', 'collapsible-view')
+
 function runTest (unitUnderTest, testData, testNumber) {
   var expectedResult = testData.expectedResult
   var description = testData.description
