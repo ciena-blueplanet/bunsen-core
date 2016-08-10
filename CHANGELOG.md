@@ -1,3 +1,9 @@
+# 0.9.4
+
+* **Fixed** removing last item in an array.
+
+
+
 # 0.9.3
 - Fixed ipv4-prefix format validation
 
