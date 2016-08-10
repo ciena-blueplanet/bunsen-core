@@ -45,19 +45,28 @@ function unset (obj, path) {
   const segments = path.split('.')
   const lastSegment = segments.pop()
   const relativePath = segments.join('.')
-  let relativeItem = _.get(obj, relativePath)
+  let relativeItem = _.get(obj, relativePath || lastSegment)
+
+  // If already not set then there is nothing to do
+  if (relativeItem === undefined) {
+    return obj
+  }
 
   if (_.isArray(relativeItem)) {
-    const index = parseInt(lastSegment)
+    if (!relativePath) {
+      relativeItem = []
+    } else {
+      const index = parseInt(lastSegment)
 
-    // Remove item from array
-    relativeItem = relativeItem.slice(0, index).concat(relativeItem.slice(index + 1))
+      // Remove item from array
+      relativeItem = relativeItem.slice(0, index).concat(relativeItem.slice(index + 1))
+    }
   } else {
     // Remove item from object
     relativeItem = relativeItem.without(lastSegment)
   }
 
-  return set(obj, relativePath, relativeItem)
+  return set(obj, relativePath || lastSegment, relativeItem)
 }
 
 /**
