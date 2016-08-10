@@ -89,7 +89,7 @@ function _validateArray (path, model) {
     if (model.items.type === 'object') {
       results.push(validateSubModel(subPath, model.items))
     }
-  } else if (_.isArray(model.items)) {
+  } else if (Array.isArray(model.items)) {
     results.push({
       errors: [
         {

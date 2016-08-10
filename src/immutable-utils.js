@@ -44,7 +44,8 @@ export function set (item, path, value) {
     const newValue = segments.length > 0 ? set(item[index], segments.join('.'), value) : value
 
     // Return immutable array with item at index updated
-    return item.slice(0, index).concat(newValue).concat(item.slice(index + 1))
+    // NOTE: concatenating the newValue in an array to preserve multi-dimensional arrays
+    return item.slice(0, index).concat([newValue]).concat(item.slice(index + 1))
   }
 
   const object = item || immutable({})
@@ -62,7 +63,7 @@ export function set (item, path, value) {
 export function unset (obj, path) {
   const segments = path.split('.')
 
-  if (_.isArray(obj)) {
+  if (Array.isArray(obj)) {
     return unsetArray(obj, path, segments)
   }
 

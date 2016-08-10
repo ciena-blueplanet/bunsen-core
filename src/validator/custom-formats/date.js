@@ -8,7 +8,7 @@ import moment from 'moment'
  */
 export default function (value) {
   if (
-    _.isArray(value) ||
+    Array.isArray(value) ||
     _.isPlainObject(value) ||
     (_.isNumber(value) && parseInt(value, 10) !== value) ||
     [undefined, null].indexOf(value) !== -1

@@ -1,5 +1,3 @@
-import _ from 'lodash'
-
 /**
  * Determine if value is within a numeric range
  * @param {String|Number} value - value to check
@@ -25,7 +23,7 @@ function inRange (value, min, max) {
 export default function (value) {
   let period
 
-  if (!_.isString(value)) {
+  if (!(typeof value === 'string' || value instanceof String)) {
     return false
   }
 

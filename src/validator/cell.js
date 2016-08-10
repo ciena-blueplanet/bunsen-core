@@ -219,8 +219,8 @@ export default createFactory({
       addErrorResult(results, path, '"children", "extends", or "model" must be defined for each cell.')
     }
 
-    const knownAttributes = _.keys(viewSchema.definitions.cell.properties)
-    _.forEach(_.keys(cell), (attr) => {
+    const knownAttributes = Object.keys(viewSchema.definitions.cell.properties)
+    Object.keys(cell).forEach((attr) => {
       if (!_.includes(knownAttributes, attr)) {
         addWarningResult(results, path, `Unrecognized attribute "${attr}"`)
       }
@@ -246,11 +246,11 @@ export default createFactory({
 
     const results = []
 
-    const attrs = _.keys(cell)
+    const attrs = Object.keys(cell)
 
     const warnings = []
-    const knownAttributes = _.keys(viewSchema.definitions.cell.properties)
-    _.forEach(attrs, (attr) => {
+    const knownAttributes = Object.keys(viewSchema.definitions.cell.properties)
+    attrs.forEach((attr) => {
       if (!_.includes(knownAttributes, attr)) {
         warnings.push({
           path,

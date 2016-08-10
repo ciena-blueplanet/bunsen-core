@@ -23,12 +23,12 @@ export function initialState (state) {
  */
 function recursiveClean (value) {
   let output = {}
-  if (_.isArray(value)) {
+  if (Array.isArray(value)) {
     output = []
   }
   _.forEach(value, (subValue, key) => {
-    if (!_.isEmpty(subValue) || _.isNumber(subValue) || _.isBoolean(subValue)) {
-      if (_.isObject(subValue) || _.isArray(subValue)) {
+    if (!_.isEmpty(subValue) || _.isNumber(subValue) || typeof subValue === 'boolean' || subValue instanceof Boolean) {
+      if (_.isObject(subValue) || Array.isArray(subValue)) {
         output[key] = recursiveClean(subValue)
       } else {
         output[key] = subValue
@@ -81,7 +81,7 @@ export const actionReducers = {
     } else {
       newValue = immutable(state.value)
 
-      if (_.includes([null, ''], value) || (_.isArray(value) && value.length === 0)) {
+      if (_.includes([null, ''], value) || (Array.isArray(value) && value.length === 0)) {
         newValue = unset(newValue, bunsenId)
       } else {
         newValue = set(newValue, bunsenId, value)

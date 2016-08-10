@@ -2,7 +2,6 @@
  * @reference https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#CIDR_notation
  */
 
-import _ from 'lodash'
 import ipv4Address from './ipv4-address'
 import {ipAddressBits, networkMaskValid} from './utils'
 
@@ -14,7 +13,7 @@ const firstOctetMax = 253
  * @returns {Boolean} whether or not value is valid
  */
 export default function (value) {
-  if (!_.isString(value)) {
+  if (!(typeof value === 'string' || value instanceof String)) {
     return false
   }
 
