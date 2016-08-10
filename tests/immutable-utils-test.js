@@ -1,6 +1,7 @@
 var expect = require('chai').expect
 var immutable = require('seamless-immutable')
 var immutableHelpers = require('../lib/immutable-utils')
+var set = immutableHelpers.set
 var unset = immutableHelpers.unset
 
 /**
@@ -15,6 +16,398 @@ function expectEquals (actual, expected) {
 
   expect(actual).to.eql(expected)
 }
+
+describe('set', function () {
+  describe('property not present', function () {
+    var obj
+
+    beforeEach(function () {
+      obj = immutable({})
+    })
+
+    it('boolean', function () {
+      const actual = set(obj, 'foo', true)
+      expectEquals(actual, {foo: true})
+    })
+
+    it('integer', function () {
+      const actual = set(obj, 'foo', 1)
+      expectEquals(actual, {foo: 1})
+    })
+
+    it('number', function () {
+      const actual = set(obj, 'foo', 1.5)
+      expectEquals(actual, {foo: 1.5})
+    })
+
+    it('string', function () {
+      const actual = set(obj, 'foo', 'bar')
+      expectEquals(actual, {foo: 'bar'})
+    })
+
+    it('boolean array', function () {
+      const actual = set(obj, 'foo', [true, false])
+      expectEquals(actual, {foo: [true, false]})
+    })
+
+    it('integer array', function () {
+      const actual = set(obj, 'foo', [1, 2])
+      expectEquals(actual, {foo: [1, 2]})
+    })
+
+    it('number array', function () {
+      const actual = set(obj, 'foo', [1.5, 2.5])
+      expectEquals(actual, {foo: [1.5, 2.5]})
+    })
+
+    it('string array', function () {
+      const actual = set(obj, 'foo', ['bar', 'baz'])
+      expectEquals(actual, {foo: ['bar', 'baz']})
+    })
+  })
+
+  describe('property present', function () {
+    var obj
+
+    beforeEach(function () {
+      obj = immutable({foo: 'old'})
+    })
+
+    it('boolean', function () {
+      const actual = set(obj, 'foo', true)
+      expectEquals(actual, {foo: true})
+    })
+
+    it('integer', function () {
+      const actual = set(obj, 'foo', 1)
+      expectEquals(actual, {foo: 1})
+    })
+
+    it('number', function () {
+      const actual = set(obj, 'foo', 1.5)
+      expectEquals(actual, {foo: 1.5})
+    })
+
+    it('string', function () {
+      const actual = set(obj, 'foo', 'bar')
+      expectEquals(actual, {foo: 'bar'})
+    })
+
+    it('boolean array', function () {
+      const actual = set(obj, 'foo', [true, false])
+      expectEquals(actual, {foo: [true, false]})
+    })
+
+    it('integer array', function () {
+      const actual = set(obj, 'foo', [1, 2])
+      expectEquals(actual, {foo: [1, 2]})
+    })
+
+    it('number array', function () {
+      const actual = set(obj, 'foo', [1.5, 2.5])
+      expectEquals(actual, {foo: [1.5, 2.5]})
+    })
+
+    it('string array', function () {
+      const actual = set(obj, 'foo', ['bar', 'baz'])
+      expectEquals(actual, {foo: ['bar', 'baz']})
+    })
+  })
+
+  describe('item not present in array', function () {
+    var obj
+
+    beforeEach(function () {
+      obj = immutable({foo: []})
+    })
+
+    it('boolean', function () {
+      const actual = set(obj, 'foo.0', true)
+      expectEquals(actual, {foo: [true]})
+    })
+
+    it('integer', function () {
+      const actual = set(obj, 'foo.0', 1)
+      expectEquals(actual, {foo: [1]})
+    })
+
+    it('number', function () {
+      const actual = set(obj, 'foo.0', 1.5)
+      expectEquals(actual, {foo: [1.5]})
+    })
+
+    it('string', function () {
+      const actual = set(obj, 'foo.0', 'bar')
+      expectEquals(actual, {foo: ['bar']})
+    })
+
+    it('boolean array', function () {
+      const actual = set(obj, 'foo.0', [true, false])
+      expectEquals(actual, {
+        foo: [
+          [true, false]
+        ]
+      })
+    })
+
+    it('integer array', function () {
+      const actual = set(obj, 'foo.0', [1, 2])
+      expectEquals(actual, {
+        foo: [
+          [1, 2]
+        ]
+      })
+    })
+
+    it('number array', function () {
+      const actual = set(obj, 'foo.0', [1.5, 2.5])
+      expectEquals(actual, {
+        foo: [
+          [1.5, 2.5]
+        ]
+      })
+    })
+
+    it('string array', function () {
+      const actual = set(obj, 'foo.0', ['bar', 'baz'])
+      expectEquals(actual, {
+        foo: [
+          ['bar', 'baz']
+        ]
+      })
+    })
+  })
+
+  describe('item present in array', function () {
+    var obj
+
+    beforeEach(function () {
+      obj = immutable({foo: ['old']})
+    })
+
+    it('boolean', function () {
+      const actual = set(obj, 'foo.0', true)
+      expectEquals(actual, {foo: [true]})
+    })
+
+    it('integer', function () {
+      const actual = set(obj, 'foo.0', 1)
+      expectEquals(actual, {foo: [1]})
+    })
+
+    it('number', function () {
+      const actual = set(obj, 'foo.0', 1.5)
+      expectEquals(actual, {foo: [1.5]})
+    })
+
+    it('string', function () {
+      const actual = set(obj, 'foo.0', 'bar')
+      expectEquals(actual, {foo: ['bar']})
+    })
+
+    it('boolean array', function () {
+      const actual = set(obj, 'foo.0', [true, false])
+      expectEquals(actual, {
+        foo: [
+          [true, false]
+        ]
+      })
+    })
+
+    it('integer array', function () {
+      const actual = set(obj, 'foo.0', [1, 2])
+      expectEquals(actual, {
+        foo: [
+          [1, 2]
+        ]
+      })
+    })
+
+    it('number array', function () {
+      const actual = set(obj, 'foo.0', [1.5, 2.5])
+      expectEquals(actual, {
+        foo: [
+          [1.5, 2.5]
+        ]
+      })
+    })
+
+    it('string array', function () {
+      const actual = set(obj, 'foo.0', ['bar', 'baz'])
+      expectEquals(actual, {
+        foo: [
+          ['bar', 'baz']
+        ]
+      })
+    })
+  })
+
+  describe('property not present in object', function () {
+    var obj
+
+    beforeEach(function () {
+      obj = immutable({
+        foo: {}
+      })
+    })
+
+    it('boolean', function () {
+      const actual = set(obj, 'foo.bar', true)
+      expectEquals(actual, {
+        foo: {
+          bar: true
+        }
+      })
+    })
+
+    it('integer', function () {
+      const actual = set(obj, 'foo.bar', 1)
+      expectEquals(actual, {
+        foo: {
+          bar: 1
+        }
+      })
+    })
+
+    it('number', function () {
+      const actual = set(obj, 'foo.bar', 1.5)
+      expectEquals(actual, {
+        foo: {
+          bar: 1.5
+        }
+      })
+    })
+
+    it('string', function () {
+      const actual = set(obj, 'foo.bar', 'baz')
+      expectEquals(actual, {
+        foo: {
+          bar: 'baz'
+        }
+      })
+    })
+
+    it('boolean array', function () {
+      const actual = set(obj, 'foo.bar', [true, false])
+      expectEquals(actual, {
+        foo: {
+          bar: [true, false]
+        }
+      })
+    })
+
+    it('integer array', function () {
+      const actual = set(obj, 'foo.bar', [1, 2])
+      expectEquals(actual, {
+        foo: {
+          bar: [1, 2]
+        }
+      })
+    })
+
+    it('number array', function () {
+      const actual = set(obj, 'foo.bar', [1.5, 2.5])
+      expectEquals(actual, {
+        foo: {
+          bar: [1.5, 2.5]
+        }
+      })
+    })
+
+    it('string array', function () {
+      const actual = set(obj, 'foo.bar', ['baz', 'spam'])
+      expectEquals(actual, {
+        foo: {
+          bar: ['baz', 'spam']
+        }
+      })
+    })
+  })
+
+  describe('property present in object', function () {
+    var obj
+
+    beforeEach(function () {
+      obj = immutable({
+        foo: {
+          bar: 'old'
+        }
+      })
+    })
+
+    it('boolean', function () {
+      const actual = set(obj, 'foo.bar', true)
+      expectEquals(actual, {
+        foo: {
+          bar: true
+        }
+      })
+    })
+
+    it('integer', function () {
+      const actual = set(obj, 'foo.bar', 1)
+      expectEquals(actual, {
+        foo: {
+          bar: 1
+        }
+      })
+    })
+
+    it('number', function () {
+      const actual = set(obj, 'foo.bar', 1.5)
+      expectEquals(actual, {
+        foo: {
+          bar: 1.5
+        }
+      })
+    })
+
+    it('string', function () {
+      const actual = set(obj, 'foo.bar', 'baz')
+      expectEquals(actual, {
+        foo: {
+          bar: 'baz'
+        }
+      })
+    })
+
+    it('boolean array', function () {
+      const actual = set(obj, 'foo.bar', [true, false])
+      expectEquals(actual, {
+        foo: {
+          bar: [true, false]
+        }
+      })
+    })
+
+    it('integer array', function () {
+      const actual = set(obj, 'foo.bar', [1, 2])
+      expectEquals(actual, {
+        foo: {
+          bar: [1, 2]
+        }
+      })
+    })
+
+    it('number array', function () {
+      const actual = set(obj, 'foo.bar', [1.5, 2.5])
+      expectEquals(actual, {
+        foo: {
+          bar: [1.5, 2.5]
+        }
+      })
+    })
+
+    it('string array', function () {
+      const actual = set(obj, 'foo.bar', ['baz', 'spam'])
+      expectEquals(actual, {
+        foo: {
+          bar: ['baz', 'spam']
+        }
+      })
+    })
+  })
+})
 
 describe('unset', function () {
   it('throws error when trying to unset path on a boolean', function () {
