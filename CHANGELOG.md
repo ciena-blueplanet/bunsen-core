@@ -1,3 +1,10 @@
+# 0.10.0
+
+* **Added** more tests to ensure more code is functioning as expected.
+* **Fixed** bug with immutable utils `set` method and multi-dimensional arrays.
+* **Replaced** some lodash method calls with native method calls in an effort to reduce our dependency on lodash when native Javascript gets the job done.
+
+
 # 0.9.5
 
 * **Fixed** issues with `unset` method and added tests to ensure method functions properly.
