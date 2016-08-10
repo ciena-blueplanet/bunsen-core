@@ -11,6 +11,7 @@ const INITIAL_VALUE = {
   model: {}, // Model calculated by the reducer
   baseModel: {} // Original model recieved
 }
+
 export function initialState (state) {
   return _.defaults(state, INITIAL_VALUE)
 }
@@ -52,6 +53,12 @@ export const actionReducers = {
     return newState
   },
 
+  /**
+   * Update the bunsen model
+   * @param {State} state - state to update
+   * @param {Action} action - action
+   * @returns {State} - updated state
+   */
   [CHANGE_MODEL]: function (state, action) {
     return _.defaults({
       baseModel: action.model,
@@ -59,6 +66,12 @@ export const actionReducers = {
     }, state)
   },
 
+  /**
+   * Update the bunsen value
+   * @param {State} state - state to update
+   * @param {Action} action - action
+   * @returns {State} - updated state
+   */
   [CHANGE_VALUE]: function (state, action) {
     const {value, bunsenId} = action
     let newValue
@@ -88,6 +101,12 @@ export const actionReducers = {
     }, state)
   },
 
+  /**
+   * Update validation results
+   * @param {State} state - state to update
+   * @param {Action} action - action
+   * @returns {State} - updated state
+   */
   [VALIDATION_RESOLVED]: function (state, action) {
     return _.defaults({
       validationResult: action.validationResult,
@@ -96,6 +115,12 @@ export const actionReducers = {
   }
 }
 
+/**
+ * Update the state
+ * @param {State} state - state to update
+ * @param {Action} action - action
+ * @returns {State} - updated state
+ */
 export function reducer (state, action) {
   if (action.type in actionReducers) {
     const actionReducer = actionReducers[action.type]
