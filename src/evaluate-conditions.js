@@ -9,7 +9,7 @@ import {dereference} from './dereference'
 
 function pathFinder (valueObj, prevPath) {
   return function (path) {
-    if (!_.isArray(path)) {
+    if (!Array.isArray(path)) {
       path = path.split('.').reverse()
     }
     let nextInPath = _.last(path)
@@ -56,7 +56,7 @@ export default function evaluate (model, value, getPreviousValue) {
 
   let retModel = _.cloneDeep(model)
   if (model.type === 'array') {
-    if (_.isArray(value)) {
+    if (Array.isArray(value)) {
       let itemSchemas = []
       // Deep version of _.uniq
       const potentialSchemas = _.map(value, function (val) {
@@ -78,7 +78,7 @@ export default function evaluate (model, value, getPreviousValue) {
       retModel.items = evaluate(model.items, value, getPreviousValue)
     }
   } else {
-    const aggregateType = _.find(['anyOf', 'oneOf'], _.partial(_.includes, _.keys(model)))
+    const aggregateType = _.find(['anyOf', 'oneOf'], _.partial(_.includes, Object.keys(model)))
     if (aggregateType !== undefined) {
       retModel[aggregateType] = _.map(model[aggregateType], (subSchema) => {
         return evaluate(subSchema, value, getPreviousValue)

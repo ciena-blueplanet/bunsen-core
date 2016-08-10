@@ -62,7 +62,7 @@ export function set (item, path, value) {
 export function unset (obj, path) {
   const segments = path.split('.')
 
-  if (_.isArray(obj)) {
+  if (Array.isArray(obj)) {
     return unsetArray(obj, path, segments)
   }
 

@@ -78,7 +78,7 @@ function _validateRootAttributes (view, model, cellValidator) {
   ]
 
   const knownAttributes = ['version', 'type', 'cells', 'cellDefinitions']
-  const unknownAttributes = _.difference(_.keys(view), knownAttributes)
+  const unknownAttributes = _.difference(Object.keys(view), knownAttributes)
   results.push({
     errors: [],
     warnings: _.map(unknownAttributes, (attr) => {

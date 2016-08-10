@@ -7,7 +7,7 @@ import _ from 'lodash'
  * @returns {Boolean} true if model or any child has a required field
  */
 export function doesModelContainRequiredField (model) {
-  if (_.isArray(model)) {
+  if (Array.isArray(model)) {
     for (let i = 0, len = model.length; i < len; i++) {
       if (doesModelContainRequiredField(model[i])) {
         return true
@@ -67,7 +67,7 @@ export function getModelPath (reference, dependencyReference) {
   const pattern = /^[^\.](.*[^\.])?$/
   let path = pattern.test(reference) ? `properties.${reference.split('.').join('.properties.')}` : undefined
 
-  if (_.isString(path)) {
+  if (typeof path === 'string' || path instanceof String) {
     path = path.replace(/\.properties\.(\d+)\./g, '.items.') // Replace array index with "items"
   }
 

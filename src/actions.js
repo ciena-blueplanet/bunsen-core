@@ -44,7 +44,7 @@ function invalidPath (refPath) {
 }
 
 function schemaFromRef (definitions) {
-  if (_.isUndefined(definitions)) {
+  if (definitions === undefined) {
     return function (refPath) {
       const schema = invalidPath(refPath)
       console.warn('"$ref" can not be used, "definitions" is not defined for this schema')

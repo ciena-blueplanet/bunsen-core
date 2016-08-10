@@ -1,5 +1,3 @@
-import _ from 'lodash'
-
 const regex = /^([\da-f][\da-f](:[\da-f][\da-f])*)?$/i
 
 /**
@@ -8,7 +6,7 @@ const regex = /^([\da-f][\da-f](:[\da-f][\da-f])*)?$/i
  * @returns {Boolean} whether or not value is a valid
  */
 export default function (value) {
-  if (!_.isString(value)) {
+  if (!(typeof value === 'string' || value instanceof String)) {
     return false
   }
 

@@ -106,7 +106,7 @@ export function validateJsonString (jsonStr, jsonObj) {
  */
 export function ensureJsonObject (json) {
   let strResult = null
-  if (_.isString(json)) {
+  if (typeof json === 'string' || json instanceof String) {
     const jsonStr = json
     try {
       json = JSON.parse(jsonStr)
