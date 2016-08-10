@@ -1,3 +1,9 @@
+# 0.9.5
+
+* **Fixed** issues with `unset` method and added tests to ensure method functions properly.
+* Refactored reducer code to be a little bit easier to follow by splitting it up into logical modules and methods.
+
+
 # 0.9.4
 
 * **Fixed** removing last item in an array.
