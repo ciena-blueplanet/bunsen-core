@@ -14,7 +14,7 @@ export function initialState (state) {
   return _.defaults(state, INITIAL_VALUE)
 }
 
-function set (item, path, value) {
+export function set (item, path, value) {
   const segments = path.split('.')
   const segment = segments.shift()
   const segmentIsArrayIndex = /^\d+$/.test(segment)
@@ -41,32 +41,44 @@ function set (item, path, value) {
   return object.set(segment, newValue)
 }
 
-function unset (obj, path) {
+/**
+ * Unset value in an object given a path to the key to unset
+ * @param {Immutable} obj - object to unset path within
+ * @param {String} path - path to value to unset
+ * @returns {Immutable} new value with path unset
+ */
+export function unset (obj, path) {
   const segments = path.split('.')
-  const lastSegment = segments.pop()
-  const relativePath = segments.join('.')
-  let relativeItem = _.get(obj, relativePath || lastSegment)
 
-  // If already not set then there is nothing to do
-  if (relativeItem === undefined) {
-    return obj
-  }
+  if (_.isArray(obj)) {
+    const key = segments.splice(0, 1)
+    const index = parseInt(key)
 
-  if (_.isArray(relativeItem)) {
-    if (!relativePath) {
-      relativeItem = []
-    } else {
-      const index = parseInt(lastSegment)
-
-      // Remove item from array
-      relativeItem = relativeItem.slice(0, index).concat(relativeItem.slice(index + 1))
+    if (segments.length === 0) {
+      return obj.slice(0, index).concat(obj.slice(index + 1))
     }
-  } else {
-    // Remove item from object
-    relativeItem = relativeItem.without(lastSegment)
+
+    const newValue = unset(obj[index], segments.join('.'))
+
+    // NOTE: concatenating the newValue in an array to preserve multi-dimensional arrays
+    return obj.slice(0, index).concat([newValue]).concat(obj.slice(index + 1))
   }
 
-  return set(obj, relativePath || lastSegment, relativeItem)
+  if (_.isObject(obj)) {
+    const key = segments.splice(0, 1)
+
+    if (segments.length === 0) {
+      return obj.without(key)
+    }
+
+    const newValue = unset(obj[key], segments.join('.'))
+    return obj.set(key, newValue)
+  }
+
+  // NOTE: explicitly checking for null because "typeof null === 'object'" which is misleading
+  const type = obj === null ? 'null' : typeof obj
+
+  throw new Error(`A path can only be unset for objects and arrays not ${type}`)
 }
 
 /**
