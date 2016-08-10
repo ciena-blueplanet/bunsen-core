@@ -138,7 +138,7 @@ export function getDefaultView (schema) {
   const view = {
     version: '2.0',
     type: 'form',
-    cells: [{label: 'Main', extends: 'main'}],
+    cells: [{extends: 'main'}],
     cellDefinitions: {
       main: {
         children: []

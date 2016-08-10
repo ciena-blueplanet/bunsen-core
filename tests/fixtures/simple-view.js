@@ -3,7 +3,6 @@ module.exports = {
   type: 'form',
   cells: [
     {
-      label: 'Main',
       extends: 'main'
     }
   ],
