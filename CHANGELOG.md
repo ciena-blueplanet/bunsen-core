@@ -1,3 +1,8 @@
+# 0.10.2
+
+* **Fixed** issues with converter dropping semantic containers/cells.
+
+
 # 0.10.1
 
 * **Fixed** v1 to v2 conversion.
