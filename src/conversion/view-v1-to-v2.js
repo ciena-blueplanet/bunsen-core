@@ -144,12 +144,18 @@ export function convertCell (cell) {
  * @returns {object} A v2 cell
  */
 function rowsToCells (rows) {
+  if (!rows) {
+    return null
+  }
+
+  const children = rows
+    .map((row) => {
+      return _.map(row, convertCell)
+    })
+    .reduce((a, b) => a.concat(b), [])
+
   return {
-    children: _.chain(rows).map((row) => {
-      return {
-        children: _.map(row, convertCell)
-      }
-    }).filter().value()
+    children
   }
 }
 

@@ -1,25 +1,34 @@
 module.exports = {
-  'version': '2.0',
-  'type': 'form',
-  'cells': [
-    {
-      'extends': 'main'
-    }
-  ],
-  'cellDefinitions': {
-    'main': {
+  cellDefinitions: {
+    main: {
+      children: [
+        {
+          extends: 'search'
+        }
+      ],
       classNames: {
         cell: 'facets'
-      },
-      'extends': 'search'
-    },
-    'search': {
-      'model': 'p',
-      classNames: {
-        cell: 'test-class',
-        label: 'label-test-class',
-        value: 'input-test-class'
       }
+    },
+    search: {
+      children: [
+        {
+          classNames: {
+            cell: 'test-class',
+            label: 'label-test-class',
+            value: 'input-test-class'
+          },
+          model: 'p'
+        }
+      ],
+      label: 'Search'
     }
-  }
+  },
+  cells: [
+    {
+      extends: 'main'
+    }
+  ],
+  type: 'form',
+  version: '2.0'
 }

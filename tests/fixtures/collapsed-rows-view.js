@@ -5,40 +5,28 @@ module.exports = {
     'uncollapsed-rows': {
       children: [
         {
-          children: [
-            {
-              model: 'item-1-1'
-            },
-            {
-              model: 'item-1-2'
-            },
-            {
-              model: 'item-1-3'
-            }
-          ]
+          model: 'item-1-1'
         },
         {
-          children: [
-            {
-              model: 'item-2-1'
-            }
-          ]
+          model: 'item-1-2'
         },
         {
-          children: [
-            {
-              model: 'item-3-1'
-            },
-            {
-              model: 'item-3-2'
-            },
-            {
-              model: 'item-3-3'
-            },
-            {
-              model: 'item-3-4'
-            }
-          ]
+          model: 'item-1-3'
+        },
+        {
+          model: 'item-2-1'
+        },
+        {
+          model: 'item-3-1'
+        },
+        {
+          model: 'item-3-2'
+        },
+        {
+          model: 'item-3-3'
+        },
+        {
+          model: 'item-3-4'
         }
       ]
     },
@@ -69,7 +57,11 @@ module.exports = {
       ]
     },
     'total-collapse': {
-      model: 'top-level-item'
+      children: [
+        {
+          model: 'top-level-item'
+        }
+      ]
     }
   },
   cells: [
