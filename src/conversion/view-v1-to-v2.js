@@ -145,7 +145,7 @@ export function convertCell (cell) {
  */
 function rowsToCells (rows) {
   if (!rows) {
-    return null
+    return {}
   }
 
   const children = rows
@@ -172,10 +172,6 @@ export function generateCellDefinitions (containers) {
     const {collapsible, rows, id, className, label} = container
     const cell = rowsToCells(rows)
 
-    if (!cell) {
-      return null
-    }
-
     if (className !== undefined) {
       cell.classNames = {
         cell: className
@@ -192,7 +188,6 @@ export function generateCellDefinitions (containers) {
 
     return [id, cell]
   })
-  .without(null)
   .fromPairs()
   .value()
 }
