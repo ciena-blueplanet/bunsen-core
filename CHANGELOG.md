@@ -1,3 +1,8 @@
+# 0.10.1
+
+* **Fixed** v1 to v2 conversion.
+
+
 # 0.10.0
 
 * **Added** more tests to ensure more code is functioning as expected.
