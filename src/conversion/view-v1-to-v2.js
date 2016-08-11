@@ -144,26 +144,12 @@ export function convertCell (cell) {
  * @returns {object} A v2 cell
  */
 function rowsToCells (rows) {
-  const collapseRows = !_.some(rows, function (row) {
-    return row.length > 1
-  })
-  const collapseColumns = rows.length <= 1
-  let rowChain = _.chain(rows)
-  if (collapseRows && collapseColumns) {
-    return rowChain.flattenDeep().map(convertCell).filter().first().value()
-  }
-  let children
-  if (collapseRows || collapseColumns) {
-    children = rowChain.flattenDeep().map(convertCell).filter().value()
-  } else {
-    children = rowChain.map((row) => {
+  return {
+    children: _.chain(rows).map((row) => {
       return {
         children: _.map(row, convertCell)
       }
     }).filter().value()
-  }
-  return {
-    children
   }
 }
 
@@ -177,7 +163,7 @@ function rowsToCells (rows) {
 export function generateCellDefinitions (containers) {
   return _.chain(containers)
   .map(function (container) {
-    const {collapsible, rows, id, className} = container
+    const {collapsible, rows, id, className, label} = container
     const cell = rowsToCells(rows)
 
     if (!cell) {
@@ -192,6 +178,10 @@ export function generateCellDefinitions (containers) {
 
     if (collapsible !== undefined) {
       cell.collapsible = collapsible
+    }
+
+    if (label !== undefined) {
+      cell.label = label
     }
 
     return [id, cell]
