@@ -1,18 +1,27 @@
 module.exports = {
-  'version': '2.0',
-  'type': 'form',
-  'cells': [
+  cellDefinitions: {
+    main: {
+      children: [
+        {
+          extends: 'search'
+        }
+      ]
+    },
+    search: {
+      children: [
+        {
+          model: 'p'
+        }
+      ],
+      collapsible: true,
+      label: 'Search'
+    }
+  },
+  cells: [
     {
-      'extends': 'main'
+      extends: 'main'
     }
   ],
-  'cellDefinitions': {
-    'main': {
-      'extends': 'search'
-    },
-    'search': {
-      'model': 'p',
-      'collapsible': true
-    }
-  }
+  type: 'form',
+  version: '2.0'
 }

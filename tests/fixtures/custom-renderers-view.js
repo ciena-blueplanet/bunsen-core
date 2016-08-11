@@ -3,9 +3,13 @@ module.exports = {
   version: '2.0',
   cellDefinitions: {
     foo: {
-      renderer: {
-        name: 'select'
-      }
+      children: [
+        {
+          renderer: {
+            name: 'select'
+          }
+        }
+      ]
     },
     bar: {
       children: [
@@ -18,14 +22,22 @@ module.exports = {
       ]
     },
     barChild1: {
-      model: 'barChild1',
-      renderer: {
-        name: 'textarea'
-      }
+      children: [
+        {
+          model: 'barChild1',
+          renderer: {
+            name: 'textarea'
+          }
+        }
+      ]
     },
     barChild2: {
-      model: 'barChild2',
-      extends: 'barGrandChildren'
+      children: [
+        {
+          model: 'barChild2',
+          extends: 'barGrandChildren'
+        }
+      ]
     },
     barGrandChildren: {
       children: [
@@ -44,12 +56,16 @@ module.exports = {
       ]
     },
     baz: {
-      model: 'baz',
-      renderer: {
-        name: 'custom-renderer',
-        someProp: 45,
-        otherProp: false
-      }
+      children: [
+        {
+          model: 'baz',
+          renderer: {
+            name: 'custom-renderer',
+            someProp: 45,
+            otherProp: false
+          }
+        }
+      ]
     }
   },
   cells: [
