@@ -1,3 +1,10 @@
+# 0.11.0
+
+* **Added** two new formats: `ip-address` and `ipv6-address`.
+* **Fixed** `ipv4-address` format to accept octets with preceding zeros.
+
+
+
 # 0.10.2
 
 * **Fixed** issues with converter dropping semantic containers/cells.
