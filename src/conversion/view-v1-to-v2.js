@@ -150,9 +150,10 @@ function rowsToCells (rows) {
 
   const children = rows
     .map((row) => {
-      return _.map(row, convertCell)
+      return {
+        children: _.map(row, convertCell)
+      }
     })
-    .reduce((a, b) => a.concat(b), [])
 
   return {
     children
