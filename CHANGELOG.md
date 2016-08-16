@@ -1,3 +1,8 @@
+# 0.11.3
+
+* **Fixed** issue with container structure not being preserved by converter.
+
+
 # 0.11.2
 Added some missing dependencies
 
