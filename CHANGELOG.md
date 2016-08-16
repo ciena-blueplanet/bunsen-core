@@ -1,3 +1,8 @@
+# 0.11.2
+Added some missing dependencies
+
+
+
 # 0.11.1
 
 * **Fixed** code to actually expose `ip-address` and `ipv6-address` custom formats to consumer.

@@ -1,6 +1,6 @@
 {
   "name": "bunsen-core",
-  "version": "0.11.1",
+  "version": "0.11.2",
   "description": "Core bunsen library",
   "main": "lib/index.js",
   "scripts": {
@@ -45,4 +45,3 @@
     "z-schema": "^3.17.0"
   }
 }
-
