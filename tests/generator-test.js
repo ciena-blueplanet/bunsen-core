@@ -2,9 +2,9 @@ var expect = require('chai').expect
 var getDefaultView = require('../lib/generator').getDefaultView
 
 var simpleModel = require('./fixtures/simple-model')
-var simpleView = require('./fixtures/simple-view')
+var simpleView = require('./fixtures/simple-view-2')
 var arrayModel = require('./fixtures/array-model')
-var arrayView = require('./fixtures/array-view')
+var arrayView = require('./fixtures/array-view-2')
 var dependenciesModel = require('./fixtures/dependencies-model')
 var dependenciesView = require('./fixtures/dependencies-view')
 

@@ -5,61 +5,103 @@ module.exports = {
     'uncollapsed-rows': {
       children: [
         {
-          model: 'item-1-1'
+          children: [
+            {
+              model: 'item-1-1'
+            },
+            {
+              model: 'item-1-2'
+            },
+            {
+              model: 'item-1-3'
+            }
+          ]
         },
         {
-          model: 'item-1-2'
+          children: [
+            {
+              model: 'item-2-1'
+            }
+          ]
         },
         {
-          model: 'item-1-3'
-        },
-        {
-          model: 'item-2-1'
-        },
-        {
-          model: 'item-3-1'
-        },
-        {
-          model: 'item-3-2'
-        },
-        {
-          model: 'item-3-3'
-        },
-        {
-          model: 'item-3-4'
+          children: [
+            {
+              model: 'item-3-1'
+            },
+            {
+              model: 'item-3-2'
+            },
+            {
+              model: 'item-3-3'
+            },
+            {
+              model: 'item-3-4'
+            }
+          ]
         }
       ]
     },
     'one-row-collapse': {
       children: [
         {
-          model: 'item-1'
-        }, {
-          model: 'item-2'
-        }, {
-          model: 'item-3'
-        }, {
-          model: 'item-4'
+          children: [
+            {
+              model: 'item-1'
+            },
+            {
+              model: 'item-2'
+            },
+            {
+              model: 'item-3'
+            },
+            {
+              model: 'item-4'
+            }
+          ]
         }
       ]
     },
     'multi-row-collapse': {
       children: [
         {
-          model: 'item-1'
-        }, {
-          model: 'item-2'
-        }, {
-          model: 'item-3'
-        }, {
-          model: 'item-4'
+          children: [
+            {
+              model: 'item-1'
+            }
+          ]
+        },
+        {
+          children: [
+            {
+              model: 'item-2'
+            }
+          ]
+        },
+        {
+          children: [
+            {
+              model: 'item-3'
+            }
+          ]
+        },
+        {
+          children: [
+            {
+              model: 'item-4'
+            }
+          ]
         }
       ]
     },
     'total-collapse': {
       children: [
         {
-          model: 'top-level-item'
+          children: [
+            {
+              model: 'top-level-item'
+            }
+          ]
         }
       ]
     }

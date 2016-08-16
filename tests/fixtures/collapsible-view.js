@@ -3,14 +3,22 @@ module.exports = {
     main: {
       children: [
         {
-          extends: 'search'
+          children: [
+            {
+              extends: 'search'
+            }
+          ]
         }
       ]
     },
     search: {
       children: [
         {
-          model: 'p'
+          children: [
+            {
+              model: 'p'
+            }
+          ]
         }
       ],
       collapsible: true,

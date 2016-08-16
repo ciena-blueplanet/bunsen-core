@@ -3,7 +3,11 @@ module.exports = {
     main: {
       children: [
         {
-          extends: 'search'
+          children: [
+            {
+              extends: 'search'
+            }
+          ]
         }
       ],
       classNames: {
@@ -13,12 +17,16 @@ module.exports = {
     search: {
       children: [
         {
-          classNames: {
-            cell: 'test-class',
-            label: 'label-test-class',
-            value: 'input-test-class'
-          },
-          model: 'p'
+          children: [
+            {
+              classNames: {
+                cell: 'test-class',
+                label: 'label-test-class',
+                value: 'input-test-class'
+              },
+              model: 'p'
+            }
+          ]
         }
       ],
       label: 'Search'

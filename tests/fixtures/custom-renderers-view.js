@@ -5,65 +5,93 @@ module.exports = {
     foo: {
       children: [
         {
-          renderer: {
-            name: 'select'
-          }
+          children: [
+            {
+              renderer: {
+                name: 'select'
+              }
+            }
+          ]
         }
       ]
     },
     bar: {
       children: [
         {
-          extends: 'barChild1'
-        },
-        {
-          extends: 'barChild2'
+          children: [
+            {
+              extends: 'barChild1'
+            },
+            {
+              extends: 'barChild2'
+            }
+          ]
         }
       ]
     },
     barChild1: {
       children: [
         {
-          model: 'barChild1',
-          renderer: {
-            name: 'textarea'
-          }
+          children: [
+            {
+              model: 'barChild1',
+              renderer: {
+                name: 'textarea'
+              }
+            }
+          ]
         }
       ]
     },
     barChild2: {
       children: [
         {
-          model: 'barChild2',
-          extends: 'barGrandChildren'
+          children: [
+            {
+              model: 'barChild2',
+              extends: 'barGrandChildren'
+            }
+          ]
         }
       ]
     },
     barGrandChildren: {
       children: [
         {
-          model: 'barGrandChild',
-          renderer: {
-            name: 'custom1'
-          }
+          children: [
+            {
+              model: 'barGrandChild',
+              renderer: {
+                name: 'custom1'
+              }
+            }
+          ]
         },
         {
-          model: 'barOtherGrandChild',
-          renderer: {
-            name: 'custom2'
-          }
+          children: [
+            {
+              model: 'barOtherGrandChild',
+              renderer: {
+                name: 'custom2'
+              }
+            }
+          ]
         }
       ]
     },
     baz: {
       children: [
         {
-          model: 'baz',
-          renderer: {
-            name: 'custom-renderer',
-            someProp: 45,
-            otherProp: false
-          }
+          children: [
+            {
+              model: 'baz',
+              renderer: {
+                name: 'custom-renderer',
+                someProp: 45,
+                otherProp: false
+              }
+            }
+          ]
         }
       ]
     }
