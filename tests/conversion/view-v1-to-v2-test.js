@@ -34,8 +34,12 @@ const CELL_DEF_TEST1 = {
     test: {
       children: [
         {
-          extends: 'someContainer',
-          model: 'some-property'
+          children: [
+            {
+              extends: 'someContainer',
+              model: 'some-property'
+            }
+          ]
         }
       ]
     }

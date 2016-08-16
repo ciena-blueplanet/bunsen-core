@@ -10,42 +10,74 @@ module.exports = {
     addresses: {
       children: [
         {
-          model: 'street'
+          children: [
+            {
+              model: 'street'
+            }
+          ]
         },
         {
-          model: 'city'
+          children: [
+            {
+              model: 'city'
+            }
+          ]
         },
         {
-          model: 'state'
+          children: [
+            {
+              model: 'state'
+            }
+          ]
         },
         {
-          model: 'zip'
+          children: [
+            {
+              model: 'zip'
+            }
+          ]
         }
       ]
     },
     main: {
       children: [
         {
-          model: 'name',
-          extends: 'name'
+          children: [
+            {
+              model: 'name',
+              extends: 'name'
+            }
+          ]
         },
         {
-          model: 'addresses',
-          arrayOptions: {
-            itemCell: {
-              extends: 'addresses'
+          children: [
+            {
+              model: 'addresses',
+              arrayOptions: {
+                itemCell: {
+                  extends: 'addresses'
+                }
+              }
             }
-          }
+          ]
         }
       ]
     },
     name: {
       children: [
         {
-          model: 'first'
+          children: [
+            {
+              model: 'first'
+            }
+          ]
         },
         {
-          model: 'last'
+          children: [
+            {
+              model: 'last'
+            }
+          ]
         }
       ]
     }

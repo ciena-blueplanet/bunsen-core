@@ -10,13 +10,25 @@ module.exports = {
     main: {
       children: [
         {
-          model: 'firstName'
+          children: [
+            {
+              model: 'firstName'
+            }
+          ]
         },
         {
-          model: 'lastName'
+          children: [
+            {
+              model: 'lastName'
+            }
+          ]
         },
         {
-          model: 'alias'
+          children: [
+            {
+              model: 'alias'
+            }
+          ]
         }
       ]
     }
