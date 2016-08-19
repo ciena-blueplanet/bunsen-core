@@ -278,7 +278,7 @@ export default {
       additionalProperties: false,
       properties: {
         object: {
-          additionalProperties: {type: 'string'},
+          additionalProperties: {type: ['string', 'boolean', 'number']},
           type: 'object'
         }
       },
