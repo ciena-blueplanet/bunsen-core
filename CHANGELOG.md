@@ -1,3 +1,7 @@
+# 0.12.0
+object transforms now support string, boolean, number
+
+
 # 0.11.3
 
 * **Fixed** issue with container structure not being preserved by converter.
