@@ -80,8 +80,20 @@ export const actionReducers = {
       newValue = immutable(recursiveClean(value))
     } else {
       newValue = immutable(state.value)
+      const segments = bunsenId.split('.')
+      const lastSegment = segments.pop()
+      const isArrayItem = /^\d+$/.test(lastSegment)
 
-      if (_.includes([null, ''], value) || (Array.isArray(value) && value.length === 0)) {
+      if (isArrayItem) {
+        const parentPath = segments.join('.')
+        const parentObject = _.get(newValue, parentPath)
+
+        if (parentObject && _.includes([null, ''], value)) {
+          newValue = unset(newValue, bunsenId)
+        } else {
+          newValue = set(newValue, bunsenId, value)
+        }
+      } else if (_.includes([null, ''], value) || (Array.isArray(value) && value.length === 0)) {
         newValue = unset(newValue, bunsenId)
       } else {
         newValue = set(newValue, bunsenId, value)
