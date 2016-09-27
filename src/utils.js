@@ -178,7 +178,7 @@ export function populateQuery (valueObj, query, startPath = '') {
  */
 export function hasValidQueryValues (value, queryDef, startPath) {
   if (!queryDef) {
-    return true
+    return false
   }
 
   try {
@@ -186,5 +186,30 @@ export function hasValidQueryValues (value, queryDef, startPath) {
     return Object.keys(query).every((key) => String(query[key]) !== '')
   } catch (e) {
     return false
+  }
+}
+
+export function traverseObject (object, iteratee) {
+  let stack = [{value: object, path: ''}]
+  while (stack.length > 0) {
+    let node = stack.pop()
+
+    if (node.value === undefined || node.value === null) {
+      continue
+    }
+
+    if (_.isObject(node.value)) {
+      Object.keys(node.value).forEach((property) => {
+        stack.push({value: node.value[property], path: `${node.path}.${property}`})
+      })
+    } else if (Array.isArray(node.value)) {
+      node.value.forEach((item, index) => {
+        stack.push({value: item, path: `${node.path}.${index}`})
+      })
+    } else {
+      // will remove the leading .
+      node.path = node.path.replace('.', '')
+      iteratee(node)
+    }
   }
 }

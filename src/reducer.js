@@ -3,6 +3,7 @@ import immutable from 'seamless-immutable'
 import {CHANGE_VALUE, VALIDATION_RESOLVED, CHANGE_MODEL} from './actions'
 import evaluateConditions from './evaluate-conditions'
 import {set, unset} from './immutable-utils'
+import {traverseObject} from './utils'
 
 const INITIAL_VALUE = {
   errors: {},
@@ -14,6 +15,14 @@ const INITIAL_VALUE = {
 
 export function initialState (state) {
   return _.defaults(state, INITIAL_VALUE)
+}
+
+function immutableOnce (object) {
+  let immutableObject = object
+  if (object.__immutable_invariants_hold === undefined) {
+    immutableObject = immutable(object)
+  }
+  return immutableObject
 }
 
 /**
@@ -75,28 +84,44 @@ export const actionReducers = {
   [CHANGE_VALUE]: function (state, action) {
     const {value, bunsenId} = action
     let newValue
+    let changeSet = new Map()
 
     if (bunsenId === null) {
-      newValue = immutable(recursiveClean(value))
+      changeSet = getChangeSet(state.value, value)
+      newValue = immutableOnce(recursiveClean(value))
     } else {
-      newValue = immutable(state.value)
+      newValue = immutableOnce(state.value)
 
       if (_.includes([null, ''], value) || (Array.isArray(value) && value.length === 0)) {
+        changeSet.set(bunsenId, {
+          value,
+          type: 'unset'
+        })
         newValue = unset(newValue, bunsenId)
       } else {
-        newValue = set(newValue, bunsenId, value)
+        if (!_.isEqual(value, _.get(newValue, bunsenId))) {
+          changeSet.set(bunsenId, {
+            value,
+            type: 'set'
+          })
+          newValue = set(newValue, bunsenId, value)
+        }
       }
     }
-    const newModel = evaluateConditions(state.baseModel, newValue)
+
     let model
-    if (!_.isEqual(state.model, newModel)) {
-      model = newModel
-    } else {
-      model = state.model
+    if (changeSet.size > 0) {
+      const newModel = evaluateConditions(state.baseModel, newValue)
+      if (!_.isEqual(state.model, newModel)) {
+        model = newModel
+      } else {
+        model = state.model
+      }
     }
 
     return _.defaults({
-      value: immutable(newValue),
+      value: newValue,
+      changeSet,
       model
     }, state)
   },
@@ -113,6 +138,42 @@ export const actionReducers = {
       errors: action.errors
     }, state)
   }
+}
+
+/**
+ * Outputs hashmap of bunsenIds that have changed. Each property is either a set or unset.
+ * @param {Object} oldValue - the old value
+ * @param {Object} newValue - the new value
+ * @returns {ChangeSet} the change set of oldValue -> newValue
+ */
+export function getChangeSet (oldValue, newValue) {
+  let changeSet = new Map()
+
+  const a = performance.now()
+  traverseObject(oldValue, (node) => {
+    changeSet.set(node.path, {
+      value: node.value,
+      type: 'unset'
+    })
+  })
+
+  traverseObject(newValue, (node) => {
+    let old = changeSet[node.path]
+
+    if (old && _.isEqual(old.value, node.value)) {
+      changeSet.delete(node.path)
+    } else {
+      changeSet.set(node.path, {
+        value: node.value,
+        type: 'set'
+      })
+    }
+  })
+
+  const b = performance.now()
+
+  console.log('getChangeSet: ' + (b - a))
+  return changeSet
 }
 
 /**

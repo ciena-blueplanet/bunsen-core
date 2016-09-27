@@ -49,18 +49,21 @@ export default function evaluate (model, value, getPreviousValue) {
 
   model = dereference(model).schema
   delete model.definitions
+  return evaluateNormalized(model, value, getPreviousValue)
+}
 
+export default function evaluateNormalized (model, value, getPreviousValue) {
   if (model.type !== 'object' && model.type !== 'array' && model.properties === undefined) {
     return model
   }
 
-  let retModel = _.cloneDeep(model)
+  let retModel = model
   if (model.type === 'array') {
     if (Array.isArray(value)) {
       let itemSchemas = []
       // Deep version of _.uniq
       const potentialSchemas = _.map(value, function (val) {
-        return evaluate(model.items, val, getPreviousValue)
+        return evaluateNormalized(model.items, val, getPreviousValue)
       })
       _.forEach(potentialSchemas, function (schema) {
         if (!_.some(itemSchemas, _.partial(_.isEqual, schema))) {
@@ -75,16 +78,16 @@ export default function evaluate (model, value, getPreviousValue) {
         retModel.items = itemSchemas[0]
       }
     } else if (value === undefined) {
-      retModel.items = evaluate(model.items, value, getPreviousValue)
+      retModel.items = evaluateNormalized(model.items, value, getPreviousValue)
     }
   } else {
     const aggregateType = _.find(['anyOf', 'oneOf'], _.partial(_.includes, Object.keys(model)))
     if (aggregateType !== undefined) {
       retModel[aggregateType] = _.map(model[aggregateType], (subSchema) => {
-        return evaluate(subSchema, value, getPreviousValue)
+        return evaluateNormalized(subSchema, value, getPreviousValue)
       })
     } else if (model.not) {
-      retModel.not = evaluate(model.not, value, getPreviousValue)
+      retModel.not = evaluateNormalized(model.not, value, getPreviousValue)
     }
   }
 
@@ -94,7 +97,7 @@ export default function evaluate (model, value, getPreviousValue) {
   const getValue = pathFinder(value, getPreviousValue)
 
   _.forEach(retModel.properties, function (subSchema, propName) {
-    retModel.properties[propName] = evaluate(subSchema, _.get(value, propName), pathFinder(value, getValue))
+    retModel.properties[propName] = evaluateNormalized(subSchema, _.get(value, propName), pathFinder(value, getValue))
   })
   let conditionalProperties = _.transform(model.properties, function (result, schema, key) {
     if (schema.conditions) {
