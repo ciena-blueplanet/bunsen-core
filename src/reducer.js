@@ -91,8 +91,30 @@ export const actionReducers = {
       newValue = immutableOnce(recursiveClean(value))
     } else {
       newValue = immutableOnce(state.value)
+      const segments = bunsenId.split('.')
+      const lastSegment = segments.pop()
+      const isArrayItem = /^\d+$/.test(lastSegment)
 
-      if (_.includes([null, ''], value) || (Array.isArray(value) && value.length === 0)) {
+      if (isArrayItem) {
+        const parentPath = segments.join('.')
+        const parentObject = _.get(newValue, parentPath)
+
+        if (parentObject && _.includes([null, ''], value)) {
+          changeSet.set(bunsenId, {
+            value,
+            type: 'unset'
+          })
+          newValue = unset(newValue, bunsenId)
+        } else {
+          if (!_.isEqual(value, _.get(newValue, bunsenId))) {
+            changeSet.set(bunsenId, {
+              value,
+              type: 'set'
+            }
+            newValue = set(newValue, bunsenId, value)
+          }
+        }
+      } else if (_.includes([null, ''], value) || (Array.isArray(value) && value.length === 0)) {
         changeSet.set(bunsenId, {
           value,
           type: 'unset'
@@ -149,7 +171,6 @@ export const actionReducers = {
 export function getChangeSet (oldValue, newValue) {
   let changeSet = new Map()
 
-  const a = performance.now()
   traverseObject(oldValue, (node) => {
     changeSet.set(node.path, {
       value: node.value,
@@ -170,9 +191,6 @@ export function getChangeSet (oldValue, newValue) {
     }
   })
 
-  const b = performance.now()
-
-  console.log('getChangeSet: ' + (b - a))
   return changeSet
 }
 

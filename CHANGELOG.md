@@ -1,3 +1,8 @@
+# 0.12.2
+
+* **Fixed** an issue where the first item in an array couldn't be set if the array didn't already exist.
+
+
 # 0.12.1
  * **Replaced** instances of `to.be.true` and `to.be.false` with `to.be.equal(true)` and `to.be.equal(false)` because mocha/chai won't error if you have a typo in the property that's not a function (i.e. `expect(false).to.be.fooBarBaz` passes without issue, even though there's no such check as `fooBarBaz`. 
 
