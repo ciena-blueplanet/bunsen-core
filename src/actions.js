@@ -133,11 +133,18 @@ export function validate (bunsenId, inputValue, renderModel, validators, all = P
     // make sure to apply defaults from the model
     if (isInputValueEmpty && previousValue === undefined) {
       const resolveRef = schemaFromRef(renderModel.definitions)
-      inputValue = findDefaults(inputValue, bunsenId, renderModel, resolveRef)
+      const defaultValue = findDefaults(inputValue, bunsenId, renderModel, resolveRef)
 
-      if (bunsenId === null && inputValue === undefined) {
+      if (bunsenId === null && defaultValue === undefined) {
         inputValue = {}
+      } else if (defaultValue !== undefined) {
+        inputValue = defaultValue
       }
+    }
+
+    // if the value never changed, no need to update and validate
+    if (_.isEqual(inputValue, previousValue)) {
+      return
     }
 
     dispatch(changeValue(bunsenId, inputValue))

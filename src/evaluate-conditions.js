@@ -5,7 +5,6 @@
  */
 
 import _ from 'lodash'
-import {dereference} from './dereference'
 
 function pathFinder (valueObj, prevPath) {
   return function (path) {
@@ -47,23 +46,17 @@ export default function evaluate (model, value, getPreviousValue) {
     return model
   }
 
-  model = dereference(model).schema
-  delete model.definitions
-  return evaluateNormalized(model, value, getPreviousValue)
-}
-
-export default function evaluateNormalized (model, value, getPreviousValue) {
   if (model.type !== 'object' && model.type !== 'array' && model.properties === undefined) {
     return model
   }
 
-  let retModel = model
-  if (model.type === 'array') {
+  let retModel = _.clone(model)
+  if (retModel.type === 'array') {
     if (Array.isArray(value)) {
       let itemSchemas = []
       // Deep version of _.uniq
       const potentialSchemas = _.map(value, function (val) {
-        return evaluateNormalized(model.items, val, getPreviousValue)
+        return evaluate(model.items, val, getPreviousValue)
       })
       _.forEach(potentialSchemas, function (schema) {
         if (!_.some(itemSchemas, _.partial(_.isEqual, schema))) {
@@ -73,21 +66,22 @@ export default function evaluateNormalized (model, value, getPreviousValue) {
       if (itemSchemas.length > 1) {
         retModel.items = {anyOf: itemSchemas}
       } else if (itemSchemas.length === 0) {
-        retModel.items = model.items
+        retModel.items = _.clone(model.items)
       } else {
         retModel.items = itemSchemas[0]
       }
     } else if (value === undefined) {
-      retModel.items = evaluateNormalized(model.items, value, getPreviousValue)
+      retModel.items = evaluate(retModel.items, value, getPreviousValue)
     }
+    return retModel
   } else {
-    const aggregateType = _.find(['anyOf', 'oneOf'], _.partial(_.includes, Object.keys(model)))
+    const aggregateType = _.find(['anyOf', 'oneOf'], _.partial(_.includes, Object.keys(retModel)))
     if (aggregateType !== undefined) {
-      retModel[aggregateType] = _.map(model[aggregateType], (subSchema) => {
-        return evaluateNormalized(subSchema, value, getPreviousValue)
+      retModel[aggregateType] = _.map(retModel[aggregateType], (subSchema) => {
+        return evaluate(subSchema, value, getPreviousValue)
       })
-    } else if (model.not) {
-      retModel.not = evaluateNormalized(model.not, value, getPreviousValue)
+    } else if (retModel.not) {
+      retModel.not = evaluate(retModel.not, value, getPreviousValue)
     }
   }
 
@@ -96,8 +90,9 @@ export default function evaluateNormalized (model, value, getPreviousValue) {
 
   const getValue = pathFinder(value, getPreviousValue)
 
+  retModel.properties = _.clone(model.properties)
   _.forEach(retModel.properties, function (subSchema, propName) {
-    retModel.properties[propName] = evaluateNormalized(subSchema, _.get(value, propName), pathFinder(value, getValue))
+    retModel.properties[propName] = evaluate(subSchema, _.get(value, propName), pathFinder(value, getValue))
   })
   let conditionalProperties = _.transform(model.properties, function (result, schema, key) {
     if (schema.conditions) {
@@ -119,7 +114,7 @@ export default function evaluateNormalized (model, value, getPreviousValue) {
     })
   })
   _.forEach(depsMet, function (dependencyMet, depName) {
-    const baseSchema = retModel.properties[depName]
+    const baseSchema = model.properties[depName]
     if (dependencyMet && !baseSchema.set || !dependencyMet && baseSchema.set) {
       retModel.properties[depName] = _.omit(_.defaults(props[depName] || {}, baseSchema), ['conditions', 'set'])
     } else {
