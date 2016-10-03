@@ -75,12 +75,12 @@ export default function evaluate (model, value, getPreviousValue) {
     }
     return retModel
   } else {
-    const aggregateType = _.find(['anyOf', 'oneOf'], _.partial(_.includes, Object.keys(retModel)))
+    const aggregateType = _.find(['anyOf', 'oneOf'], _.partial(_.includes, Object.keys(model)))
     if (aggregateType !== undefined) {
       retModel[aggregateType] = _.map(retModel[aggregateType], (subSchema) => {
         return evaluate(subSchema, value, getPreviousValue)
       })
-    } else if (retModel.not) {
+    } else if (model.not) {
       retModel.not = evaluate(retModel.not, value, getPreviousValue)
     }
   }
@@ -114,7 +114,7 @@ export default function evaluate (model, value, getPreviousValue) {
     })
   })
   _.forEach(depsMet, function (dependencyMet, depName) {
-    const baseSchema = model.properties[depName]
+    const baseSchema = retModel.properties[depName]
     if (dependencyMet && !baseSchema.set || !dependencyMet && baseSchema.set) {
       retModel.properties[depName] = _.omit(_.defaults(props[depName] || {}, baseSchema), ['conditions', 'set'])
     } else {

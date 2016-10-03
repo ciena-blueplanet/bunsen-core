@@ -189,12 +189,6 @@ describe('reducer', function () {
     })
   })
 
-  describe('will create a change set', function () {
-    describe('when setting an the entire object', function () {
-
-    })
-  })
-
   describe('can set the validation', function () {
     it('basic functionality', function () {
       var initialState = {
