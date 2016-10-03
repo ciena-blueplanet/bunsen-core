@@ -34,7 +34,8 @@ module.exports = {
   },
   cells: [
     {
-      extends: 'main'
+      extends: 'main',
+      label: 'Main'
     }
   ],
   type: 'form',

@@ -203,10 +203,6 @@ export function generateCellDefinitions (containers) {
 export default function viewV1ToV2 (v1View) {
   const {type} = v1View
 
-  if (v1View.rootContainers.length === 1) {
-    delete v1View.rootContainers[0].label
-  }
-
   const cells = generateCells(v1View.rootContainers)
 
   const cellDefinitions = generateCellDefinitions(v1View.containers)
