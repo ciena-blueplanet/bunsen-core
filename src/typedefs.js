@@ -17,6 +17,7 @@
 /**
  * @typedef {Object} BunsenCell
  * @property {Object} [classNames] - class names to apply to cell
+ * @property {Boolean} [clearable=false] - whether or not cell should be clearable
  * @property {Boolean} [collapsible=false] - whether or not cell should be collapsible
  * @property {String} id - the unique ID for the cell, used to generate a BunsenCellSet
  * @property {String} [instructions] - instructions for cell
