@@ -3,7 +3,8 @@ module.exports = {
   type: 'form',
   cells: [
     {
-      extends: 'main'
+      extends: 'main',
+      label: 'Main'
     }
   ],
   cellDefinitions: {

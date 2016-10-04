@@ -1,3 +1,8 @@
+# 0.12.3
+
+* **Fixed** bug where `label` was being dropped from `rootContainer` from v1 view being converted to v2.
+
+
 # 0.12.2
 
 * **Fixed** an issue where the first item in an array couldn't be set if the array didn't already exist.
