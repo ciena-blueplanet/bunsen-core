@@ -115,7 +115,7 @@ export default {
         },
 
         // Whether or not cell can be cleared by user
-        clerable: {
+        clearable: {
           type: 'boolean'
         },
 
