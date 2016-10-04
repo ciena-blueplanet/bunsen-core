@@ -1,3 +1,8 @@
+# 0.12.4
+
+* **Added** new `clearable` option for cells to be used by facet views.
+
+
 # 0.12.3
 
 * **Fixed** bug where `label` was being dropped from `rootContainer` from v1 view being converted to v2.
