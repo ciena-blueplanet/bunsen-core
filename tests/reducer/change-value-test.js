@@ -15,10 +15,12 @@ function getInitialStateWithValue (value) {
 function getStateWithValue (value) {
   return {
     errors: {},
+    lastAction: 'CHANGE_VALUE',
     model: {},
     validationResult: {warnings: [], errors: []},
     value: value,
-    baseModel: {}
+    baseModel: {},
+    valueChangeSet: new Map()
   }
 }
 

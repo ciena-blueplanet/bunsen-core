@@ -177,6 +177,7 @@ export function populateQuery (valueObj, query, startPath = '') {
  * @returns {Boolean} true if valid
  */
 export function hasValidQueryValues (value, queryDef, startPath) {
+  // need to invert this for the next major rev since returning true is contrary to the function name
   if (!queryDef) {
     return true
   }

@@ -3,17 +3,33 @@ import immutable from 'seamless-immutable'
 import {CHANGE_VALUE, VALIDATION_RESOLVED, CHANGE_MODEL} from './actions'
 import evaluateConditions from './evaluate-conditions'
 import {set, unset} from './immutable-utils'
+import {dereference} from './dereference'
+import {getChangeSet} from './change-utils'
 
 const INITIAL_VALUE = {
+  lastAction: null,
   errors: {},
   validationResult: {warnings: [], errors: []},
   value: null,
   model: {}, // Model calculated by the reducer
-  baseModel: {} // Original model recieved
+  baseModel: {}, // Original model recieved,
+  valueChangeSet: null
 }
 
 export function initialState (state) {
   return _.defaults(state, INITIAL_VALUE)
+}
+
+function immutableOnce (object) {
+  if (object === null || object === undefined) {
+    return immutable({})
+  }
+
+  let immutableObject = object
+  if (object.asMutable === undefined) {
+    immutableObject = immutable(object)
+  }
+  return immutableObject
 }
 
 /**
@@ -38,17 +54,26 @@ function recursiveClean (value) {
   return output
 }
 
+function getDereferencedModelSchema (model) {
+  let dereferencedModel = dereference(model).schema
+
+  delete dereferencedModel.definitions
+  return dereferencedModel
+}
+
 export const actionReducers = {
   '@@redux/INIT': function (state, action) {
     if (state && state.baseModel) {
       let initialValue = state.value || {}
-      state.model = evaluateConditions(state.baseModel, recursiveClean(initialValue))
+      state.baseModel = getDereferencedModelSchema(state.baseModel)
+      state.model = evaluateConditions(_.cloneDeep(state.baseModel), recursiveClean(initialValue))
       // leave this undefined to force consumers to go through the proper CHANGE_VALUE channel
       // for value changes
       state.value = undefined
     }
 
     const newState = initialState(state || {})
+    newState.lastAction = 'INIT'
     newState.value = immutable(newState.value)
     return newState
   },
@@ -60,9 +85,11 @@ export const actionReducers = {
    * @returns {State} - updated state
    */
   [CHANGE_MODEL]: function (state, action) {
+    const model = getDereferencedModelSchema(action.model)
     return _.defaults({
-      baseModel: action.model,
-      model: evaluateConditions(action.model, state.value)
+      baseModel: model,
+      lastAction: CHANGE_MODEL,
+      model: evaluateConditions(_.cloneDeep(model), state.value)
     }, state)
   },
 
@@ -75,11 +102,13 @@ export const actionReducers = {
   [CHANGE_VALUE]: function (state, action) {
     const {value, bunsenId} = action
     let newValue
+    let valueChangeSet = new Map()
 
     if (bunsenId === null) {
-      newValue = immutable(recursiveClean(value))
+      valueChangeSet = getChangeSet(state.value, value)
+      newValue = immutableOnce(recursiveClean(value))
     } else {
-      newValue = immutable(state.value)
+      newValue = immutableOnce(state.value)
       const segments = bunsenId.split('.')
       const lastSegment = segments.pop()
       const isArrayItem = /^\d+$/.test(lastSegment)
@@ -89,27 +118,46 @@ export const actionReducers = {
         const parentObject = _.get(newValue, parentPath)
 
         if (parentObject && _.includes([null, ''], value)) {
+          valueChangeSet.set(bunsenId, {
+            value,
+            type: 'unset'
+          })
           newValue = unset(newValue, bunsenId)
         } else {
+          valueChangeSet.set(bunsenId, {
+            value,
+            type: 'set'
+          })
           newValue = set(newValue, bunsenId, value)
         }
       } else if (_.includes([null, ''], value) || (Array.isArray(value) && value.length === 0)) {
+        valueChangeSet.set(bunsenId, {
+          value,
+          type: 'unset'
+        })
         newValue = unset(newValue, bunsenId)
       } else {
-        newValue = set(newValue, bunsenId, value)
+        if (!_.isEqual(value, _.get(newValue, bunsenId))) {
+          valueChangeSet.set(bunsenId, {
+            value,
+            type: 'set'
+          })
+          newValue = set(newValue, bunsenId, value)
+        }
       }
     }
-    const newModel = evaluateConditions(state.baseModel, newValue)
-    let model
-    if (!_.isEqual(state.model, newModel)) {
-      model = newModel
-    } else {
-      model = state.model
+
+    let model = state.model || state.baseModel
+    if (valueChangeSet.size > 0) {
+      const newModel = evaluateConditions(_.cloneDeep(state.baseModel), newValue)
+      model = _.isEqual(state.model, newModel) ? state.model : newModel
     }
 
     return _.defaults({
-      value: immutable(newValue),
-      model
+      value: newValue,
+      valueChangeSet,
+      model,
+      lastAction: CHANGE_VALUE
     }, state)
   },
 
@@ -121,8 +169,9 @@ export const actionReducers = {
    */
   [VALIDATION_RESOLVED]: function (state, action) {
     return _.defaults({
-      validationResult: action.validationResult,
-      errors: action.errors
+      errors: action.errors,
+      lastAction: VALIDATION_RESOLVED,
+      validationResult: action.validationResult
     }, state)
   }
 }

@@ -5,7 +5,6 @@
  */
 
 import _ from 'lodash'
-import {dereference} from './dereference'
 
 function pathFinder (valueObj, prevPath) {
   return function (path) {
@@ -47,15 +46,12 @@ export default function evaluate (model, value, getPreviousValue) {
     return model
   }
 
-  model = dereference(model).schema
-  delete model.definitions
-
   if (model.type !== 'object' && model.type !== 'array' && model.properties === undefined) {
     return model
   }
 
-  let retModel = _.cloneDeep(model)
-  if (model.type === 'array') {
+  let retModel = _.clone(model)
+  if (retModel.type === 'array') {
     if (Array.isArray(value)) {
       let itemSchemas = []
       // Deep version of _.uniq
@@ -70,21 +66,22 @@ export default function evaluate (model, value, getPreviousValue) {
       if (itemSchemas.length > 1) {
         retModel.items = {anyOf: itemSchemas}
       } else if (itemSchemas.length === 0) {
-        retModel.items = model.items
+        retModel.items = _.clone(model.items)
       } else {
         retModel.items = itemSchemas[0]
       }
     } else if (value === undefined) {
-      retModel.items = evaluate(model.items, value, getPreviousValue)
+      retModel.items = evaluate(retModel.items, value, getPreviousValue)
     }
+    return retModel
   } else {
     const aggregateType = _.find(['anyOf', 'oneOf'], _.partial(_.includes, Object.keys(model)))
     if (aggregateType !== undefined) {
-      retModel[aggregateType] = _.map(model[aggregateType], (subSchema) => {
+      retModel[aggregateType] = _.map(retModel[aggregateType], (subSchema) => {
         return evaluate(subSchema, value, getPreviousValue)
       })
     } else if (model.not) {
-      retModel.not = evaluate(model.not, value, getPreviousValue)
+      retModel.not = evaluate(retModel.not, value, getPreviousValue)
     }
   }
 
@@ -93,6 +90,7 @@ export default function evaluate (model, value, getPreviousValue) {
 
   const getValue = pathFinder(value, getPreviousValue)
 
+  retModel.properties = _.clone(model.properties)
   _.forEach(retModel.properties, function (subSchema, propName) {
     retModel.properties[propName] = evaluate(subSchema, _.get(value, propName), pathFinder(value, getValue))
   })

@@ -5,12 +5,26 @@
 var _ = require('lodash')
 var expect = require('chai').expect
 var evaluate = require('../lib/evaluate-conditions')
+var dereference = require('../lib/dereference')
 
 var simpleModel = require('./fixtures/conditions/simple-model')
 var modelWithDeepConditionals = require('./fixtures/conditions/deep-model')
 var modelWithRelativePaths = require('./fixtures/conditions/relative-paths-model')
 var modelWithArray = require('./fixtures/conditions/array-model')
 var modelWithDefinitions = require('./fixtures/conditions/definitions-model')
+
+/**
+ * Used to deference the
+ * @param {Object} model - model to evaluate
+ * @param {Object} value - value
+ * @returns {Object} the evaluated model
+ */
+function dereferenceAndEval (model, value) {
+  var schema = dereference.dereference(model).schema
+  delete schema.definitions
+
+  return evaluate(schema, value)
+}
 
 describe('evaluate-coniditions', () => {
   var model, newModel, value, expected
@@ -25,7 +39,7 @@ describe('evaluate-coniditions', () => {
 
     model = _.cloneDeep(simpleModel)
     model.properties.tag.set = true
-    var newModel = evaluate(model, data)
+    var newModel = dereferenceAndEval(model, data)
     expect(newModel).to.eql({
       'type': 'object',
       'properties': {
@@ -56,7 +70,7 @@ describe('evaluate-coniditions', () => {
     describe('when no value given', () => {
       beforeEach(() => {
         value = {}
-        newModel = evaluate(model, value)
+        newModel = dereferenceAndEval(model, value)
       })
 
       it('trims the tags', () => {
@@ -72,7 +86,7 @@ describe('evaluate-coniditions', () => {
         value = {
           tagType: 'single-tagged'
         }
-        newModel = evaluate(model, value)
+        newModel = dereferenceAndEval(model, value)
       })
 
       it('strips out the second tag', () => {
@@ -87,7 +101,7 @@ describe('evaluate-coniditions', () => {
         value = {
           tagType: 'double-tagged'
         }
-        newModel = evaluate(model, value)
+        newModel = dereferenceAndEval(model, value)
       })
 
       it('includes all three properties', () => {
@@ -103,7 +117,7 @@ describe('evaluate-coniditions', () => {
         value = {
           tagType: 'foo-tagged'
         }
-        newModel = evaluate(model, value)
+        newModel = dereferenceAndEval(model, value)
       })
 
       it('includes a modified tag property', () => {
@@ -123,7 +137,7 @@ describe('evaluate-coniditions', () => {
       beforeEach(() => {
         model.properties.tag.set = true
         value = {}
-        newModel = evaluate(model, value)
+        newModel = dereferenceAndEval(model, value)
       })
 
       it('includes the defaulted property', () => {
@@ -148,7 +162,7 @@ describe('evaluate-coniditions', () => {
             tagType: 'single-tagged'
           }
         }
-        newModel = evaluate(model, value)
+        newModel = dereferenceAndEval(model, value)
       })
 
       it('trims out tag2', () => {
@@ -171,7 +185,7 @@ describe('evaluate-coniditions', () => {
           tagType: 'single-tagged'
         }
 
-        newModel = evaluate(model, value)
+        newModel = dereferenceAndEval(model, value)
       })
 
       it('shows just the first tag', () => {
@@ -193,7 +207,7 @@ describe('evaluate-coniditions', () => {
         value = {
           tagType: 'single-tagged'
         }
-        newModel = evaluate(model, value)
+        newModel = dereferenceAndEval(model, value)
       })
 
       it('includes only the first tag', () => {
@@ -221,7 +235,7 @@ describe('evaluate-coniditions', () => {
             {tagType: 'double-tagged'}
           ]
         }
-        newModel = evaluate(model, value)
+        newModel = dereferenceAndEval(model, value)
       })
 
       it('evalutates to anyOf the possible items', () => {
