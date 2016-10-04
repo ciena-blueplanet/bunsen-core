@@ -150,11 +150,7 @@ export const actionReducers = {
     let model = state.model || state.baseModel
     if (valueChangeSet.size > 0) {
       const newModel = evaluateConditions(_.cloneDeep(state.baseModel), newValue)
-      if (!_.isEqual(state.model, newModel)) {
-        model = newModel
-      } else {
-        model = state.model
-      }
+      model = _.isEqual(state.model, newModel) ? state.model : newModel
     }
 
     return _.defaults({
