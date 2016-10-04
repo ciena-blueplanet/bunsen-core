@@ -114,6 +114,11 @@ export default {
           type: 'array'
         },
 
+        // Whether or not cell can be cleared by user
+        clearable: {
+          type: 'boolean'
+        },
+
         // Whether or not cell can be expanded/collapsed by user
         collapsible: {
           type: 'boolean'
