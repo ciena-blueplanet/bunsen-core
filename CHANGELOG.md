@@ -1,3 +1,9 @@
+# 0.13.0
+* Introduced change-sets which can be used in `ember-frost-bunsen` to determine what values have changed
+* Fix issue with validation not applying the proper empty value when defaults don't exist
+* Optimized `evaluate-conditions` to avoid recursive `_.cloneDeep`
+
+
 # 0.12.4
 
 * **Added** new `clearable` option for cells to be used by facet views.
