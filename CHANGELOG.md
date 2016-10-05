@@ -1,3 +1,9 @@
+# 0.13.1
+
+* Fixed `properties: undefined` bug when models were `evaluated`
+
+
+
 # 0.13.0
 * Introduced change-sets which can be used in `ember-frost-bunsen` to determine what values have changed
 * Fix issue with validation not applying the proper empty value when defaults don't exist
