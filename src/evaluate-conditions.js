@@ -90,6 +90,10 @@ export default function evaluate (model, value, getPreviousValue) {
 
   const getValue = pathFinder(value, getPreviousValue)
 
+  if (!model.properties) {
+    return retModel
+  }
+
   retModel.properties = _.clone(model.properties)
   _.forEach(retModel.properties, function (subSchema, propName) {
     retModel.properties[propName] = evaluate(subSchema, _.get(value, propName), pathFinder(value, getValue))

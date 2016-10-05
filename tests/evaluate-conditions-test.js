@@ -26,7 +26,7 @@ function dereferenceAndEval (model, value) {
   return evaluate(schema, value)
 }
 
-describe('evaluate-coniditions', () => {
+describe('evaluate-conditions', () => {
   var model, newModel, value, expected
 
   // FIXME: in the next major release, we want this to behave differently, the 'if' condition should not invert
@@ -49,6 +49,14 @@ describe('evaluate-coniditions', () => {
         }
       }
     })
+  })
+
+  it('does not add additional undefined properties', function () {
+    model = {
+      type: 'object'
+    }
+    var newModel = dereferenceAndEval(model, {})
+    expect('properties' in newModel).to.equal(false)
   })
 
   describe('when nothing passed in', () => {
@@ -238,7 +246,7 @@ describe('evaluate-coniditions', () => {
         newModel = dereferenceAndEval(model, value)
       })
 
-      it('evalutates to anyOf the possible items', () => {
+      it('evaluates to anyOf the possible items', () => {
         expect(newModel).to.eql({
           type: 'object',
           properties: {
