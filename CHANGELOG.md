@@ -1,3 +1,8 @@
+# 0.13.2
+
+* **Added** utility method to add support for square bracket array index referencing in bunsen views.
+
+
 # 0.13.1
 
 * Fixed `properties: undefined` bug when models were `evaluated`
