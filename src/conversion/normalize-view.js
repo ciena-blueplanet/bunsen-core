@@ -1,5 +1,11 @@
 import _ from 'lodash'
 
+/**
+ * Ensure model property in bunsen view partial uses dot notation for
+ * referning array items by converting square brackets format to dot notation.
+ * @param {Object} object - bunsen view partial
+ * @returns {Object} normalized bunsen view partial
+ */
 export function normalizeModelProperty (object) {
   if (Array.isArray(object)) {
     return object
@@ -28,6 +34,11 @@ export function normalizeModelProperty (object) {
   return object
 }
 
+/**
+ * Normalize bunsen view to be more strict (ie. cleaning up model properties)
+ * @param {Object} bunsenView - bunsen view
+ * @returns {Object} normalized bunsen view
+ */
 function normalizeView (bunsenView) {
   if (bunsenView.cellDefinitions) {
     normalizeModelProperty(bunsenView.cellDefinitions)
