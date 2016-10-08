@@ -47,12 +47,14 @@ describe('validator/custom-formats/unit64', () => {
   it('returns true when 0 <= value <= Number.MAX_SAFE_INTEGER', () => {
     expect(uint64(0)).to.be.equal(true)
     expect(uint64('0')).to.be.equal(true)
-    expect(uint64(Number.MAX_SAFE_INTEGER)).to.be.equal(true)
-    expect(uint64(`${Number.MAX_SAFE_INTEGER}`)).to.be.equal(true)
+    expect(uint64('18446744073709551614')).to.be.equal(true)
+    expect(uint64('1844675409551614')).to.be.equal(true)
+    expect(uint64('1844684451614')).to.be.equal(true)
+    expect(uint64('1844774414')).to.be.equal(true)
+    expect(uint64('1845674')).to.be.equal(true)
   })
 
   it('returns false when value > Number.MAX_SAFE_INTEGER', () => {
-    expect(uint64(Number.MAX_SAFE_INTEGER + 1)).to.be.equal(false)
-    expect(uint64(`${Number.MAX_SAFE_INTEGER + 1}`)).to.be.equal(false)
+    expect(uint64('18446744073709551616')).to.be.equal(false)
   })
 })
