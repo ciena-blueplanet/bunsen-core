@@ -1,3 +1,6 @@
+# 0.14.0
+* added uint64 format validation support
+
 # 0.13.2
 
 * **Added** utility method to add support for square bracket array index referencing in bunsen views.
