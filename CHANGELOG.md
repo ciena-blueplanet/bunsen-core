@@ -1,3 +1,8 @@
+# 0.14.1
+
+* **Fixed** issue with nested cells.
+
+
 # 0.14.0
 * added uint64 format validation support
 
