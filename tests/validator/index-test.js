@@ -133,3 +133,72 @@ describe('validator', () => {
       })
     })
 })
+
+describe('validator', () => {
+  describe('when valid', () => {
+    var result
+
+    beforeEach(() => {
+      const model = {
+        type: 'object',
+        properties: {
+          nested: {
+            type: 'object',
+            properties: {
+              foo: {
+                type: 'object',
+                properties: {
+                  foosValue: {
+                    type: 'string'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      const view = {
+        type: 'form',
+        version: '2.0',
+        cells: [
+          {
+            children: [
+              {
+                label: 'Main',
+                model: 'nested',
+                children: [
+                  {
+                    label: 'Foo',
+                    model: 'foo',
+                    children: [
+                      {
+                        label: 'value',
+                        model: 'foosValue'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+
+      const renderers = []
+
+      function validateRenderer (rendererName) {
+        return rendererName === 'foo-bar-renderer'
+      }
+
+      result = validator.validate(view, model, renderers, validateRenderer)
+    })
+
+    it('returns proper result', () => {
+      expect(result).deep.equal({
+        errors: [],
+        warnings: []
+      })
+    })
+  })
+})
