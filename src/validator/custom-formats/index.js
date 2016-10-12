@@ -19,6 +19,7 @@ import time from './time'
 import uint8 from './uint8'
 import uint16 from './uint16'
 import uint32 from './uint32'
+import uint64 from './uint64'
 import url from './url'
 import vlanId from './vlan-id'
 
@@ -44,6 +45,7 @@ export default {
   uint8,
   uint16,
   uint32,
+  uint64,
   url,
   'vlan-id': vlanId
 }

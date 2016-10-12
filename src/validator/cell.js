@@ -154,9 +154,17 @@ export default createFactory({
         this._validateArrayCell(path, cell, subModel)
       )
     } else if (subModel.type === 'object') {
-      results.push(
-        this._validateSubCell(`${path}/extends`, cell.extends, subModel)
-      )
+      if (cell.extends) {
+        results.push(
+          this._validateSubCell(`${path}/extends`, cell.extends, subModel)
+        )
+      }
+
+      _.forEach((child, index) => {
+        results.push(
+          this._validateCell(`${path}/children/${index}`, child, subModel)
+        )
+      })
     }
 
     return aggregateResults(results)

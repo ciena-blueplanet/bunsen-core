@@ -1,3 +1,22 @@
+# 0.14.1
+
+* **Fixed** issue with nested cells.
+
+
+# 0.14.0
+* added uint64 format validation support
+
+# 0.13.2
+
+* **Added** utility method to add support for square bracket array index referencing in bunsen views.
+
+
+# 0.13.1
+
+* Fixed `properties: undefined` bug when models were `evaluated`
+
+
+
 # 0.13.0
 * Introduced change-sets which can be used in `ember-frost-bunsen` to determine what values have changed
 * Fix issue with validation not applying the proper empty value when defaults don't exist
