@@ -1,3 +1,8 @@
+# 0.15.0
+
+* **Added** `mac-address`, `mac-prefix`, `mac-interface` format validation.
+* **Added** additional properties to the `select` renderer v2 schema
+
 # 0.14.1
 
 * **Fixed** issue with nested cells.

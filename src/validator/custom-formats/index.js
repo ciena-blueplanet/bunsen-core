@@ -10,6 +10,9 @@ import ipv4Address from './ipv4-address'
 import ipv4Interface from './ipv4-interface'
 import ipv4Prefix from './ipv4-prefix'
 import ipv6Address from './ipv6-address'
+import macAddress from './mac-address'
+import macInterface from './mac-interface'
+import macPrefix from './mac-prefix'
 import netmask from './netmask'
 import portNumber from './port-number'
 import time from './time'
@@ -34,6 +37,9 @@ export default {
   'ipv4-prefix': ipv4Prefix,
   'ipv6-address': ipv6Address,
   netmask,
+  'mac-address': macAddress,
+  'mac-interface': macInterface,
+  'mac-prefix': macPrefix,
   'port-number': portNumber,
   time,
   uint8,
