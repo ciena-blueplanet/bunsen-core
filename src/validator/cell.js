@@ -100,6 +100,7 @@ export default createFactory({
       }
     ]
 
+    const modelType = _.get(cell, 'renderer.options.modelType')
     const rendererName = _.get(cell, 'renderer.name')
     const rendererPathExt = 'renderer'
     const rendererPath = `${path}/${rendererPathExt}`
@@ -111,8 +112,6 @@ export default createFactory({
     ) {
       addErrorResult(results, rendererPath, `Invalid renderer reference "${rendererName}"`)
     }
-
-    const modelType = _.get(cell, 'renderer.options.modelType')
 
     if (rendererName === 'select' && modelType && !this.validateModelType(modelType)) {
       addErrorResult(results, `${rendererPath}/options`, `Invalid modelType reference "${modelType}"`)
@@ -262,25 +261,9 @@ export default createFactory({
 
     const results = []
 
-    const attrs = Object.keys(cell)
-
-    const warnings = []
-    const knownAttributes = Object.keys(viewSchema.definitions.cell.properties)
-    attrs.forEach((attr) => {
-      if (!_.includes(knownAttributes, attr)) {
-        warnings.push({
-          path,
-          message: `Unrecognized attribute "${attr}"`
-        })
-      }
-    })
-
-    if (warnings.length > 0) {
-      results.push({
-        warnings,
-        errors: []
-      })
-    }
+    results.push(
+      this._validateCell(path, cell, model)
+    )
 
     _.forEach(cell.children, (child, index) => {
       results.push(

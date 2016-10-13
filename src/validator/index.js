@@ -38,15 +38,16 @@ function _validateCells (view, model, cellValidator) {
   }
 
   const results = _.map(view.cells, (rootCell, index) => {
+    const cellResults = []
     const path = `#/cells/${index}`
     const cellId = rootCell.extends
 
     if (cellId) {
       const cell = view.cellDefinitions[cellId]
       const cellPath = `#/cellDefinitions/${cellId}`
-      const cellResults = [
+      cellResults.push(
         validateRequiredAttribute(rootCell, path, 'extends', Object.keys(view.cellDefinitions))
-      ]
+      )
 
       if (cell !== undefined) {
         cellResults.push(
@@ -57,9 +58,11 @@ function _validateCells (view, model, cellValidator) {
       return aggregateResults(cellResults)
     }
 
-    return [
+    cellResults.push(
       cellValidator.validate(`#/cells/${index}`, rootCell)
-    ]
+    )
+
+    return aggregateResults(cellResults)
   })
 
   return aggregateResults(results)
