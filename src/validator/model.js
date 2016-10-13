@@ -32,9 +32,10 @@ const supportedTypes = ['string', 'object', 'array', 'integer', 'number', 'boole
  * Validate the children of the model object (if any exist)
  * @param {String} path - the path to the field from the root of the model
  * @param {BunsenModel} model - the model to validate
+ * @param {Function} validateModelType - function to validate model type
  * @returns {BunsenValidationResult} the results of the model validation
  */
-function _validateChildren (path, model) {
+function _validateChildren (path, model, validateModelType) {
   const results = [
     {
       errors: [],
@@ -53,11 +54,15 @@ function _validateChildren (path, model) {
         addErrorResult(results, subPath, 'Property names cannot include "."')
       }
       // We have a circular dependency in these functions, so one needs to be defined before the others
-      results.push(validateSubModel(subPath, subModel)) // eslint-disable-line no-use-before-define
+      results.push(validateSubModel(subPath, subModel, validateModelType)) // eslint-disable-line no-use-before-define
     })
   } else if (model.type === 'array') {
     // We have a circular dependency in these functions, so one needs to be defined before the others
-    results.push(_validateArray(path, model)) // eslint-disable-line no-use-before-define
+    results.push(_validateArray(path, model, validateModelType)) // eslint-disable-line no-use-before-define
+  }
+
+  if (model.modelType && !validateModelType(model.modelType)) {
+    addErrorResult(results, `${path}/modelType`, 'Invalid modelType reference')
   }
 
   return aggregateResults(results)
@@ -67,12 +72,13 @@ function _validateChildren (path, model) {
  * Validate the sub-model of the model object (if any exist)
  * @param {String} path - the path to the field from the root of the model
  * @param {BunsenModel} subModel - the model to validate
+ * @param {Function} validateModelType - function to validate model type
  * @returns {BunsenValidationResult} the results of the model validation
  */
-export function validateSubModel (path, subModel) {
+export function validateSubModel (path, subModel, validateModelType) {
   return aggregateResults([
     validateRequiredAttribute(subModel, path, 'type', supportedTypes),
-    _validateChildren(path, subModel)
+    _validateChildren(path, subModel, validateModelType)
   ])
 }
 
@@ -80,14 +86,15 @@ export function validateSubModel (path, subModel) {
  * Validate the array definition
  * @param {String} path - the path to the field from the root of the model
  * @param {BunsenModel} model - the model to validate
+ * @param {Function} validateModelType - function to validate model type
  * @returns {BunsenValidationResult} the results of the model validation
  */
-function _validateArray (path, model) {
+function _validateArray (path, model, validateModelType) {
   const results = []
   let subPath = `${path}/items`
   if (_.isPlainObject(model.items)) {
     if (model.items.type === 'object') {
-      results.push(validateSubModel(subPath, model.items))
+      results.push(validateSubModel(subPath, model.items, validateModelType))
     }
   } else if (Array.isArray(model.items)) {
     results.push({
@@ -121,9 +128,10 @@ export function validateRefs (model) {
 /**
  * Validate the entire model
  * @param {BunsenModel} model - the top-level model to validate
+ * @param {Function} validateModelType - function to validate model type
  * @returns {BunsenValidationResult} the results of the model validation
  */
-export function validate (model) {
+export function validate (model, validateModelType) {
   // let strResult = null
   let jsonObject = ensureJsonObject(model)
   model = jsonObject[0]
@@ -147,7 +155,7 @@ export function validate (model) {
   if (model.type !== 'object') {
     addErrorResult(results, '#/type', 'Only root level "object" type is supported.')
   } else {
-    results.push(_validateChildren('#', model))
+    results.push(_validateChildren('#', model, validateModelType))
   }
 
   if (strResult !== null) {

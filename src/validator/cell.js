@@ -51,15 +51,17 @@ export default createFactory({
    * @param {BunsenModel} model - the Model to validate model references against
    * @param {String[]} [renderers] - the list of available custom renderers to validate renderer references against
    * @param {Function} validateRenderer - function to validate a renderer
+   * @param {Function} validateModelType - function to validate model type
    * @returns {validator} the instance
    */
-  init (cellDefinitions, model, renderers, validateRenderer) {
+  init (cellDefinitions, model, renderers, validateRenderer, validateModelType) {
     renderers = renderers || []
     return _.assign(this, {
       cellDefinitions,
       cellsValidated: [],
       model,
       renderers,
+      validateModelType,
       validateRenderer
     })
   },
@@ -98,6 +100,7 @@ export default createFactory({
       }
     ]
 
+    const modelType = _.get(cell, 'renderer.options.modelType')
     const rendererName = _.get(cell, 'renderer.name')
     const rendererPathExt = 'renderer'
     const rendererPath = `${path}/${rendererPathExt}`
@@ -108,6 +111,10 @@ export default createFactory({
       !this.validateRenderer(rendererName)
     ) {
       addErrorResult(results, rendererPath, `Invalid renderer reference "${rendererName}"`)
+    }
+
+    if (rendererName === 'select' && modelType && !this.validateModelType(modelType)) {
+      addErrorResult(results, `${rendererPath}/options`, `Invalid modelType reference "${modelType}"`)
     }
 
     return aggregateResults(results)
@@ -254,25 +261,9 @@ export default createFactory({
 
     const results = []
 
-    const attrs = Object.keys(cell)
-
-    const warnings = []
-    const knownAttributes = Object.keys(viewSchema.definitions.cell.properties)
-    attrs.forEach((attr) => {
-      if (!_.includes(knownAttributes, attr)) {
-        warnings.push({
-          path,
-          message: `Unrecognized attribute "${attr}"`
-        })
-      }
-    })
-
-    if (warnings.length > 0) {
-      results.push({
-        warnings,
-        errors: []
-      })
-    }
+    results.push(
+      this._validateCell(path, cell, model)
+    )
 
     _.forEach(cell.children, (child, index) => {
       results.push(

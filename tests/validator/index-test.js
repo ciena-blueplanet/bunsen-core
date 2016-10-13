@@ -121,7 +121,11 @@ describe('validator', () => {
             return rendererName === 'foo-bar-renderer'
           }
 
-          result = validator.validate(view, model, renderers, validateRenderer)
+          function validateModelType () {
+            return true
+          }
+
+          result = validator.validate(view, model, renderers, validateRenderer, validateModelType)
         })
 
         it('returns proper result', () => {
@@ -191,12 +195,130 @@ describe('validator', () => {
         return rendererName === 'foo-bar-renderer'
       }
 
-      result = validator.validate(view, model, renderers, validateRenderer)
+      function validateModelType () {
+        return true
+      }
+
+      result = validator.validate(view, model, renderers, validateRenderer, validateModelType)
     })
 
     it('returns proper result', () => {
       expect(result).deep.equal({
         errors: [],
+        warnings: []
+      })
+    })
+  })
+
+  describe('when modelType is invalid on root cell', function () {
+    var result
+
+    beforeEach(function () {
+      const model = {
+        properties: {
+          foo: {
+            type: 'string'
+          }
+        },
+        type: 'object'
+      }
+
+      const view = {
+        cells: [
+          {
+            model: 'foo',
+            renderer: {
+              name: 'select',
+              options: {
+                modelType: 'bar'
+              }
+            }
+          }
+        ],
+        type: 'form',
+        version: '2.0'
+      }
+
+      const renderers = []
+
+      function validateRenderer (rendererName) {
+        return true
+      }
+
+      function validateModelType () {
+        return false
+      }
+
+      result = validator.validate(view, model, renderers, validateRenderer, validateModelType)
+    })
+
+    it('returns proper result', () => {
+      expect(result).deep.equal({
+        errors: [
+          {
+            message: 'Invalid modelType reference "bar"',
+            path: '#/cells/0/renderer/options'
+          }
+        ],
+        warnings: []
+      })
+    })
+  })
+
+  describe('when modelType is invalid on root cell child', function () {
+    var result
+
+    beforeEach(function () {
+      const model = {
+        properties: {
+          foo: {
+            type: 'string'
+          }
+        },
+        type: 'object'
+      }
+
+      const view = {
+        cells: [
+          {
+            children: [
+              {
+                model: 'foo',
+                renderer: {
+                  name: 'select',
+                  options: {
+                    modelType: 'bar'
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        type: 'form',
+        version: '2.0'
+      }
+
+      const renderers = []
+
+      function validateRenderer (rendererName) {
+        return true
+      }
+
+      function validateModelType () {
+        return false
+      }
+
+      result = validator.validate(view, model, renderers, validateRenderer, validateModelType)
+    })
+
+    it('returns proper result', () => {
+      expect(result).deep.equal({
+        errors: [
+          {
+            message: 'Invalid modelType reference "bar"',
+            path: '#/cells/0/children/0/renderer/options'
+          }
+        ],
         warnings: []
       })
     })

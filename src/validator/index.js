@@ -38,15 +38,16 @@ function _validateCells (view, model, cellValidator) {
   }
 
   const results = _.map(view.cells, (rootCell, index) => {
+    const cellResults = []
     const path = `#/cells/${index}`
     const cellId = rootCell.extends
 
     if (cellId) {
       const cell = view.cellDefinitions[cellId]
       const cellPath = `#/cellDefinitions/${cellId}`
-      const cellResults = [
+      cellResults.push(
         validateRequiredAttribute(rootCell, path, 'extends', Object.keys(view.cellDefinitions))
-      ]
+      )
 
       if (cell !== undefined) {
         cellResults.push(
@@ -57,9 +58,11 @@ function _validateCells (view, model, cellValidator) {
       return aggregateResults(cellResults)
     }
 
-    return [
+    cellResults.push(
       cellValidator.validate(`#/cells/${index}`, rootCell)
-    ]
+    )
+
+    return aggregateResults(cellResults)
   })
 
   return aggregateResults(results)
@@ -98,9 +101,10 @@ function _validateRootAttributes (view, model, cellValidator) {
  * @param {BunsenModel} model - the JSON schema that the cells will reference
  * @param {String[]} renderers - the list of available custom renderers to validate renderer references against
  * @param {Function} validateRenderer - function to validate a renderer
+ * @param {Function} validateModelType - function to validate model type
  * @returns {BunsenValidationResult} the results of the view validation
  */
-export function validate (view, model, renderers, validateRenderer) {
+export function validate (view, model, renderers, validateRenderer, validateModelType) {
   if (view.version === '1.0') {
     view = viewV1ToV2(view)
   }
@@ -125,7 +129,9 @@ export function validate (view, model, renderers, validateRenderer) {
   }
 
   const derefModel = dereference(model).schema
-  const cellValidator = cellValidatorFactory(view.cellDefinitions, derefModel, renderers, validateRenderer)
+  const cellValidator = cellValidatorFactory(
+    view.cellDefinitions, derefModel, renderers, validateRenderer, validateModelType
+  )
   const schemaResult = _validateValue(view, viewSchema, true)
   if (schemaResult.errors.length !== 0) {
     return schemaResult
