@@ -51,15 +51,17 @@ export default createFactory({
    * @param {BunsenModel} model - the Model to validate model references against
    * @param {String[]} [renderers] - the list of available custom renderers to validate renderer references against
    * @param {Function} validateRenderer - function to validate a renderer
+   * @param {Function} validateModelType - function to validate model type
    * @returns {validator} the instance
    */
-  init (cellDefinitions, model, renderers, validateRenderer) {
+  init (cellDefinitions, model, renderers, validateRenderer, validateModelType) {
     renderers = renderers || []
     return _.assign(this, {
       cellDefinitions,
       cellsValidated: [],
       model,
       renderers,
+      validateModelType,
       validateRenderer
     })
   },
@@ -108,6 +110,12 @@ export default createFactory({
       !this.validateRenderer(rendererName)
     ) {
       addErrorResult(results, rendererPath, `Invalid renderer reference "${rendererName}"`)
+    }
+
+    const modelType = _.get(cell, 'renderer.options.modelType')
+
+    if (rendererName === 'select' && modelType && !this.validateModelType(modelType)) {
+      addErrorResult(results, `${rendererPath}/options`, `Invalid modelType reference "${modelType}"`)
     }
 
     return aggregateResults(results)
