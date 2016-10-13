@@ -1,5 +1,7 @@
 export const networkMaskMax = 32
 export const networkMaskMin = 0
+export const macMaskMax = 48
+export const macMaskMin = 0
 
 /**
  * Convert decimal value to binary representation
@@ -13,6 +15,15 @@ export function decimalToBinary (decimal) {
   const twosComplement = decimal >>> 0
   const binaryStr = twosComplement.toString(2)
   return PAD.substring(binaryStr.length) + binaryStr
+}
+
+/**
+ * Convert decimal value to binary representation
+ * @param {Number} hexString - decimal value to convert to binary
+ * @returns {String} string containing binary representation
+ */
+export function hexToBinary (hexString) {
+  return parseInt(hexString, 16).toString(2)
 }
 
 /**
@@ -30,6 +41,16 @@ export function networkMaskValid (value) {
 }
 
 /**
+ * Determine whether or not MAC mask is valid
+ * @param {String} value - mask value
+ * @returns {Boolean} whether or not mask is valid
+ */
+export function isMacMaskValid (value) {
+  const mask = parseInt(value, 10)
+  return mask >= macMaskMin && mask <= macMaskMax
+}
+
+/**
  * Get bits representation of IP address
  * @param {String} ipAddress - IP address in dot notation (ie 127.0.0.1)
  * @returns {String} bits
@@ -37,5 +58,16 @@ export function networkMaskValid (value) {
 export function ipAddressBits (ipAddress) {
   return ipAddress.split('.')
     .map(decimalToBinary)
+    .join('')
+}
+
+/**
+ * Get bits representation of MAC address
+ * @param {String} macAddress - MAC address (i.e. xx:xx:xx:xx:xx:xx)
+ * @returns {String} bits
+ */
+export function macAddressBits (macAddress) {
+  return macAddress.split(':')
+    .map(hexToBinary)
     .join('')
 }

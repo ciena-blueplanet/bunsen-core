@@ -305,6 +305,27 @@ export default {
         options: {
           additionalProperties: false,
           properties: {
+            // the attribute for specifying data to populate the list with
+            data: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  label: {
+                    type: 'string'
+                  },
+                  value: {
+                    type: 'string'
+                  }
+                }
+              }
+            },
+
+            // the attribute to enable local filtering
+            localFiltering: {
+              type: 'boolean'
+            },
+
             // the attribute of the listed items to use as a label
             labelAttribute: {
               type: 'string'
@@ -313,6 +334,22 @@ export default {
             // description: the type of model to fetch for list-based inputs
             modelType: {
               type: 'string'
+            },
+
+            // specifies if none should be available as an option
+            none: {
+              type: 'object',
+              properties: {
+                label: {
+                  type: 'string'
+                },
+                present: {
+                  type: 'boolean'
+                },
+                value: {
+                  type: 'string'
+                }
+              }
             },
 
             // description: a hash of key/value pairs to use as query string to fetch values for list-based inputs
