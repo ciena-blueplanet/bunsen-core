@@ -140,6 +140,10 @@ export function findValue (obj, valuePath, startPath = '') {
  * @throws Will throw when any value at the resolved path is empty
  */
 export function parseVariables (valueObj, queryJSON, startPath = '', allowEmpty = false) {
+  if (!queryJSON) {
+    return {}
+  }
+
   if (queryJSON.indexOf('${') !== -1) {
     const valueVariable = queryJSON.split('${')[1].split('}')[0]
     let result = findValue(valueObj, valueVariable, startPath)
@@ -155,6 +159,7 @@ export function parseVariables (valueObj, queryJSON, startPath = '', allowEmpty 
     const newQueryJson = queryJSON.split('${' + valueVariable + '}').join(result)
     return parseVariables(valueObj, newQueryJson, startPath, allowEmpty)
   }
+
   return queryJSON
 }
 
@@ -166,7 +171,7 @@ export function parseVariables (valueObj, queryJSON, startPath = '', allowEmpty 
  * @returns {Object} the populated query
  */
 export function populateQuery (valueObj, query, startPath = '') {
-  return JSON.parse(parseVariables(valueObj, JSON.stringify(query), startPath))
+  return JSON.parse(parseVariables(valueObj, JSON.stringify(query || {}), startPath))
 }
 
 /**

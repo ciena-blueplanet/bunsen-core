@@ -98,4 +98,20 @@ describe('utils', () => {
       expect(JSON.stringify(actual)).to.equal(JSON.stringify(expected))
     })
   })
+
+  describe('.parseVariables()', function () {
+    it('does not throw error when queryJSON not present', function () {
+      expect(() => {
+        utils.parseVariables({}, undefined)
+      }).not.to.throw()
+    })
+  })
+
+  describe('.populateQuery()', function () {
+    it('does not throw error when query not present', function () {
+      expect(() => {
+        utils.populateQuery({}, undefined)
+      }).not.to.throw()
+    })
+  })
 })
