@@ -1,3 +1,9 @@
+# 0.16.1
+
+* **Fixed** utility methods not to be less brittle and not throw an error when query isn't present.
+
+
+
 # 0.16.0
 
 * **Added** validation of the `modelType` option for select renderers.
