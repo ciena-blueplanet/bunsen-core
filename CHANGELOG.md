@@ -1,3 +1,9 @@
+# 0.16.0
+
+* **Added** validation of the `modelType` option for select renderers.
+* **Fixed** an issue where proper validation wasn't being run against root cells.
+
+
 # 0.15.0
 
 * **Added** `mac-address`, `mac-prefix`, `mac-interface` format validation.
