@@ -175,7 +175,7 @@ export function populateQuery (valueObj, query, startPath = '') {
     return JSON.parse(parseVariables(valueObj, JSON.stringify(query || {}), startPath))
   } catch (err) {
     console.warn(err)
-    return {}
+    return null
   }
 }
 
@@ -192,10 +192,9 @@ export function hasValidQueryValues (value, queryDef, startPath) {
     return true
   }
 
-  try {
-    const query = populateQuery(value, queryDef, startPath)
-    return Object.keys(query).every((key) => String(query[key]) !== '')
-  } catch (e) {
+  const query = populateQuery(value, queryDef, startPath)
+  if (!query) {
     return false
   }
+  return Object.keys(query).every((key) => String(query[key]) !== '')
 }

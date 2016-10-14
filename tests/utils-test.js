@@ -114,10 +114,22 @@ describe('utils', () => {
       }).not.to.throw()
     })
 
+    it('does not return null when query is not present', function () {
+      expect(utils.populateQuery({}, undefined)).not.to.be.null
+    })
+
+    it('does not return null when query is empty', function () {
+      expect(utils.populateQuery({}, {})).not.to.be.null
+    })
+
     it('does not throw error when query dependency is not present', function () {
       expect(function () {
         utils.populateQuery({}, {node: '${./node}'})
       }).not.to.throw()
+    })
+
+    it('returns null when query dependency is not present', function () {
+      expect(utils.populateQuery({}, {node: '${./node}'})).to.be.null
     })
   })
 })
