@@ -119,5 +119,9 @@ describe('utils', () => {
         utils.populateQuery({}, {node: '${./node}'})
       }).not.to.throw()
     })
+
+    it('returns null when query dependency is not present', function () {
+      expect(utils.populateQuery({}, {node: '${./node}'})).to.be.null
+    })
   })
 })
