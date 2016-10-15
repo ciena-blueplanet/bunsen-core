@@ -315,7 +315,7 @@ export default {
                     type: 'string'
                   },
                   value: {
-                    type: 'string'
+                    type: ['string', 'number', 'boolean']
                   }
                 }
               }
