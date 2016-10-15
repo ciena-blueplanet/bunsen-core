@@ -174,7 +174,6 @@ export function populateQuery (valueObj, query, startPath = '') {
   try {
     return JSON.parse(parseVariables(valueObj, JSON.stringify(query || {}), startPath))
   } catch (err) {
-    console.warn(err)
     return null
   }
 }
