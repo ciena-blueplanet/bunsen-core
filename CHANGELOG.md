@@ -1,3 +1,7 @@
+# 0.16.4
+* **Fixed** Selects can be used with values other than string. This adds supports for numbers and booleans.
+
+
 # 0.16.3
 * **Fixed** `hasValidQuery` to return false when `populateQuery` fails on lookup.
 
