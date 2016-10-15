@@ -1,3 +1,8 @@
+# 0.16.3
+* **Fixed** `hasValidQuery` to return false when `populateQuery` fails on lookup.
+
+
+
 # 0.16.2
 
 * **Fixed** `populateQuery()` to not throw error.
