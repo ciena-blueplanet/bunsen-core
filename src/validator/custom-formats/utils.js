@@ -2,6 +2,8 @@ export const networkMaskMax = 32
 export const networkMaskMin = 0
 export const macMaskMax = 48
 export const macMaskMin = 0
+export const macMulticastMaskRegex = /^multicast$/i
+export const macMulticastBit = 7
 
 /**
  * Convert decimal value to binary representation
@@ -46,8 +48,22 @@ export function networkMaskValid (value) {
  * @returns {Boolean} whether or not mask is valid
  */
 export function isMacMaskValid (value) {
+  // Ciena allows /multicast as an option for the mask
+  if (macMulticastMaskRegex.test(value)) {
+    return true
+  }
+
   const mask = parseInt(value, 10)
   return mask >= macMaskMin && mask <= macMaskMax
+}
+
+/**
+ * Tests whether the address is a valid multicast address
+ * @param {String} value - mac address value
+ * @returns {Boolean} whether the address is a valid multicast address
+ */
+export function isMacMulticastAddress (value) {
+  return macAddressBits(value).charAt(macMulticastBit) === '1'
 }
 
 /**

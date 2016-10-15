@@ -315,7 +315,7 @@ export default {
                     type: 'string'
                   },
                   value: {
-                    type: 'string'
+                    type: ['string', 'number', 'integer', 'boolean', 'object']
                   }
                 }
               }
@@ -347,7 +347,7 @@ export default {
                   type: 'boolean'
                 },
                 value: {
-                  type: 'string'
+                  type: ['string', 'number', 'integer', 'boolean', 'object']
                 }
               }
             },

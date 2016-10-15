@@ -1,5 +1,5 @@
 import isMacAddress from './mac-address'
-import {isMacMaskValid, macAddressBits} from './utils'
+import {isMacMaskValid, macAddressBits, macMulticastMaskRegex, isMacMulticastAddress} from './utils'
 
 /**
  * Validate value as an MAC address interface
@@ -19,6 +19,10 @@ export default function (value) {
 
   if (!isMacMaskValid(mask)) {
     return false
+  }
+
+  if (macMulticastMaskRegex.test(mask)) {
+    return isMacMulticastAddress(value)
   }
 
   const bits = macAddressBits(macAddress)

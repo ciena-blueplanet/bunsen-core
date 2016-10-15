@@ -1,5 +1,5 @@
 import isMacAddress from './mac-address'
-import {isMacMaskValid, macAddressBits} from './utils'
+import {isMacMaskValid, macAddressBits, macMulticastMaskRegex, isMacMulticastAddress} from './utils'
 
 /**
  * Validate value as an MAC address prefix
@@ -22,6 +22,11 @@ export default function (value) {
   }
 
   const bits = macAddressBits(macAddress)
+
+  if (macMulticastMaskRegex.test(mask)) {
+    return isMacMulticastAddress(value)
+  }
+
   const hostBits = bits.slice(parseInt(mask, 10))
 
   return /^0+$/.test(hostBits)
