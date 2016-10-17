@@ -1,3 +1,9 @@
+# 0.16.5
+
+* **Fixed** bug where view generator would overwrite `cellDefinitions` by not first checking if a name was already taken.
+* **Fixed** validation bug where cell wasn't being validated against proper model.
+
+
 # 0.16.4
 * **Fixed** Selects can be used with values other than string. This adds supports for numbers and booleans.
 

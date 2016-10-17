@@ -1,6 +1,6 @@
 {
   "name": "bunsen-core",
-  "version": "0.16.4",
+  "version": "0.16.5",
   "description": "Core bunsen library",
   "main": "lib/index.js",
   "scripts": {
