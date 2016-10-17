@@ -102,10 +102,10 @@ describe('validator', () => {
     }
   ]
     .forEach((view) => {
-      describe('when valid', () => {
+      describe('when valid', function () {
         var result
 
-        beforeEach(() => {
+        beforeEach(function () {
           const model = {
             properties: {
               foo: {
@@ -128,7 +128,7 @@ describe('validator', () => {
           result = validator.validate(view, model, renderers, validateRenderer, validateModelType)
         })
 
-        it('returns proper result', () => {
+        it('returns proper result', function () {
           expect(result).deep.equal({
             errors: [],
             warnings: []
@@ -136,13 +136,11 @@ describe('validator', () => {
         })
       })
     })
-})
 
-describe('validator', () => {
-  describe('when valid', () => {
+  describe('when valid', function () {
     var result
 
-    beforeEach(() => {
+    beforeEach(function () {
       const model = {
         type: 'object',
         properties: {
@@ -202,7 +200,78 @@ describe('validator', () => {
       result = validator.validate(view, model, renderers, validateRenderer, validateModelType)
     })
 
-    it('returns proper result', () => {
+    it('returns proper result', function () {
+      expect(result).deep.equal({
+        errors: [],
+        warnings: []
+      })
+    })
+  })
+
+  describe('when valid', function () {
+    var result
+
+    beforeEach(function () {
+      const model = {
+        properties: {
+          alpha: {
+            properties: {
+              foo: {
+                type: 'string'
+              }
+            },
+            type: 'object'
+          },
+          bravo: {
+            properties: {
+              foo: {
+                type: 'string'
+              }
+            },
+            type: 'object'
+          }
+        },
+        type: 'object'
+      }
+
+      const view = {
+        version: '2.0',
+        type: 'form',
+        cells: [
+          {
+            extends: 'foo',
+            model: 'alpha'
+          },
+          {
+            extends: 'foo',
+            model: 'bravo'
+          }
+        ],
+        cellDefinitions: {
+          foo: {
+            children: [
+              {
+                model: 'foo'
+              }
+            ]
+          }
+        }
+      }
+
+      const renderers = []
+
+      function validateRenderer (rendererName) {
+        return rendererName === 'foo-bar-renderer'
+      }
+
+      function validateModelType () {
+        return true
+      }
+
+      result = validator.validate(view, model, renderers, validateRenderer, validateModelType)
+    })
+
+    it('returns proper result', function () {
       expect(result).deep.equal({
         errors: [],
         warnings: []

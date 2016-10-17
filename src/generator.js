@@ -36,7 +36,15 @@ function addModelCell (propertyName, model, cellDefinitions) {
     children: []
   }
 
-  cellDefinitions[propertyName] = cell
+  var defName = propertyName
+  var counter = 1
+
+  while (defName in cellDefinitions) {
+    defName = `${propertyName}${counter}`
+    counter++
+  }
+
+  cellDefinitions[defName] = cell
 
   const props = getPropertyOrder(model.properties)
   props.forEach((propName) => {
@@ -58,7 +66,7 @@ function addModelCell (propertyName, model, cellDefinitions) {
     })
   }
 
-  return propertyName
+  return defName
 }
 
 /**
