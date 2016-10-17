@@ -15,6 +15,7 @@ import {
 import cellValidatorFactory from './cell'
 import viewSchema from './view-schemas/v2'
 import viewV1ToV2 from '../conversion/view-v1-to-v2'
+import {getSubModel} from '../utils'
 
 export {validate as validateModel} from './model'
 import {validate as _validateValue} from './value'
@@ -50,8 +51,10 @@ function _validateCells (view, model, cellValidator) {
       )
 
       if (cell !== undefined) {
+        const subModel = rootCell.model ? getSubModel(model, rootCell.model, cell.dependsOn) : undefined
+
         cellResults.push(
-           cellValidator.validate(cellPath, cell)
+           cellValidator.validate(cellPath, cell, subModel)
         )
       }
 
