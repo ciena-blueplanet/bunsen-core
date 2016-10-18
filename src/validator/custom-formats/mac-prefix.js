@@ -24,7 +24,7 @@ export default function (value) {
   const bits = macAddressBits(macAddress)
 
   if (macMulticastMaskRegex.test(mask)) {
-    return isMacMulticastAddress(value)
+    return isMacMulticastAddress(macAddress)
   }
 
   const hostBits = bits.slice(parseInt(mask, 10))
