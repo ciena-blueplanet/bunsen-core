@@ -22,7 +22,7 @@ export default function (value) {
   }
 
   if (macMulticastMaskRegex.test(mask)) {
-    return isMacMulticastAddress(value)
+    return isMacMulticastAddress(macAddress)
   }
 
   const bits = macAddressBits(macAddress)

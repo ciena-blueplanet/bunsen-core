@@ -25,7 +25,7 @@ export function decimalToBinary (decimal) {
  * @returns {String} string containing binary representation
  */
 export function hexToBinary (hexString) {
-  return parseInt(hexString, 16).toString(2)
+  return decimalToBinary(parseInt(hexString, 16))
 }
 
 /**
