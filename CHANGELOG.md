@@ -1,3 +1,7 @@
+# 0.16.6
+* **Fixes** mac address validation
+
+
 # 0.16.5
 
 * **Fixed** bug where view generator would overwrite `cellDefinitions` by not first checking if a name was already taken.
