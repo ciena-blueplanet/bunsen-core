@@ -160,18 +160,10 @@ export default createFactory({
       results.push(
         this._validateArrayCell(path, cell, subModel)
       )
-    } else if (subModel.type === 'object') {
-      if (cell.extends) {
-        results.push(
-          this._validateSubCell(`${path}/extends`, cell.extends, subModel)
-        )
-      }
-
-      _.forEach((child, index) => {
-        results.push(
-          this._validateCell(`${path}/children/${index}`, child, subModel)
-        )
-      })
+    } else if (subModel.type === 'object' && cell.extends) {
+      results.push(
+        this._validateSubCell(`${path}/extends`, cell.extends, subModel)
+      )
     }
 
     return aggregateResults(results)
@@ -213,6 +205,7 @@ export default createFactory({
    */
   _validateCell (path, cell, model) {
     const results = []
+    let subModel = model
 
     if (cell.dependsOn) {
       results.push(
@@ -222,7 +215,7 @@ export default createFactory({
       const parts = cell.model.split('.')
       const last = parts.pop()
       const modelArg = (/^\d+$/.test(last)) ? parts.join('.') : cell.model
-      const subModel = getSubModel(model, modelArg)
+      subModel = getSubModel(model, modelArg)
       results.push(
         this._validateModelCell(path, cell, subModel)
       )
@@ -235,11 +228,20 @@ export default createFactory({
     }
 
     const knownAttributes = Object.keys(viewSchema.definitions.cell.properties)
+
     Object.keys(cell).forEach((attr) => {
       if (!_.includes(knownAttributes, attr)) {
         addWarningResult(results, path, `Unrecognized attribute "${attr}"`)
       }
     })
+
+    if (cell.children) {
+      cell.children.forEach((child, index) => {
+        results.push(
+          this._validateCell(`${path}/children/${index}`, child, subModel)
+        )
+      })
+    }
 
     return aggregateResults(results)
   },
@@ -264,12 +266,6 @@ export default createFactory({
     results.push(
       this._validateCell(path, cell, model)
     )
-
-    _.forEach(cell.children, (child, index) => {
-      results.push(
-        this._validateCell(`${path}/children/${index}`, child, model)
-      )
-    })
 
     return aggregateResults(results)
   }

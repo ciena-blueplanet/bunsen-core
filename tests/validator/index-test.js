@@ -279,6 +279,65 @@ describe('validator', () => {
     })
   })
 
+  describe('when valid', function () {
+    var result
+
+    beforeEach(function () {
+      const model = {
+        properties: {
+          foo: {
+            properties: {
+              bar: {
+                properties: {
+                  baz: {
+                    type: 'string'
+                  }
+                },
+                type: 'object'
+              }
+            },
+            type: 'object'
+          }
+        },
+        type: 'object'
+      }
+
+      const view = {
+        cells: [
+          {
+            children: [
+              {
+                model: 'baz'
+              }
+            ],
+            model: 'foo.bar'
+          }
+        ],
+        type: 'form',
+        version: '2.0'
+      }
+
+      const renderers = []
+
+      function validateRenderer (rendererName) {
+        return rendererName === 'foo-bar-renderer'
+      }
+
+      function validateModelType () {
+        return true
+      }
+
+      result = validator.validate(view, model, renderers, validateRenderer, validateModelType)
+    })
+
+    it('returns proper result', function () {
+      expect(result).deep.equal({
+        errors: [],
+        warnings: []
+      })
+    })
+  })
+
   describe('when modelType is invalid on root cell', function () {
     var result
 
