@@ -100,10 +100,8 @@ describe('utils', () => {
   })
 
   describe('.parseVariables()', function () {
-    it('does not throw error when queryJSON not present', function () {
-      expect(() => {
-        utils.parseVariables({}, undefined)
-      }).not.to.throw()
+    it('returns an empty string when queryJSON not present', function () {
+      expect(utils.parseVariables({}, undefined)).to.equal('')
     })
   })
 
