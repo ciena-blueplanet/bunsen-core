@@ -179,6 +179,12 @@ export default {
           type: 'string'
         },
 
+        // Whether or not cell label should be hidden
+        hideLabel: {
+          default: false,
+          type: 'boolean'
+        },
+
         // The user-visible label for this cell
         label: {
           type: 'string'
