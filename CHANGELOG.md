@@ -1,3 +1,9 @@
+# 0.17.0
+
+* **Added** `hideLabel` option to cell for hiding the auto-generated label when `model` is present.
+* **Added** more renderers to the v2 schema in order for validation to catch errors around those renderers.
+
+
 # 0.16.8
 
 * **Fixed** `parseVariables()` to return correct data type.
