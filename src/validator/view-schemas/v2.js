@@ -285,7 +285,9 @@ export default {
         // name can be anything that's not builtin
         name: {
           type: 'string',
-          pattern: '^(?!boolean$|button-group$|multi-select$|number$|select$|string|textarea$).*'
+          /* eslint-disable max-len */
+          pattern: '^(?!boolean$|button-group$|checkbox-array$|link$|multi-select$|number$|password$|select$|string|textarea$|url$).*'
+          /* eslint-enable max-len */
         }
       },
       type: 'object'
