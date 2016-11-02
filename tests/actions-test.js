@@ -302,7 +302,7 @@ describe('validate action', function () {
           }
         )
 
-        expect(spy.callCount, 'dispatches nothing').to.equal(1)
+        expect(spy.callCount).to.equal(1)
       })
 
       it('dispatches action when forceValidation is disabled', function () {
@@ -315,7 +315,7 @@ describe('validate action', function () {
           }
         )
 
-        expect(spy.callCount, 'dispatches nothing').to.equal(1)
+        expect(spy.callCount).to.equal(1)
       })
 
       it('dispatches action when forceValidation is enabled', function () {
@@ -328,7 +328,7 @@ describe('validate action', function () {
           }
         )
 
-        expect(spy.callCount, 'dispatches nothing').to.equal(1)
+        expect(spy.callCount).to.equal(1)
       })
     })
 
@@ -343,7 +343,7 @@ describe('validate action', function () {
           }
         )
 
-        expect(spy.callCount, 'dispatches nothing').to.equal(0)
+        expect(spy.callCount).to.equal(0)
       })
 
       it('does not dispatch action when forceValidation is disabled', function () {
@@ -356,7 +356,7 @@ describe('validate action', function () {
           }
         )
 
-        expect(spy.callCount, 'dispatches nothing').to.equal(0)
+        expect(spy.callCount).to.equal(0)
       })
 
       it('dispatches action when forceValidation is enabled', function () {
@@ -369,7 +369,7 @@ describe('validate action', function () {
           }
         )
 
-        expect(spy.callCount, 'dispatches nothing').to.equal(1)
+        expect(spy.callCount).to.equal(1)
       })
     })
   })
