@@ -1,6 +1,7 @@
 var expect = require('chai').expect
 var actions = require('../lib/actions')
 var _ = require('lodash')
+var sinon = require('sinon')
 
 describe('changeValue action', function () {
   it(`returns a dispatcher action with type "${actions.CHANGE_VALUE}"`, function () {
@@ -276,11 +277,11 @@ describe('validate action', function () {
   })
 
   describe('when value is the same', function () {
-    var count, schema, state
+    var schema, state, spy
 
     beforeEach(function () {
-      count = 0
       schema = _.cloneDeep(SCHEMA_WITH_NO_DEFAULTS)
+      spy = sinon.spy()
       state = {
         value: {
           alias: 'Bob'
@@ -291,96 +292,84 @@ describe('validate action', function () {
     // NOTE: the full form value always re-triggers validation. Otherwise we get
     // ourselves into a state where defaults aren't applied.
     describe('check entire form for changes', function () {
-      it('dispatches actions', function () {
+      it('dispatches action', function () {
         var thunk = actions.validate(null, _.cloneDeep(state.value), schema, [])
 
         thunk(
-          function (action) {
-            count += 1
-          },
+          spy,
           function () {
             return _.cloneDeep(state)
           }
         )
 
-        expect(count, 'dispatches nothing').to.equal(1)
+        expect(spy.callCount, 'dispatches nothing').to.equal(1)
       })
 
-      it('dispatches actions when forceValidation is disabled', function () {
+      it('dispatches action when forceValidation is disabled', function () {
         var thunk = actions.validate(null, _.cloneDeep(state.value), schema, [], Promise.all, false)
 
         thunk(
-          function (action) {
-            count += 1
-          },
+          spy,
           function () {
             return _.cloneDeep(state)
           }
         )
 
-        expect(count, 'dispatches nothing').to.equal(1)
+        expect(spy.callCount, 'dispatches nothing').to.equal(1)
       })
 
-      it('dispatches actions when forceValidation is enabled', function () {
+      it('dispatches action when forceValidation is enabled', function () {
         var thunk = actions.validate(null, _.cloneDeep(state.value), schema, [], Promise.all, true)
 
         thunk(
-          function (action) {
-            count += 1
-          },
+          spy,
           function () {
             return _.cloneDeep(state)
           }
         )
 
-        expect(count, 'dispatches nothing').to.equal(1)
+        expect(spy.callCount, 'dispatches nothing').to.equal(1)
       })
     })
 
     describe('check property for changes', function () {
-      it('does not dispatch actions', function () {
+      it('does not dispatch action', function () {
         var thunk = actions.validate('alias', _.cloneDeep(state.value.alias), schema, [])
 
         thunk(
-          function (action) {
-            count += 1
-          },
+          spy,
           function () {
             return _.cloneDeep(state)
           }
         )
 
-        expect(count, 'dispatches nothing').to.equal(0)
+        expect(spy.callCount, 'dispatches nothing').to.equal(0)
       })
 
-      it('does not dispatch actions when forceValidation is disabled', function () {
+      it('does not dispatch action when forceValidation is disabled', function () {
         var thunk = actions.validate('alias', _.cloneDeep(state.value.alias), schema, [], Promise.all, false)
 
         thunk(
-          function (action) {
-            count += 1
-          },
+          spy,
           function () {
             return _.cloneDeep(state)
           }
         )
 
-        expect(count, 'dispatches nothing').to.equal(0)
+        expect(spy.callCount, 'dispatches nothing').to.equal(0)
       })
 
-      it('dispatches actions when forceValidation is enabled', function () {
+      it('dispatches action when forceValidation is enabled', function () {
         var thunk = actions.validate('alias', _.cloneDeep(state.value.alias), schema, [], Promise.all, true)
 
         thunk(
-          function (action) {
-            count += 1
-          },
+          spy,
           function () {
             return _.cloneDeep(state)
           }
         )
 
-        expect(count, 'dispatches nothing').to.equal(1)
+        expect(spy.callCount, 'dispatches nothing').to.equal(1)
       })
     })
   })
