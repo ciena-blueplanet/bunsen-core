@@ -1,3 +1,9 @@
+# 0.18.0
+
+* **Added** new `forceValidation` argument to `validate` action to allow consumer to force re-validation when the value is the same.
+
+
+
 # 0.17.0
 
 * **Added** `hideLabel` option to cell for hiding the auto-generated label when `model` is present.
