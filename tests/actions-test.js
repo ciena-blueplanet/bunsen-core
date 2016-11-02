@@ -288,49 +288,98 @@ describe('validate action', function () {
       }
     })
 
-    it('does not dispatch any actions', function () {
-      var thunk = actions.validate(null, _.cloneDeep(state.value), schema, [])
+    describe('check entire form for changes', function () {
+      it('does not dispatch any actions', function () {
+        var thunk = actions.validate(null, _.cloneDeep(state.value), schema, [])
 
-      thunk(
-        function (action) {
-          count += 1
-        },
-        function () {
-          return _.cloneDeep(state)
-        }
-      )
+        thunk(
+          function (action) {
+            count += 1
+          },
+          function () {
+            return _.cloneDeep(state)
+          }
+        )
 
-      expect(count, 'dispatches nothing').to.equal(0)
+        expect(count, 'dispatches nothing').to.equal(0)
+      })
+
+      it('dispatches actions when forceValidation is disabled', function () {
+        var thunk = actions.validate(null, _.cloneDeep(state.value), schema, [], Promise.all, false)
+
+        thunk(
+          function (action) {
+            count += 1
+          },
+          function () {
+            return _.cloneDeep(state)
+          }
+        )
+
+        expect(count, 'dispatches nothing').to.equal(0)
+      })
+
+      it('dispatches actions when forceValidation is enabled', function () {
+        var thunk = actions.validate(null, _.cloneDeep(state.value), schema, [], Promise.all, true)
+
+        thunk(
+          function (action) {
+            count += 1
+          },
+          function () {
+            return _.cloneDeep(state)
+          }
+        )
+
+        expect(count, 'dispatches nothing').to.equal(1)
+      })
     })
 
-    it('dispatches actions when forceValidation is disabled', function () {
-      var thunk = actions.validate(null, _.cloneDeep(state.value), schema, [], Promise.all, false)
+    describe('check property for changes', function () {
+      it('does not dispatch any actions', function () {
+        var thunk = actions.validate('alias', _.cloneDeep(state.value.alias), schema, [])
 
-      thunk(
-        function (action) {
-          count += 1
-        },
-        function () {
-          return _.cloneDeep(state)
-        }
-      )
+        thunk(
+          function (action) {
+            count += 1
+          },
+          function () {
+            return _.cloneDeep(state)
+          }
+        )
 
-      expect(count, 'dispatches nothing').to.equal(0)
-    })
+        expect(count, 'dispatches nothing').to.equal(0)
+      })
 
-    it('dispatches actions when forceValidation is enabled', function () {
-      var thunk = actions.validate(null, _.cloneDeep(state.value), schema, [], Promise.all, true)
+      it('dispatches actions when forceValidation is disabled', function () {
+        var thunk = actions.validate('alias', _.cloneDeep(state.value.alias), schema, [], Promise.all, false)
 
-      thunk(
-        function (action) {
-          count += 1
-        },
-        function () {
-          return _.cloneDeep(state)
-        }
-      )
+        thunk(
+          function (action) {
+            count += 1
+          },
+          function () {
+            return _.cloneDeep(state)
+          }
+        )
 
-      expect(count, 'dispatches nothing').to.equal(1)
+        expect(count, 'dispatches nothing').to.equal(0)
+      })
+
+      it('dispatches actions when forceValidation is enabled', function () {
+        var thunk = actions.validate('alias', _.cloneDeep(state.value.alias), schema, [], Promise.all, true)
+
+        thunk(
+          function (action) {
+            count += 1
+          },
+          function () {
+            return _.cloneDeep(state)
+          }
+        )
+
+        expect(count, 'dispatches nothing').to.equal(1)
+      })
     })
   })
 
