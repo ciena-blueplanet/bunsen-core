@@ -118,7 +118,18 @@ function findDefaults (value, path, model, resolveRef) {
   return schemaDefault
 }
 
-export function validate (bunsenId, inputValue, renderModel, validators, all = Promise.all) {
+/**
+ * Validate action
+ * @param {String} bunsenId - bunsen ID of what changed
+ * @param {Object} inputValue - value of what changed
+ * @param {Object} renderModel - bunsen model
+ * @param {Array<Function>} validators - custom validators
+ * @param {Function} [all=Promise.all] - framework specific Promise.all method
+ * @param {Boolean} [forceValidation=false] - whether or not to force validation
+ */
+export function validate (
+  bunsenId, inputValue, renderModel, validators, all = Promise.all, forceValidation = false
+) {
   return function (dispatch, getState) {
     let formValue = getState().value
 
@@ -127,7 +138,7 @@ export function validate (bunsenId, inputValue, renderModel, validators, all = P
       (_.isObject(inputValue) && Object.keys(inputValue).length === 0) // Check if empty object
     )
 
-    const previousValue = _.get(formValue, bunsenId)
+    const previousValue = !bunsenId ? formValue : _.get(formValue, bunsenId)
 
     // If an empty value has been provided and there is no previous value then
     // make sure to apply defaults from the model
@@ -142,8 +153,9 @@ export function validate (bunsenId, inputValue, renderModel, validators, all = P
       }
     }
 
-    // if the value never changed, no need to update and validate
-    if (_.isEqual(inputValue, previousValue)) {
+    // if the value never changed, no need to update and validate (unless consumer
+    // is forcing validation again)
+    if (!forceValidation && _.isEqual(inputValue, previousValue)) {
       return
     }
 
