@@ -138,7 +138,7 @@ export function validate (
       (_.isObject(inputValue) && Object.keys(inputValue).length === 0) // Check if empty object
     )
 
-    const previousValue = !bunsenId ? formValue : _.get(formValue, bunsenId)
+    const previousValue = _.get(formValue, bunsenId)
 
     // If an empty value has been provided and there is no previous value then
     // make sure to apply defaults from the model
