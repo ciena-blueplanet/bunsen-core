@@ -247,6 +247,30 @@ export default {
           type: 'string'
         },
 
+        // pre-checked checkboxes
+        selectedValues: {
+          type: 'array',
+          items: {
+            type: 'string'
+          }
+        },
+
+        // data to populate checkboxes with, overrides the model enum
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              label: {
+                type: 'string'
+              },
+              value: {
+                type: 'string'
+              }
+            }
+          }
+        },
+
         // Size of buttons (small, large, etc)
         size: {
           type: 'string'
