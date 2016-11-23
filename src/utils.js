@@ -141,7 +141,7 @@ export function findValue (obj, valuePath, startPath = '') {
  */
 export function parseVariables (valueObj, queryJSON, startPath = '', allowEmpty = false) {
   if (!queryJSON) {
-    return {}
+    return ''
   }
 
   if (queryJSON.indexOf('${') !== -1) {

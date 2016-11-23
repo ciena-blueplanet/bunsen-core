@@ -1,3 +1,31 @@
+# 0.18.0
+
+* **Added** new `forceValidation` argument to `validate` action to allow consumer to force re-validation when the value is the same.
+
+
+
+# 0.17.0
+
+* **Added** `hideLabel` option to cell for hiding the auto-generated label when `model` is present.
+* **Added** more renderers to the v2 schema in order for validation to catch errors around those renderers.
+
+
+# 0.16.8
+
+* **Fixed** `parseVariables()` to return correct data type.
+
+
+
+# 0.16.7
+
+* **Fixed** validation bug where cell's `model` wasn't being applied to it's children.
+
+
+
+# 0.16.6
+* **Fixes** mac address validation
+
+
 # 0.16.5
 
 * **Fixed** bug where view generator would overwrite `cellDefinitions` by not first checking if a name was already taken.

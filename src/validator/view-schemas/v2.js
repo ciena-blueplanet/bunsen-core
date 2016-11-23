@@ -179,6 +179,12 @@ export default {
           type: 'string'
         },
 
+        // Whether or not cell label should be hidden
+        hideLabel: {
+          default: false,
+          type: 'boolean'
+        },
+
         // The user-visible label for this cell
         label: {
           type: 'string'
@@ -199,11 +205,15 @@ export default {
           oneOf: [
             {'$ref': '#/definitions/booleanRenderer'},
             {'$ref': '#/definitions/buttonGroupRenderer'},
+            {'$ref': '#/definitions/checkboxArrayRenderer'},
             {'$ref': '#/definitions/customRenderer'},
+            {'$ref': '#/definitions/linkRenderer'},
             {'$ref': '#/definitions/numberRenderer'},
+            {'$ref': '#/definitions/passwordRenderer'},
             {'$ref': '#/definitions/selectRenderer'},
             {'$ref': '#/definitions/stringRenderer'},
-            {'$ref': '#/definitions/textareaRenderer'}
+            {'$ref': '#/definitions/textareaRenderer'},
+            {'$ref': '#/definitions/urlRenderer'}
           ]
         },
 
@@ -222,6 +232,24 @@ export default {
             }
           },
           type: 'object'
+        }
+      },
+      type: 'object'
+    },
+
+    // checkbox-array renderer options
+    checkboxArrayRenderer: {
+      additionalProperties: false,
+      properties: {
+        // name can only be 'checkbox-array'
+        name: {
+          enum: ['checkbox-array'],
+          type: 'string'
+        },
+
+        // Size of buttons (small, large, etc)
+        size: {
+          type: 'string'
         }
       },
       type: 'object'
@@ -257,7 +285,44 @@ export default {
         // name can be anything that's not builtin
         name: {
           type: 'string',
-          pattern: '^(?!boolean$|button-group$|multi-select$|number$|select$|string|textarea$).*'
+          /* eslint-disable max-len */
+          pattern: '^(?!boolean$|button-group$|checkbox-array$|link$|multi-select$|number$|password$|select$|string|textarea$|url$).*'
+          /* eslint-enable max-len */
+        }
+      },
+      type: 'object'
+    },
+
+    // link renderer options
+    linkRenderer: {
+      additionalProperties: false,
+      properties: {
+        // User friendly label/text to show for link when label references another
+        // property which is empty. Otherwise the label/tet would be empty and
+        // thus no link would be visible to the user.
+        defaultLabel: {
+          type: 'string'
+        },
+
+        // User friendly label/text to show for link
+        label: {
+          type: 'string'
+        },
+
+        // name can only be 'link'
+        name: {
+          enum: ['link'],
+          type: 'string'
+        },
+
+        // named route to use for link
+        route: {
+          type: 'string'
+        },
+
+        // URL of link
+        url: {
+          type: 'string'
         }
       },
       type: 'object'
@@ -286,6 +351,21 @@ export default {
           additionalProperties: {type: ['string', 'boolean', 'number']},
           type: 'object'
         }
+      },
+      type: 'object'
+    },
+
+    // password renderer options
+    passwordRenderer: {
+      additionalProperties: false,
+      properties: {
+        // name can only be 'password'
+        name: {
+          enum: ['password'],
+          type: 'string'
+        }
+
+        // no options yet
       },
       type: 'object'
     },
@@ -436,6 +516,21 @@ export default {
         ]
       },
       type: 'array'
+    },
+
+    // url renderer options
+    urlRenderer: {
+      additionalProperties: false,
+      properties: {
+        // name can only be 'url'
+        name: {
+          enum: ['url'],
+          type: 'string'
+        }
+
+        // no options yet
+      },
+      type: 'object'
     }
   },
 
