@@ -82,4 +82,118 @@ describe('change-utils', function () {
       expect(changeSet.size).to.equal(0)
     })
   })
+
+  describe('computePatch', function () {
+    describe('computes the right values for removed values', function () {
+      it('when a leaf node is set to undefined', function () {
+        const result = changeUtils.computePatch({
+          foo: 'bar'
+        }, {
+          foo: undefined
+        })
+        expect(result).to.eql({
+          foo: undefined
+        })
+      })
+
+      it('when a parent node is set to undefined', function () {
+        const result = changeUtils.computePatch({
+          foo: {
+            bar: 'baz'
+          }
+        }, {
+          foo: undefined
+        })
+
+        expect(result).to.eql({
+          foo: undefined
+        })
+      })
+
+      it('when a parent node is set to an empty object', function () {
+        const result = changeUtils.computePatch({
+          foo: {
+            bar: 'baz'
+          }
+        }, {
+          foo: {}
+        })
+
+        expect(result).to.eql({
+          foo: {}
+        })
+      })
+    })
+
+    describe('computes the right values for modified values', function () {
+      it('when a leaf node is updated', function () {
+        const result = changeUtils.computePatch({
+          foo: 'bar'
+        }, {
+          foo: 'baz'
+        })
+        expect(result).to.eql({
+          foo: 'baz'
+        })
+      })
+
+      it('when a parent node is updated', function () {
+        const result = changeUtils.computePatch({
+          foo: {
+            bar: 'baz'
+          }
+        }, {
+          foo: 'bar'
+        })
+
+        expect(result).to.eql({
+          foo: 'bar'
+        })
+      })
+    })
+
+    describe('computes the right values for unmodified values', function () {
+      it('when a leaf node is unmodified', function () {
+        const result = changeUtils.computePatch({
+          foo: 'bar'
+        }, {
+          foo: 'bar'
+        })
+        expect(result).to.eql({})
+      })
+    })
+
+    describe('computes the right values for values that have been added', function () {
+      it('when a leaf node is added', function () {
+        const result = changeUtils.computePatch({
+          foo: 'bar'
+        }, {
+          foo: 'bar',
+          baz: 'qux'
+        })
+        expect(result).to.eql({
+          baz: 'qux'
+        })
+      })
+
+      it('when a parent node is updated with additions', function () {
+        const result = changeUtils.computePatch({
+          foo: {
+            bar: 'baz'
+          }
+        }, {
+          foo: {
+            bar: 'baz',
+            baz: 'qux'
+          }
+        })
+
+        expect(result).to.eql({
+          foo: {
+            baz: 'qux'
+          }
+        })
+      })
+    })
+  })
 })
