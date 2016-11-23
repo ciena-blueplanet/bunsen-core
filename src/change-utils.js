@@ -12,15 +12,11 @@ export function traverseObjectLeaf (object, iteratee) {
   while (stack.length > 0) {
     let node = stack.pop()
 
-    if (node.value === undefined || node.value === null) {
-      continue
-    }
-
-    if (_.isObject(node.value)) {
+    if (_.isObject(node.value) && !_.isEmpty(node.value)) {
       Object.keys(node.value).forEach((property) => {
         stack.push({value: node.value[property], path: `${node.path}.${property}`})
       })
-    } else if (Array.isArray(node.value)) {
+    } else if (Array.isArray(node.value) && node.value.length > 0) {
       node.value.forEach((item, index) => {
         stack.push({value: item, path: `${node.path}.${index}`})
       })
@@ -76,4 +72,31 @@ export function getChangeSet (oldValue, newValue) {
   })
 
   return changeSet
+}
+
+/**
+ * Computes the differences between oldValue and newValue
+ * @param {Object} oldValue old form value
+ * @param {Object} newValue new form value
+ * @returns {Object} an object with the patch contents
+ */
+export function computePatch (oldValue, newValue) {
+  const changeSets = getChangeSet(oldValue, newValue)
+  const diff = {}
+
+  // process deletes first so update/adds don't get clobbered
+  changeSets.forEach((changeSet, pathId) => {
+    if (changeSet.type === 'unset') {
+      _.set(diff, pathId, undefined)
+    }
+  })
+
+  // add/updates
+  changeSets.forEach((changeSet, pathId) => {
+    if (changeSet.type === 'set') {
+      _.set(diff, pathId, changeSet.value)
+    }
+  })
+
+  return diff
 }
