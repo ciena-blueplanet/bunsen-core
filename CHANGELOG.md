@@ -1,3 +1,8 @@
+# 0.18.1
+* **Fixed** diff computation so that any empty values are detected
+* **Added** a method to generate a patch from the diff so consumers can leverage this utility
+
+
 # 0.18.0
 
 * **Added** new `forceValidation` argument to `validate` action to allow consumer to force re-validation when the value is the same.
