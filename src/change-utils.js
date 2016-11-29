@@ -14,13 +14,21 @@ export function traverseObjectLeaf (object, iteratee) {
 
     if (_.isObject(node.value) && !_.isEmpty(node.value)) {
       Object.keys(node.value).forEach((property) => {
-        stack.push({value: node.value[property], path: `${node.path}.${property}`})
+        const value = node.value[property]
+        stack.push({
+          value,
+          path: `${node.path}.${property}`
+        })
       })
     } else if (Array.isArray(node.value) && node.value.length > 0) {
       node.value.forEach((item, index) => {
-        stack.push({value: item, path: `${node.path}.${index}`})
+        stack.push({
+          value: item,
+          path: `${node.path}.${index}`,
+          type: _.isObject(item) ? 'object' : (Array.isArray(item) ? 'array' : 'value')
+        })
       })
-    } else {
+    } else if (node.path) {
       // will remove the leading .
       node.path = node.path.replace(/^\./, '')
       iteratee(node)
@@ -83,18 +91,21 @@ export function getChangeSet (oldValue, newValue) {
 export function computePatch (oldValue, newValue) {
   const changeSets = getChangeSet(oldValue, newValue)
   const diff = {}
+  // tests array indexes in the path and capture the path leading up to
+  // but not including the index
+  const indexRegex = /^(\D*)\.\d+|^\d+\./
 
-  // process deletes first so update/adds don't get clobbered
-  changeSets.forEach((changeSet, pathId) => {
-    if (changeSet.type === 'unset') {
-      _.set(diff, pathId, undefined)
-    }
-  })
-
-  // add/updates
   changeSets.forEach((changeSet, pathId) => {
     if (changeSet.type === 'set') {
-      _.set(diff, pathId, changeSet.value)
+      // need to apply the updated array value instead of patching the array contents
+      // since patching arrays don't make sense
+      const matches = pathId.match(indexRegex)
+      if (matches) {
+        const arrayAnc = matches[1] || ''
+        _.set(diff, arrayAnc, _.get(newValue, arrayAnc))
+      } else {
+        _.set(diff, pathId, changeSet.value)
+      }
     }
   })
 
