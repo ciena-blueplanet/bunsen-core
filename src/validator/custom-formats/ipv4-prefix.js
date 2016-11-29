@@ -36,5 +36,8 @@ export default function (value) {
   const bits = ipAddressBits(ipAddress)
   const zeroBits = bits.slice(parseInt(networkMask, 10))
 
+  if (networkMask === '32') {
+    return zeroBits.length === 0
+  }
   return /^0+$/.test(zeroBits)
 }
