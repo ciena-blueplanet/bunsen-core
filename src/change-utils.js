@@ -102,7 +102,7 @@ export function computePatch (oldValue, newValue) {
       const matches = pathId.match(indexRegex)
       if (matches) {
         const arrayAnc = matches[1] || ''
-        _.set(diff, arrayAnc, _.get(newValue, arrayAnc))
+        _.set(diff, arrayAnc, _.cloneDeep(_.get(newValue, arrayAnc)))
       } else {
         _.set(diff, pathId, changeSet.value)
       }

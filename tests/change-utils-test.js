@@ -161,27 +161,35 @@ describe('change-utils', function () {
         })
       })
 
-      it('when a nested array item is modified', function () {
+      it('when a deeply nested array item is modified', function () {
         const result = changeUtils.computePatch({
-          fooParent: [{
-            foo: ['bar', 'baz']
-          }, {
-            foo: ['bar', 'baz']
-          }]
+          lorem: {
+            fooParent: [{
+              foo: ['bar', 'baz']
+            }, {
+              foo: ['bar', 'baz']
+            }]
+          },
+          ipsum: 'dolor'
         }, {
-          fooParent: [{
-            foo: ['bar', 'baz']
-          }, {
-            foo: ['bar', 'qux']
-          }]
+          lorem: {
+            fooParent: [{
+              foo: ['bar', 'baz']
+            }, {
+              foo: ['bar', 'qux']
+            }]
+          },
+          ipsum: 'dolor'
         })
 
         expect(result).to.eql({
-          fooParent: [{
-            foo: ['bar', 'baz']
-          }, {
-            foo: ['bar', 'qux']
-          }]
+          lorem: {
+            fooParent: [{
+              foo: ['bar', 'baz']
+            }, {
+              foo: ['bar', 'qux']
+            }]
+          }
         })
       })
     })
@@ -193,6 +201,16 @@ describe('change-utils', function () {
         }, {
           foo: 'bar'
         })
+        expect(result).to.eql({})
+      })
+
+      it('when an array is unmodified', function () {
+        const result = changeUtils.computePatch({
+          foo: ['bar', 'baz']
+        }, {
+          foo: ['bar', 'baz']
+        })
+
         expect(result).to.eql({})
       })
     })
@@ -243,25 +261,33 @@ describe('change-utils', function () {
 
       it('when a nested array item is modified', function () {
         const result = changeUtils.computePatch({
-          fooParent: [{
-            foo: ['bar', 'baz']
-          }, {
-            foo: ['bar', 'baz']
-          }]
+          lorem: {
+            fooParent: [{
+              foo: ['bar', 'baz']
+            }, {
+              foo: ['bar', 'baz']
+            }]
+          },
+          ipsum: 'dolor'
         }, {
-          fooParent: [{
-            foo: ['bar', 'baz']
-          }, {
-            foo: ['bar', 'baz', 'qux']
-          }]
+          lorem: {
+            fooParent: [{
+              foo: ['bar', 'baz']
+            }, {
+              foo: ['bar', 'baz', 'qux']
+            }]
+          },
+          ipsum: 'dolor'
         })
 
         expect(result).to.eql({
-          fooParent: [{
-            foo: ['bar', 'baz']
-          }, {
-            foo: ['bar', 'baz', 'qux']
-          }]
+          lorem: {
+            fooParent: [{
+              foo: ['bar', 'baz']
+            }, {
+              foo: ['bar', 'baz', 'qux']
+            }]
+          }
         })
       })
     })
