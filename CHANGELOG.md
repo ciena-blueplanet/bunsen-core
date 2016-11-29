@@ -1,3 +1,10 @@
+# 0.18.3
+
+* **Removed** the processing of deletes in the `computePatch` since only `add/updates` are the only operations required.
+* **Fixed** issue where a previous value of empty would cause an empty path id
+* Ignored arrays since it doesn't make sense to send partial arrays
+
+
 # 0.18.2
 * added support for 192.168.1.5/32 (entire address is network) ipv4 prefix values.  edge case but it is valid CIDR
 
