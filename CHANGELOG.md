@@ -1,3 +1,8 @@
+# 0.18.2
+* added support for 192.168.1.5/32 (entire address is network) ipv4 prefix values.  edge case but it is valid CIDR
+
+
+
 # 0.18.1
 * **Fixed** diff computation so that any empty values are detected
 * **Added** a method to generate a patch from the diff so consumers can leverage this utility
