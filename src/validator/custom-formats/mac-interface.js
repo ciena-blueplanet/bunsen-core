@@ -28,8 +28,5 @@ export default function (value) {
   const bits = macAddressBits(macAddress)
   const hostBits = bits.slice(parseInt(mask, 10))
 
-  return !(
-    /^0+$/.test(hostBits) ||
-    /^1+$/.test(hostBits)
-  )
+  return !/^(0+|1+)$/.test(hostBits)
 }
