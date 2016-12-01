@@ -1,3 +1,8 @@
+# 0.19.0
+
+* **Added** new formats: `ipv6-interface`, `ipv6-multicast`, and `ipv6-prefix`.
+
+
 # 0.18.3
 
 * **Removed** the processing of deletes in the `computePatch` since only `add/updates` are the only operations required.
