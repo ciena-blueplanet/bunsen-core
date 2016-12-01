@@ -77,11 +77,11 @@ describe('validator/custom-formats/IPv6-interface', () => {
   })
 
   it('returns true when valid IPv6 interface', () => {
-    expect(ipv6Interface('1080:0:0:0:8:800:200C:417A/32'), 1).to.be.equal(true)
-    expect(ipv6Interface('12AB::CD30/60'), 5).to.be.equal(true)
-    expect(ipv6Interface('12AB::CD3/60'), 6).to.be.equal(true)
-    expect(ipv6Interface('12AB:0:0:CD30:123:4567:89AB:CDEF/60'), 7).to.be.equal(true)
-    expect(ipv6Interface('fe80::6a05:caff:fe05:f789/64'), 8).to.be.equal(true)
-    expect(ipv6Interface('FEDC:BA98:7654:3210:FEDC:BA98:7654:3210/68'), 9).to.be.equal(true)
+    expect(ipv6Interface('1080:0:0:0:8:800:200C:417A/32')).to.be.equal(true)
+    expect(ipv6Interface('12AB::CD30/60')).to.be.equal(true)
+    expect(ipv6Interface('12AB::CD3/60')).to.be.equal(true)
+    expect(ipv6Interface('12AB:0:0:CD30:123:4567:89AB:CDEF/60')).to.be.equal(true)
+    expect(ipv6Interface('fe80::6a05:caff:fe05:f789/64')).to.be.equal(true)
+    expect(ipv6Interface('FEDC:BA98:7654:3210:FEDC:BA98:7654:3210/68')).to.be.equal(true)
   })
 })
