@@ -1,3 +1,9 @@
+# 0.19.1
+
+* **Fixed** code to actually include new IPv6 formats.
+
+
+
 # 0.19.0
 
 * **Added** new formats: `ipv6-interface`, `ipv6-multicast`, and `ipv6-prefix`.
