@@ -11,12 +11,17 @@ const int64 = require('../../../lib/validator/custom-formats/int64')
 const ipv4Address = require('../../../lib/validator/custom-formats/ipv4-address')
 const ipv4Interface = require('../../../lib/validator/custom-formats/ipv4-interface')
 const ipv4Prefix = require('../../../lib/validator/custom-formats/ipv4-prefix')
+const ipv6Address = require('../../../lib/validator/custom-formats/ipv6-address')
+const ipv6Interface = require('../../../lib/validator/custom-formats/ipv6-interface')
+const ipv6Multicast = require('../../../lib/validator/custom-formats/ipv6-multicast')
+const ipv6Prefix = require('../../../lib/validator/custom-formats/ipv6-prefix')
 const netmask = require('../../../lib/validator/custom-formats/netmask')
 const portNumber = require('../../../lib/validator/custom-formats/port-number')
 const time = require('../../../lib/validator/custom-formats/time')
 const uint8 = require('../../../lib/validator/custom-formats/uint8')
 const uint16 = require('../../../lib/validator/custom-formats/uint16')
 const uint32 = require('../../../lib/validator/custom-formats/uint32')
+const uint64 = require('../../../lib/validator/custom-formats/uint64')
 const url = require('../../../lib/validator/custom-formats/url')
 const vlanId = require('../../../lib/validator/custom-formats/vlan-id')
 
@@ -61,6 +66,22 @@ describe('validator/custom-formats', () => {
     expect(customFormats['ipv4-prefix']).to.equal(ipv4Prefix)
   })
 
+  it('includes ipv6-address format', () => {
+    expect(customFormats['ipv6-address']).to.equal(ipv6Address)
+  })
+
+  it('includes ipv6-interface format', () => {
+    expect(customFormats['ipv6-interface']).to.equal(ipv6Interface)
+  })
+
+  it('includes ipv6-multicast format', () => {
+    expect(customFormats['ipv6-multicast']).to.equal(ipv6Multicast)
+  })
+
+  it('includes ipv6-prefix format', () => {
+    expect(customFormats['ipv6-prefix']).to.equal(ipv6Prefix)
+  })
+
   it('includes netmask format', () => {
     expect(customFormats.netmask).to.equal(netmask)
   })
@@ -83,6 +104,10 @@ describe('validator/custom-formats', () => {
 
   it('includes uint32 format', () => {
     expect(customFormats.uint32).to.equal(uint32)
+  })
+
+  it('includes uint64 format', () => {
+    expect(customFormats.uint64).to.equal(uint64)
   })
 
   it('includes url format', () => {
