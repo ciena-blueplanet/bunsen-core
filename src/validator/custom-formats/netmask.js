@@ -3,7 +3,7 @@
  */
 
 import ipv4Address from './ipv4-address'
-import {ipAddressBits} from './utils'
+import {ipv4AddressBits} from './utils'
 
 /**
  * Validate value as a netmask
@@ -15,7 +15,7 @@ export default function (value) {
     return false
   }
 
-  const bits = ipAddressBits(value)
+  const bits = ipv4AddressBits(value)
 
   return /^1*0*$/.test(bits)
 }

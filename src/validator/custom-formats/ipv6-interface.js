@@ -2,13 +2,11 @@
  * @reference https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing#CIDR_notation
  */
 
-import ipv4Address from './ipv4-address'
-import {ipv4AddressBits, networkMaskValid} from './utils'
-
-const firstOctetMax = 253
+import ipv6Address from './ipv6-address'
+import {ipv6AddressBits, networkMaskValid} from './utils'
 
 /**
- * Validate value as an IPv4 interface
+ * Validate value as an IPv6 interface
  * @param {Any} value - value to validate
  * @returns {Boolean} whether or not value is valid
  */
@@ -19,22 +17,20 @@ export default function (value) {
 
   const [ipAddress, networkMask] = value.split('/')
 
-  if (!networkMaskValid(networkMask)) {
+  if (!networkMaskValid(networkMask, true)) {
     return false
   }
 
-  if (!ipv4Address(ipAddress)) {
+  if (!ipv6Address(ipAddress)) {
     return false
   }
 
-  const octets = ipAddress.split('.')
-
-  if (parseInt(octets[0], 10) > firstOctetMax) {
-    return false
-  }
-
-  const bits = ipv4AddressBits(ipAddress)
+  const bits = ipv6AddressBits(ipAddress)
   const postPrefixBits = bits.slice(parseInt(networkMask, 10))
+
+  if (networkMask === '128') {
+    return false
+  }
 
   return !/^(0+|1+)$/.test(postPrefixBits)
 }

@@ -4,10 +4,10 @@ var utils = require('../../../lib/validator/custom-formats/utils')
 describe('validator/custom-formats/utils', function () {
   describe('hexToBinary', function () {
     it('converts hexidecimal to binary properly', function () {
-      expect(utils.hexToBinary('0xff')).to.equal('11111111')
+      expect(utils.hexToBinary(8, '0xff')).to.equal('11111111')
     })
     it('pads the binary number with 0s', function () {
-      expect(utils.hexToBinary('0x1')).to.equal('00000001')
+      expect(utils.hexToBinary(8, '0x1')).to.equal('00000001')
     })
   })
 
