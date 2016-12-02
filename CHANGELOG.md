@@ -1,3 +1,9 @@
+# 0.19.2
+
+* **Fixed** `ipv6-interface` format to not deny host of all one bits or zero bits.
+
+
+
 # 0.19.1
 
 * **Fixed** code to actually include new IPv6 formats.
