@@ -83,5 +83,8 @@ describe('validator/custom-formats/IPv6-interface', () => {
     expect(ipv6Interface('12AB:0:0:CD30:123:4567:89AB:CDEF/60')).to.be.equal(true)
     expect(ipv6Interface('fe80::6a05:caff:fe05:f789/64')).to.be.equal(true)
     expect(ipv6Interface('FEDC:BA98:7654:3210:FEDC:BA98:7654:3210/68')).to.be.equal(true)
+    expect(ipv6Interface('12AB:0000:0000:CD30:0000:0000:0000:0000/60')).to.be.equal(true)
+    expect(ipv6Interface('12AB::CD30:0:0:0:0/60')).to.be.equal(true)
+    expect(ipv6Interface('12AB:0:0:CD30::/60')).to.be.equal(true)
   })
 })

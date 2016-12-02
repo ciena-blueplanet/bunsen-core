@@ -3,7 +3,7 @@
  */
 
 import ipv6Address from './ipv6-address'
-import {ipv6AddressBits, networkMaskValid} from './utils'
+import {networkMaskValid} from './utils'
 
 /**
  * Validate value as an IPv6 interface
@@ -17,20 +17,9 @@ export default function (value) {
 
   const [ipAddress, networkMask] = value.split('/')
 
-  if (!networkMaskValid(networkMask, true)) {
-    return false
-  }
-
-  if (!ipv6Address(ipAddress)) {
-    return false
-  }
-
-  const bits = ipv6AddressBits(ipAddress)
-  const postPrefixBits = bits.slice(parseInt(networkMask, 10))
-
-  if (networkMask === '128') {
-    return false
-  }
-
-  return !/^(0+|1+)$/.test(postPrefixBits)
+  return (
+    ipv6Address(ipAddress) &&
+    networkMaskValid(networkMask, true) &&
+    networkMask !== '128'
+  )
 }
