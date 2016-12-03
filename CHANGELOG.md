@@ -1,3 +1,8 @@
+# 0.20.0
+
+* **Upgraded** to version 6.x of `validator`.
+
+
 # 0.19.2
 
 * **Fixed** `ipv6-interface` format to not deny host of all one bits or zero bits.
