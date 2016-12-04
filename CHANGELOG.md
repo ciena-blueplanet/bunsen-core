@@ -1,3 +1,10 @@
+# 0.21.0
+
+* **Added** more method exports to `index.js`.
+* **Renamed** `getDefaultView()` to `generateView()`.
+
+
+
 # 0.20.0
 
 * **Upgraded** to version 6.x of `validator`.
