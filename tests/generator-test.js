@@ -1,5 +1,5 @@
 var expect = require('chai').expect
-var getDefaultView = require('../lib/generator').getDefaultView
+var generateView = require('../lib/generator').generateView
 var validator = require('../lib/validator')
 
 var simpleModel = require('./fixtures/simple-model')
@@ -10,11 +10,11 @@ var dependenciesModel = require('./fixtures/dependencies-model')
 var dependenciesView = require('./fixtures/dependencies-view')
 
 describe('generator', function () {
-  describe('getDefaultView()', function () {
+  describe('generateView()', function () {
     var result
     describe('simple schema', function () {
       beforeEach(() => {
-        result = getDefaultView(simpleModel)
+        result = generateView(simpleModel)
       })
 
       it('creates proper simple layout', function () {
@@ -24,7 +24,7 @@ describe('generator', function () {
 
     describe('array schema', function () {
       beforeEach(() => {
-        result = getDefaultView(arrayModel)
+        result = generateView(arrayModel)
       })
 
       it('creates proper array layout', function () {
@@ -34,7 +34,7 @@ describe('generator', function () {
 
     describe('dependencies schema', function () {
       beforeEach(() => {
-        result = getDefaultView(dependenciesModel)
+        result = generateView(dependenciesModel)
       })
 
       it('creates proper dependencies layout', function () {
@@ -78,7 +78,7 @@ describe('generator', function () {
           type: 'object'
         }
 
-        view = getDefaultView(model)
+        view = generateView(model)
       })
 
       it('generates valid view view', function () {
