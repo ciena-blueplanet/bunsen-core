@@ -140,7 +140,7 @@ function addDependentModel (propertyName, dependencyName, model, children, cellD
  * @param {BunsenModel} schema - the schema to generate a default view for
  * @returns {BunsenView} the generated view
  */
-export function getDefaultView (schema) {
+export function generateView (schema) {
   const model = dereference(schema || {}).schema
 
   const view = {
@@ -161,3 +161,5 @@ export function getDefaultView (schema) {
 
   return view
 }
+
+export default generateView
