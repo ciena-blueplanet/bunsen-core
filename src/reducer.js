@@ -16,6 +16,32 @@ const INITIAL_VALUE = {
   valueChangeSet: null
 }
 
+function isArrayItem (segment) {
+  return /^\d+$/.test(segment)
+}
+
+function subModel (model, modelPath) {
+  if (modelPath.length <= 0) {
+    return model
+  }
+  const pathSeg = modelPath.pop()
+  if (isArrayItem(pathSeg)) {
+    return subModel(model, modelPath.items)
+  }
+  return subModel(model.properties[pathSeg], pathSeg)
+}
+
+function isRequired (model, id) {
+  if (id === null) {
+    return false
+  }
+  const modelPath = id.split('.')
+  const lastSegment = modelPath.pop()
+  modelPath.reverse()
+  const parentModel = subModel(model, modelPath)
+  return _.includes(parentModel.required, lastSegment)
+}
+
 export function initialState (state) {
   return _.defaults(state, INITIAL_VALUE)
 }
@@ -111,9 +137,8 @@ export const actionReducers = {
       newValue = immutableOnce(state.value)
       const segments = bunsenId.split('.')
       const lastSegment = segments.pop()
-      const isArrayItem = /^\d+$/.test(lastSegment)
 
-      if (isArrayItem) {
+      if (isArrayItem(lastSegment)) {
         const parentPath = segments.join('.')
         const parentObject = _.get(newValue, parentPath)
 
@@ -130,7 +155,9 @@ export const actionReducers = {
           })
           newValue = set(newValue, bunsenId, value)
         }
-      } else if (_.includes([null, ''], value) || (Array.isArray(value) && value.length === 0)) {
+      } else if (_.includes([null, ''], value) ||
+        (Array.isArray(value) && value.length === 0 && !isRequired(state.model, bunsenId))
+      ) {
         valueChangeSet.set(bunsenId, {
           value,
           type: 'unset'
