@@ -1,3 +1,6 @@
+# 0.21.1
+**Changed** empty object/array clearing to leave empty objects/arrays that are required properties of a parent object.
+
 # 0.21.0
 
 * **Added** more method exports to `index.js`.
