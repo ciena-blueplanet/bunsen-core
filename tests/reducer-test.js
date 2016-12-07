@@ -148,11 +148,42 @@ describe('reducer', function () {
     })
 
     it('will prune all the dead wood when setting root object', function () {
+      var model = {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'object',
+            properties: {
+              bar: {
+                type: 'object',
+                properties: {
+                  baz: {
+                    type: 'null'
+                  },
+                  qux: {
+                    type: 'number'
+                  }
+                }
+              },
+              waldo: {
+                type: 'null'
+              },
+              buzz: {
+                type: 'boolean'
+              },
+              fizz: {
+                type: 'boolean'
+              }
+            }
+          }
+        }
+      }
       var initialState = {
         errors: {},
         validationResult: {warnings: [], errors: []},
         value: null,
-        baseModel: {}
+        baseModel: model,
+        model
       }
       var newValue = {
         foo: {
@@ -171,11 +202,28 @@ describe('reducer', function () {
     })
 
     it('will prune all the dead wood out of a complex array', function () {
+      var model = {
+        type: 'object',
+        properties: {
+          a: {
+            type: 'object',
+            properties: {
+              b1: {
+                type: 'array'
+              },
+              b2: {
+                type: 'array'
+              }
+            }
+          }
+        }
+      }
       var initialState = {
         errors: {},
         validationResult: {warnings: [], errors: []},
         value: null,
-        baseModel: {}
+        baseModel: model,
+        model
       }
       var newValue = {
         a: {
@@ -195,6 +243,16 @@ describe('reducer', function () {
     })
 
     it('does not remove required properties from an object', function () {
+      var model = {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'object'
+          }
+        },
+        required: ['foo']
+      }
+
       var initialState = {
         errors: {},
         validationResult: {warnings: [], errors: []},
@@ -203,15 +261,8 @@ describe('reducer', function () {
             bar: 'baz'
           }
         },
-        baseModel: {
-          type: 'object',
-          properties: {
-            foo: {
-              type: 'object'
-            }
-          },
-          required: ['foo']
-        }
+        baseModel: model,
+        model
       }
 
       var storedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: {foo: {}}, bunsenId: null})

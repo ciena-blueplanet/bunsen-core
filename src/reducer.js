@@ -63,18 +63,16 @@ function immutableOnce (object) {
  * @param {Object} value - our current value POJO
  * @returns {Object} a value cleaned of any `null`s
  */
-function recursiveClean (value) {
-  let output = {}
-  if (Array.isArray(value)) {
-    output = []
-  }
+function recursiveClean (value, model) {
+  let output = Array.isArray(value) ? [] : {}
   _.forEach(value, (subValue, key) => {
-    if (!_.isEmpty(subValue) || _.isNumber(subValue) || typeof subValue === 'boolean' || subValue instanceof Boolean) {
-      if (_.isObject(subValue) || Array.isArray(subValue)) {
-        output[key] = recursiveClean(subValue)
-      } else {
-        output[key] = subValue
-      }
+    const notEmpty = !_.isEmpty(subValue)
+    if (Array.isArray(subValue) && (notEmpty || _.includes(_.get(model, 'required'), key))) {
+      output[key] = recursiveClean(subValue, _.get(model, 'items'))
+    } else if (_.isObject(subValue) && (notEmpty || _.includes(_.get(model, 'required'), key))) {
+      output[key] = recursiveClean(subValue, _.get(model, 'properties.' + key))
+    } else if (notEmpty || _.isNumber(subValue) || typeof subValue === 'boolean' || subValue instanceof Boolean) {
+      output[key] = subValue
     }
   })
   return output
@@ -92,7 +90,7 @@ export const actionReducers = {
     if (state && state.baseModel) {
       let initialValue = state.value || {}
       state.baseModel = getDereferencedModelSchema(state.baseModel)
-      state.model = evaluateConditions(_.cloneDeep(state.baseModel), recursiveClean(initialValue))
+      state.model = evaluateConditions(_.cloneDeep(state.baseModel), recursiveClean(initialValue, state.baseModel))
       // leave this undefined to force consumers to go through the proper CHANGE_VALUE channel
       // for value changes
       state.value = undefined
@@ -132,7 +130,7 @@ export const actionReducers = {
 
     if (bunsenId === null) {
       valueChangeSet = getChangeSet(state.value, value)
-      newValue = immutableOnce(recursiveClean(value))
+      newValue = immutableOnce(recursiveClean(value, state.model))
     } else {
       newValue = immutableOnce(state.value)
       const segments = bunsenId.split('.')
@@ -163,14 +161,12 @@ export const actionReducers = {
           type: 'unset'
         })
         newValue = unset(newValue, bunsenId)
-      } else {
-        if (!_.isEqual(value, _.get(newValue, bunsenId))) {
-          valueChangeSet.set(bunsenId, {
-            value,
-            type: 'set'
-          })
-          newValue = set(newValue, bunsenId, value)
-        }
+      } else if (!_.isEqual(value, _.get(newValue, bunsenId))) {
+        valueChangeSet.set(bunsenId, {
+          value,
+          type: 'set'
+        })
+        newValue = set(newValue, bunsenId, value)
       }
     }
 
