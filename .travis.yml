@@ -8,8 +8,6 @@ branches:
 before_install:
 - npm install -g coveralls pr-bumper
 - pr-bumper check
-after_success:
-- cat coverage/lcov.info | coveralls
 addons:
   apt:
     sources:
@@ -30,7 +28,7 @@ deploy:
   api_key:
     secure: DetqtRglZqss1t4aBLH+lU+/9eIQtWS8ONw3qLs7cNvWuOmNrhRZEux8mMR4yK5VMcu35EKObr5gXkr/Rxl9A4AdwihRxmYqBWaoNyhJvAnbKAi6X2DCmhy38jnRgtfLzSmKai1NzJJne28KZUqQtH8SFehu5bIvCzKw3EPLoYbXvnLlDdofkglUwXBvCWVQxmIwlRf0W9B6S/ISMdhKC0NALIY0t3Rxg3E/de7gJs8iqahd29TRT7QmKr3JE4UUv0zh3FQavdy7mtyHbTu7D6VSZOaJ1AQqovh9WELkBISUQJtERcwYEks/FssEEG8krBpJE8O9MKOzSQ/u84bsvyM9auIqrRcxoo4ovkIk4YwZANxR3e0MWxKY3RJUEayPavxoerVLwVoTcNhIl4BnoaOWNz0ZneGEKFp91HEn0YhAxCSn+KRa+QkNcENKbHQ8LoKDl+L7Jyg7JJSSMAqlp9phhkG96ymotj7QTerMmjquSavm2GZUl9RQ0Lvu52IywFCJKtfjZtMKlwUu9RyJ+/MBfIbQsrkF4VHHxZmfYzg/fDYm2NfS4tU/MDICDHAy40qu02TXV1vD0MnONhZhh7Fwse5C+rh/gBTZXhPOc0+JJIY93Is4IOg70q2Pb3tceGlv92HE3MX0XhBU8AIAJdDVYB/a4OZ1CXkkK4O+zes=
   on:
-    branch: master
+    branch: 0.19.x
     tags: false
 notifications:
   slack:
