@@ -257,6 +257,21 @@ describe('validate action', function () {
     expect(defaultValue).to.eql({})
   })
 
+  it('initializes required objects', function () {
+    var model = {
+      type: 'object',
+      properties: {
+        foo: {
+          type: 'object'
+        }
+      },
+      required: ['foo']
+    }
+
+    var defaultValue = getDefaultValue(null, {}, model)
+    expect(defaultValue).to.eql({foo: {}})
+  })
+
   function getState () {
     return {
       get value () {

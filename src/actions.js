@@ -87,7 +87,7 @@ function getSchema (pathStack, model, resolveRef) {
   return {}
 }
 
-function findDefaults (value, path, model, resolveRef) {
+function findDefaults (value, path, model, resolveRef, required) {
   let schema
 
   if (model.$ref !== undefined) {
@@ -101,9 +101,15 @@ function findDefaults (value, path, model, resolveRef) {
   const schemaDefault = _.clone(schema.default)
   if (model.type === 'object' || model.properties) { // Recursing only makes sense for objects
     let subSchemaDefaults = {}
-    let hasDefaults = false
+    let hasDefaults = required || false
     _.forEach(schema.properties, function (subSchema, propName) {
-      const defaults = findDefaults(value && value[propName], null, subSchema, resolveRef)
+      const defaults = findDefaults(
+        value && value[propName],
+        null,
+        subSchema,
+        resolveRef,
+        _.includes(schema.required, propName)
+      )
       if (defaults !== undefined) {
         subSchemaDefaults[propName] = defaults
         hasDefaults = true
@@ -144,7 +150,7 @@ export function validate (
     // make sure to apply defaults from the model
     if (isInputValueEmpty && previousValue === undefined) {
       const resolveRef = schemaFromRef(renderModel.definitions)
-      const defaultValue = findDefaults(inputValue, bunsenId, renderModel, resolveRef)
+      const defaultValue = findDefaults(inputValue, bunsenId, renderModel, resolveRef, false)
 
       if (bunsenId === null && defaultValue === undefined) {
         inputValue = {}
