@@ -1,3 +1,9 @@
+# 0.19.3
+
+* **Updated** Travis config to handle proper branch.
+
+
+
 # 0.19.2
 
 * **Fixed** `ipv6-interface` format to not deny host of all one bits or zero bits.
