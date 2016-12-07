@@ -16,6 +16,32 @@ const INITIAL_VALUE = {
   valueChangeSet: null
 }
 
+function isArrayItem (segment) {
+  return /^\d+$/.test(segment)
+}
+
+function subModel (model, modelPath) {
+  if (modelPath.length <= 0) {
+    return model
+  }
+  const pathSeg = modelPath.pop()
+  if (isArrayItem(pathSeg)) {
+    return subModel(model, modelPath.items)
+  }
+  return subModel(model.properties[pathSeg], pathSeg)
+}
+
+function isRequired (model, id) {
+  if (id === null) {
+    return false
+  }
+  const modelPath = id.split('.')
+  const lastSegment = modelPath.pop()
+  modelPath.reverse()
+  const parentModel = subModel(model, modelPath)
+  return _.includes(parentModel.required, lastSegment)
+}
+
 export function initialState (state) {
   return _.defaults(state, INITIAL_VALUE)
 }
@@ -37,18 +63,16 @@ function immutableOnce (object) {
  * @param {Object} value - our current value POJO
  * @returns {Object} a value cleaned of any `null`s
  */
-function recursiveClean (value) {
-  let output = {}
-  if (Array.isArray(value)) {
-    output = []
-  }
+function recursiveClean (value, model) {
+  let output = Array.isArray(value) ? [] : {}
   _.forEach(value, (subValue, key) => {
-    if (!_.isEmpty(subValue) || _.isNumber(subValue) || typeof subValue === 'boolean' || subValue instanceof Boolean) {
-      if (_.isObject(subValue) || Array.isArray(subValue)) {
-        output[key] = recursiveClean(subValue)
-      } else {
-        output[key] = subValue
-      }
+    const notEmpty = !_.isEmpty(subValue)
+    if (Array.isArray(subValue) && (notEmpty || _.includes(_.get(model, 'required'), key))) {
+      output[key] = recursiveClean(subValue, _.get(model, 'items'))
+    } else if (_.isObject(subValue) && (notEmpty || _.includes(_.get(model, 'required'), key))) {
+      output[key] = recursiveClean(subValue, _.get(model, 'properties.' + key))
+    } else if (notEmpty || _.isNumber(subValue) || typeof subValue === 'boolean' || subValue instanceof Boolean) {
+      output[key] = subValue
     }
   })
   return output
@@ -66,7 +90,7 @@ export const actionReducers = {
     if (state && state.baseModel) {
       let initialValue = state.value || {}
       state.baseModel = getDereferencedModelSchema(state.baseModel)
-      state.model = evaluateConditions(_.cloneDeep(state.baseModel), recursiveClean(initialValue))
+      state.model = evaluateConditions(_.cloneDeep(state.baseModel), recursiveClean(initialValue, state.baseModel))
       // leave this undefined to force consumers to go through the proper CHANGE_VALUE channel
       // for value changes
       state.value = undefined
@@ -106,14 +130,13 @@ export const actionReducers = {
 
     if (bunsenId === null) {
       valueChangeSet = getChangeSet(state.value, value)
-      newValue = immutableOnce(recursiveClean(value))
+      newValue = immutableOnce(recursiveClean(value, state.model))
     } else {
       newValue = immutableOnce(state.value)
       const segments = bunsenId.split('.')
       const lastSegment = segments.pop()
-      const isArrayItem = /^\d+$/.test(lastSegment)
 
-      if (isArrayItem) {
+      if (isArrayItem(lastSegment)) {
         const parentPath = segments.join('.')
         const parentObject = _.get(newValue, parentPath)
 
@@ -130,20 +153,20 @@ export const actionReducers = {
           })
           newValue = set(newValue, bunsenId, value)
         }
-      } else if (_.includes([null, ''], value) || (Array.isArray(value) && value.length === 0)) {
+      } else if (_.includes([null, ''], value) ||
+        (Array.isArray(value) && value.length === 0 && !isRequired(state.model, bunsenId))
+      ) {
         valueChangeSet.set(bunsenId, {
           value,
           type: 'unset'
         })
         newValue = unset(newValue, bunsenId)
-      } else {
-        if (!_.isEqual(value, _.get(newValue, bunsenId))) {
-          valueChangeSet.set(bunsenId, {
-            value,
-            type: 'set'
-          })
-          newValue = set(newValue, bunsenId, value)
-        }
+      } else if (!_.isEqual(value, _.get(newValue, bunsenId))) {
+        valueChangeSet.set(bunsenId, {
+          value,
+          type: 'set'
+        })
+        newValue = set(newValue, bunsenId, value)
       }
     }
 
