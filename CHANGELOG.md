@@ -1,3 +1,7 @@
+# 0.21.2
+**Fixed** a recursive property check to determine if a property is required.
+
+
 # 0.21.1
 **Changed** empty object/array clearing to leave empty objects/arrays that are required properties of a parent object.
 
