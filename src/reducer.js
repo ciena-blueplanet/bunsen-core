@@ -44,7 +44,7 @@ function subModel (model, modelPath) {
   if (isArrayItem(pathSeg)) {
     return subModel(model, modelPath.items)
   }
-  return subModel(model.properties[pathSeg], pathSeg)
+  return subModel(model.properties[pathSeg], modelPath)
 }
 
 function isRequired (model, id) {
