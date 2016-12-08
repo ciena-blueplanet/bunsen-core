@@ -328,10 +328,10 @@ describe('reducer', function () {
                 type: 'array',
                 item: {
                   type: 'string'
-                },
-                required: ['bazProp']
+                }
               }
-            }
+            },
+            required: ['baz']
           }
         },
         required: ['foo']
