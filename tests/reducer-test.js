@@ -275,7 +275,12 @@ describe('reducer', function () {
         validationResult: {warnings: [], errors: []},
         value: {
           foo: {
-            fooProp: ''
+            fooProp: 'test'
+          },
+          bar: {
+            baz: {
+              bazProp: 'test'
+            }
           }
         },
         baseModel: {
@@ -283,6 +288,20 @@ describe('reducer', function () {
           properties: {
             foo: {
               type: 'object'
+            },
+            bar: {
+              type: 'object',
+              properties: {
+                baz: {
+                  type: 'object',
+                  properties: {
+                    bazProp: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              required: ['baz']
             }
           },
           required: ['foo']
@@ -290,7 +309,9 @@ describe('reducer', function () {
       }
 
       var changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: {}, bunsenId: 'foo'})
-      expect(changedState.value).to.eql({foo: {}})
+      expect(changedState.value).to.eql({foo: {}, bar: {baz: {bazProp: 'test'}}})
+      changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: {}, bunsenId: 'bar.baz'})
+      expect(changedState.value).to.eql({foo: {fooProp: 'test'}, bar: {baz: {}}})
     })
 
     it('preserves empty arrays that are required', function () {
@@ -299,6 +320,18 @@ describe('reducer', function () {
         properties: {
           foo: {
             type: 'array'
+          },
+          bar: {
+            type: 'object',
+            properties: {
+              baz: {
+                type: 'array',
+                item: {
+                  type: 'string'
+                },
+                required: ['bazProp']
+              }
+            }
           }
         },
         required: ['foo']
@@ -308,14 +341,19 @@ describe('reducer', function () {
         errors: {},
         validationResult: {warnings: [], errors: []},
         value: {
-          foo: ['foo item']
+          foo: ['foo item'],
+          bar: {
+            baz: ['baz item']
+          }
         },
         baseModel: model,
         model
       }
 
       var changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: [], bunsenId: 'foo'})
-      expect(changedState.value).to.eql({foo: []})
+      expect(changedState.value).to.eql({foo: [], bar: {baz: ['baz item']}})
+      changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: [], bunsenId: 'bar.baz'})
+      expect(changedState.value).to.eql({foo: ['foo item'], bar: {baz: []}})
     })
   })
 
