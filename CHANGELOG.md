@@ -1,3 +1,9 @@
+# 0.21.3
+
+* **Added** Validation for renderer.labels for overriding checkbox-array labels
+
+
+
 # 0.21.2
 **Fixed** a recursive property check to determine if a property is required.
 
