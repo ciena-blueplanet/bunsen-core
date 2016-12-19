@@ -247,6 +247,14 @@ export default {
           type: 'string'
         },
 
+        // labels to override enum values for display
+        labels: {
+          type: 'object',
+          additionalProperties: {
+            type: 'string'
+          }
+        },
+
         // Size of buttons (small, large, etc)
         size: {
           type: 'string'
