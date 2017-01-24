@@ -137,22 +137,11 @@ export const actionReducers = {
       const lastSegment = segments.pop()
 
       if (isArrayItem(lastSegment)) {
-        const parentPath = segments.join('.')
-        const parentObject = _.get(newValue, parentPath)
-
-        if (parentObject && _.includes([null, ''], value)) {
-          valueChangeSet.set(bunsenId, {
-            value,
-            type: 'unset'
-          })
-          newValue = unset(newValue, bunsenId)
-        } else {
-          valueChangeSet.set(bunsenId, {
-            value,
-            type: 'set'
-          })
-          newValue = set(newValue, bunsenId, value)
-        }
+        valueChangeSet.set(bunsenId, {
+          value,
+          type: 'set'
+        })
+        newValue = set(newValue, bunsenId, value)
       } else if (_.includes([null, ''], value) ||
         (Array.isArray(value) && value.length === 0 && !isRequired(state.model, bunsenId))
       ) {
