@@ -1,3 +1,8 @@
+# 0.21.4
+
+* **Fixed** bugs where primitive arrays couldn't have more than one item added to them.
+
+
 # 0.21.3
 
 * **Added** Validation for renderer.labels for overriding checkbox-array labels
