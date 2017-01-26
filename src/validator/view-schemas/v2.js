@@ -409,6 +409,11 @@ export default {
               }
             },
 
+            // description: the API endpoint for list-based inputs
+            endpoint: {
+              type: 'string'
+            },
+
             // the attribute to enable local filtering
             localFiltering: {
               type: 'boolean'
@@ -446,6 +451,11 @@ export default {
                 type: 'string'
               },
               type: 'object'
+            },
+
+            // description: where in API response to find records for list-based inputs
+            recordsPath: {
+              type: 'string'
             },
 
             // the attribute of the listed items to use as a value
