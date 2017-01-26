@@ -1,6 +1,6 @@
 {
   "name": "bunsen-core",
-  "version": "0.21.4",
+  "version": "0.22.0",
   "dependencies": {
     "abbrev": {
       "version": "1.0.9",
@@ -606,9 +606,9 @@
       "resolved": "https://registry.npmjs.org/escope/-/escope-3.6.0.tgz"
     },
     "eslint": {
-      "version": "3.14.0",
+      "version": "3.14.1",
       "from": "eslint@>=3.2.1 <4.0.0",
-      "resolved": "https://registry.npmjs.org/eslint/-/eslint-3.14.0.tgz",
+      "resolved": "https://registry.npmjs.org/eslint/-/eslint-3.14.1.tgz",
       "dependencies": {
         "user-home": {
           "version": "2.0.0",

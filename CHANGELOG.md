@@ -1,3 +1,8 @@
+# 0.22.0
+
+* **Added** ability to drive selects via an arbitrary API endpoint.
+
+
 # 0.21.4
 
 * **Fixed** bugs where primitive arrays couldn't have more than one item added to them.
