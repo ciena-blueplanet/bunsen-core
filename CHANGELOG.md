@@ -1,3 +1,8 @@
+# 0.22.1
+
+* Added queryForCurrentValue to select renderer options schema
+
+
 # 0.22.0
 
 * **Added** ability to drive selects via an arbitrary API endpoint.
