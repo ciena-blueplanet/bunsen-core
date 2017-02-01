@@ -453,6 +453,11 @@ export default {
               type: 'object'
             },
 
+            // whether or not to try to query for the current value when Ember Data is used to populate options
+            queryForCurrentValue: {
+              type: 'boolean'
+            },
+
             // description: where in API response to find records for list-based inputs
             recordsPath: {
               type: 'string'
