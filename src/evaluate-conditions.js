@@ -13,11 +13,11 @@ function pathFinder (valueObj, prevPath) {
     }
     let nextInPath = _.last(path)
 
-    if (nextInPath === '') {
+    if (nextInPath === '') { // . for sibling
       path.pop()
-      if (_.last(path) === '') {
+      if (_.last(path) === '') { // .. for sibling of parent
         path.pop()
-        path.push(path.pop().replace('/', ''))
+        path.push(path.pop().replace('/', '')) // get rid of leading slash
         return prevPath(path)
       } else {
         path.push(path.pop().replace('/', ''))
@@ -28,8 +28,8 @@ function pathFinder (valueObj, prevPath) {
 }
 const possibleConditions = {
   equals: _.isEqual,
-  greaterThan: function (value, expected) { value > expected },
-  lessThan: function (value, expected) { value < expected },
+  greaterThan: function (value, expected) { return value > expected },
+  lessThan: function (value, expected) { return value < expected },
   notEqual: _.negate(_.isEqual)
 }
 // (value, condition)->boolean
