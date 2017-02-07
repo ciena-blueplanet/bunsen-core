@@ -1,11 +1,11 @@
-
+'use strict'
 var _ = require('lodash')
 var expect = require('chai').expect
 var evaluate = require('../lib/view-conditions')
 
 // Fixtures
 var simpleView = require('./fixtures/v2-views/view-with-conditional')
-var extensionsView = require('./fixtures/v2-views/view-with-extended-conditional')
+var extensionsView = require('./fixtures/v2-views/view-with-extended-conditionals')
 
 const expectedBase = {
   version: '2.0',
@@ -58,6 +58,7 @@ class ExpectedSimpleValue extends ExpectedValue {
       }
     ])
     this.lastNameIncluded = true
+    return this
   }
   includeAlias () {
     if (this.aliasIncluded === true) {
