@@ -1,35 +1,24 @@
 module.exports = {
   version: '2.0',
   type: 'form',
-  rootContainers: [
+  cells: [
     {
       label: 'Main',
-      container: 'main'
+      children: [
+        {
+          model: 'firstName'
+        },
+        {
+          extends: 'lastName'
+        },
+        {
+          extends: 'alias'
+        }
+      ]
     }
   ],
-  containers: [
-    {
-      id: 'main',
-      rows: [
-        [
-          {
-            model: 'firstName'
-          }
-        ],
-        [
-          {
-            extends: 'lastName'
-          }
-        ],
-        [
-          {
-            extends: 'alias'
-          }
-        ]
-      ]
-    },
-    {
-      id: 'lastName',
+  cellDefinitions: {
+    lastName: {
       model: 'lastName',
       conditions: [{
         unless: [{
@@ -37,8 +26,7 @@ module.exports = {
         }]
       }]
     },
-    {
-      id: 'alias',
+    alias: {
       model: 'alias',
       conditions: [{
         if: [{
@@ -47,5 +35,5 @@ module.exports = {
         }]
       }]
     }
-  ]
+  }
 }

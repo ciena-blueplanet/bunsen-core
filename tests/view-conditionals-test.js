@@ -10,22 +10,12 @@ var extensionsView = require('./fixtures/v2-views/view-with-extended-conditional
 const expectedBase = {
   version: '2.0',
   type: 'form',
-  rootContainers: [
+  cells: [
     {
       label: 'Main',
-      container: 'main'
-    }
-  ],
-  containers: [
-    {
-      id: 'main',
-      rows: [
-        [
-          {
-            model: 'firstName'
-          }
-        ]
-      ]
+      children: [{
+        model: 'firstName'
+      }]
     }
   ]
 }
@@ -52,11 +42,14 @@ class ExpectedSimpleValue extends ExpectedValue {
     if (this.lastNameIncluded) {
       return this
     }
-    this._value.containers[0].rows.push([
-      {
-        model: 'lastName'
-      }
-    ])
+    this._value.cells[0].children.push({
+      model: 'lastName',
+      conditions: [{
+        unless: [{
+          firstName: {equals: 'Cher'}
+        }]
+      }]
+    })
     this.lastNameIncluded = true
     return this
   }
@@ -64,29 +57,7 @@ class ExpectedSimpleValue extends ExpectedValue {
     if (this.aliasIncluded) {
       return this
     }
-    this._value.containers[0].rows.push([
-      {
-        model: 'alias'
-      }
-    ])
-    this.aliasIncluded = true
-    return this
-  }
-}
-
-class ExpectedExtendedValue extends ExpectedValue {
-  constructor () {
-    super(expectedBase)
-    this._value.containers.push({
-      id: 'lastName',
-      model: 'lastName',
-      conditions: [{
-        unless: [{
-          firstName: {equals: 'Cher'}
-        }]
-      }]
-    }, {
-      id: 'alias',
+    this._value.cells[0].children.push({
       model: 'alias',
       conditions: [{
         if: [{
@@ -95,6 +66,33 @@ class ExpectedExtendedValue extends ExpectedValue {
         }]
       }]
     })
+    this.aliasIncluded = true
+    return this
+  }
+}
+
+class ExpectedExtendedValue extends ExpectedValue {
+  constructor () {
+    super(expectedBase)
+    this._value.cellDefinitions = {
+      lastName: {
+        model: 'lastName',
+        conditions: [{
+          unless: [{
+            firstName: {equals: 'Cher'}
+          }]
+        }]
+      },
+      alias: {
+        model: 'alias',
+        conditions: [{
+          if: [{
+            firstName: {equals: 'Bruce'},
+            lastName: {equals: 'Wayne'}
+          }]
+        }]
+      }
+    }
     this.lastNameIncluded = false
     this.aliasIncluded = false
   }
@@ -103,9 +101,15 @@ class ExpectedExtendedValue extends ExpectedValue {
       return this
     }
 
-    this._value.containers[0].rows.push([{
-      extends: 'lastName'
-    }])
+    this._value.cells[0].children.push({
+      model: 'lastName',
+      conditions: [{
+        unless: [{
+          firstName: {equals: 'Cher'}
+        }]
+      }]
+
+    })
 
     return this
   }
@@ -115,16 +119,22 @@ class ExpectedExtendedValue extends ExpectedValue {
       return this
     }
 
-    this._value.containers[0].rows.push([{
-      extends: 'alias'
-    }])
+    this._value.cells[0].children.push({
+      model: 'alias',
+      conditions: [{
+        if: [{
+          firstName: {equals: 'Bruce'},
+          lastName: {equals: 'Wayne'}
+        }]
+      }]
+    })
 
     return this
   }
 }
 
-describe('views with conditionals when', function () {
-  describe('hide cells', function () {
+describe('views with conditionals', function () {
+  describe('hide cells when', function () {
     it('"unless" conditions are met', function () {
       var result = evaluate(simpleView, {
         firstName: 'Cher'
@@ -179,6 +189,12 @@ describe('views with conditionals when', function () {
         .includeAlias()
         .value
       )
+    })
+  })
+
+  describe('handle complex cases like', function () {
+    it('', function () {
+
     })
   })
 })
