@@ -49,7 +49,7 @@ class ExpectedSimpleValue extends ExpectedValue {
     this.aliasIncluded = false
   }
   includeLastName () {
-    if (this.lastNameIncluded === true) {
+    if (this.lastNameIncluded) {
       return this
     }
     this._value.containers[0].rows.push([
@@ -61,7 +61,7 @@ class ExpectedSimpleValue extends ExpectedValue {
     return this
   }
   includeAlias () {
-    if (this.aliasIncluded === true) {
+    if (this.aliasIncluded) {
       return this
     }
     this._value.containers[0].rows.push([
@@ -74,27 +74,111 @@ class ExpectedSimpleValue extends ExpectedValue {
   }
 }
 
-describe('views with conditionals', function () {
+class ExpectedExtendedValue extends ExpectedValue {
+  constructor () {
+    super(expectedBase)
+    this._value.containers.push({
+      id: 'lastName',
+      model: 'lastName',
+      conditions: [{
+        unless: [{
+          firstName: {equals: 'Cher'}
+        }]
+      }]
+    }, {
+      id: 'alias',
+      model: 'alias',
+      conditions: [{
+        if: [{
+          firstName: {equals: 'Bruce'},
+          lastName: {equals: 'Wayne'}
+        }]
+      }]
+    })
+    this.lastNameIncluded = false
+    this.aliasIncluded = false
+  }
+  includeLastName () {
+    if (this.lastNameIncluded) {
+      return this
+    }
+
+    this._value.containers[0].rows.push([{
+      extends: 'lastName'
+    }])
+
+    return this
+  }
+
+  includeAlias () {
+    if (this.aliasIncluded) {
+      return this
+    }
+
+    this._value.containers[0].rows.push([{
+      extends: 'alias'
+    }])
+
+    return this
+  }
+}
+
+describe('views with conditionals when', function () {
   describe('hide cells', function () {
-    it('when "unless" conditions are met', function () {
+    it('"unless" conditions are met', function () {
       var result = evaluate(simpleView, {
         firstName: 'Cher'
       })
 
       expect(result).to.be.eql(new ExpectedSimpleValue().value)
     })
-    it('when "if" conditions are not met', function () {
+    it('"if" conditions are not met', function () {
       var result = evaluate(simpleView, {
         firstName: 'Bart'
       })
-      expect(result).to.be.eql(new ExpectedSimpleValue().includeLastName().value)
+      expect(result).to.be.eql(
+        new ExpectedSimpleValue()
+        .includeLastName()
+        .value
+      )
     })
-    it('when cells extend cells with a condition that is not met', function () {
+    it('cells extend cells with a condition that is not met', function () {
+      var result = evaluate(extensionsView, {firstName: 'Bart'})
+
+      expect(result).to.be.eql(
+        new ExpectedExtendedValue()
+        .includeLastName()
+        .value
+      )
     })
   })
-  describe('show cells', function () {
-    it('', function () {
 
+  describe('show cells when', function () {
+    it('conditions are met', function () {
+      var result = evaluate(simpleView, {
+        firstName: 'Bruce',
+        lastName: 'Wayne'
+      })
+      expect(result).to.be.eql(
+        new ExpectedSimpleValue()
+        .includeLastName()
+        .includeAlias()
+        .value
+     )
+    })
+
+    it('conditions of extended cells', function () {
+      var result = evaluate(extensionsView, {
+        firstName: 'Bruce',
+        lastName: 'Wayne'
+      })
+
+      expect(result).to.be.eql(
+        new ExpectedExtendedValue()
+        .includeLastName()
+        .includeAlias()
+        .value
+      )
     })
   })
 })

@@ -55,7 +55,7 @@ function checkRootContainers (view, value, prevVal) {
 function checkContainer (view, value, path, prevVal) {
   return function (container) {
     const newContainer = _.clone(container)
-    newContainer.rows = _.map(container.rows, (row) => {
+    const rows = _.map(container.rows, (row) => {
       const newRow = row.map(cell => {
         cell = _.clone(cell)
         if (cell.conditions) {
@@ -67,15 +67,23 @@ function checkContainer (view, value, path, prevVal) {
         }
 
         if (cell.extends) {
-
-        } else {
-          return cell
+          const extContainer = view.containers.find(container => container.id === cell.extends)
+          if (extContainer.conditions) {
+            const condition = extContainer.conditions.find(checkConditions(value))
+            if (condition === undefined) {
+              return
+            }
+          }
         }
+        return cell
       }).filter(isNotUndefined)
       if (newRow.length > 0) {
         return newRow
       }
     }).filter(isNotUndefined)
+    if (rows.length > 0) {
+      newContainer.rows = rows
+    }
     return newContainer
   }
 }
