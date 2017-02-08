@@ -6,7 +6,10 @@ var evaluate = require('../lib/view-conditions')
 // Fixtures
 var simpleView = require('./fixtures/v2-views/view-with-conditional')
 var extensionsView = require('./fixtures/v2-views/view-with-extended-conditionals')
-
+var complexConditional = require('./fixtures/v2-views/complex-conditionals-view')
+var complexConditionalView = complexConditional.view
+var ExpectedComplexConditional = complexConditional.ExpectedComplexConditional
+var ExpectedValue = require('./fixtures/expected-value')
 const expectedBase = {
   version: '2.0',
   type: 'form',
@@ -20,19 +23,7 @@ const expectedBase = {
   ]
 }
 
-class ExpectedValue {
-  constructor (base) {
-    this._value = _.cloneDeep(base)
-  }
-  get value () {
-    return this._value
-  }
-}
-
 class ExpectedSimpleValue extends ExpectedValue {
-  static create () {
-    return new ExpectedSimpleValue()
-  }
   constructor () {
     super(expectedBase)
     this.lastNameIncluded = false
@@ -43,12 +34,7 @@ class ExpectedSimpleValue extends ExpectedValue {
       return this
     }
     this._value.cells[0].children.push({
-      model: 'lastName',
-      conditions: [{
-        unless: [{
-          firstName: {equals: 'Cher'}
-        }]
-      }]
+      model: 'lastName'
     })
     this.lastNameIncluded = true
     return this
@@ -58,13 +44,7 @@ class ExpectedSimpleValue extends ExpectedValue {
       return this
     }
     this._value.cells[0].children.push({
-      model: 'alias',
-      conditions: [{
-        if: [{
-          firstName: {equals: 'Bruce'},
-          lastName: {equals: 'Wayne'}
-        }]
-      }]
+      model: 'alias'
     })
     this.aliasIncluded = true
     return this
@@ -102,13 +82,7 @@ class ExpectedExtendedValue extends ExpectedValue {
     }
 
     this._value.cells[0].children.push({
-      model: 'lastName',
-      conditions: [{
-        unless: [{
-          firstName: {equals: 'Cher'}
-        }]
-      }]
-
+      model: 'lastName'
     })
 
     return this
@@ -120,13 +94,7 @@ class ExpectedExtendedValue extends ExpectedValue {
     }
 
     this._value.cells[0].children.push({
-      model: 'alias',
-      conditions: [{
-        if: [{
-          firstName: {equals: 'Bruce'},
-          lastName: {equals: 'Wayne'}
-        }]
-      }]
+      model: 'alias'
     })
 
     return this
@@ -193,8 +161,65 @@ describe('views with conditionals', function () {
   })
 
   describe('handle complex cases like', function () {
-    it('', function () {
+    it('children of an extended cell extending another cell', function () {
+      var result = evaluate(complexConditionalView, {
+        name: {
+          firstName: 'Norman',
+          lastName: 'Osborne'
+        },
+        isSuperHero: false
+      })
 
+      expect(result).to.be.eql(
+        new ExpectedComplexConditional()
+        .value
+      )
+    })
+
+    it('checking against siblings', function () {
+      var result = evaluate(complexConditionalView, {
+        name: {
+          firstName: 'Peter',
+          lastName: 'Parker'
+        }
+      })
+
+      expect(result).to.be.eql(
+        new ExpectedComplexConditional()
+        .includeAlterEgo()
+        .value
+      )
+    })
+
+    it('checking against siblings of ancestors', function () {
+      var result = evaluate(complexConditionalView, {
+        name: {
+          firstName: 'Tony',
+          lastName: 'Stark'
+        },
+        isSuperHero: true
+      })
+
+      expect(result).to.be.eql(
+        new ExpectedComplexConditional()
+        .includeAlias()
+        .value
+      )
+    })
+
+    it('an "if" and "unless" block defined on the same condtion', function () {
+      var result = evaluate(complexConditionalView, {
+        name: {
+          firstName: 'Luke',
+          lastName: 'Cage'
+        },
+        isSuperHero: true
+      })
+
+      expect(result).to.be.eql(
+        new ExpectedComplexConditional()
+        .value
+      )
     })
   })
 })

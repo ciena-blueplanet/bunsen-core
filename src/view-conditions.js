@@ -29,62 +29,73 @@ function checkConditions (value) {
   }
 }
 
-function checkRootContainers (view, value, path, prevVal) {
+function checkRootCells (view, value, path, prevVal) {
+  const meetsCondition = checkConditions(value)
   return function (cell) {
-    if (cell.conditions) { // This root cell has conditions
-      // Find a condition that has been met
-      const condition = cell.conditions.find(checkConditions(value))
-      if (condition !== undefined) {
-        if (condition.then) { // Cell has conditional properties, so add them
-          return Object.assign(_.cloneDeep(cell), condition.then)
-        }
-        return cell
-      }
-      // Returns undefined if conditions aren't met so we can filter
-    }
-
-    if (cell.children) {
-      cell = checkChildren(view, value, path)(cell)
-    }
-
-    return cell
+    return checkCell(view, value, cell, meetsCondition)
   }
 }
 
-function checkCell (cell, meetsCondition) {
-  if (cell.conditions) {
-    const condition = cell.conditions.find(meetsCondition)
-    if (condition === undefined) {
-      return
-    }
+function checkCellConditions (view, value, cell, meetsCondition) {
+  // Find a condition that has been met
+  const condition = cell.conditions.find(meetsCondition)
+  if (condition === undefined) {
+    // Returns undefined if conditions aren't met so we can filter
+    return
+  }
+  if (condition.then) { // Cell has conditional properties, so add them
+    cell = Object.assign(_.clone(cell), condition.then)
   }
   return cell
 }
 
-function checkChildren (view, value, path, prevVal) {
-  return function (cell) {
-    const newCell = _.clone(cell)
-    const meetsCondition = checkConditions(value)
-    const children = _.map(cell.children, (child) => {
-      let newChild = checkCell(child, meetsCondition)
-      if (newChild === undefined) {
-        return
-      }
-      if (child.extends) {
-        const extCell = view.cellDefinitions[child.extends]
-        newChild = checkCell(extCell, meetsCondition)
-      }
-      return newChild
-    })
-    .filter(isNotUndefined)
-
-    newCell.children = children
-    return newCell
+function expandExtendedCell (view, value, cell) {
+  let extendedCell = view.cellDefinitions[cell.extends]
+  if (extendedCell.extends) {
+    extendedCell = expandExtendedCell(view, value, extendedCell)
+    delete extendedCell.extends
   }
+
+  return _.defaults(
+    _.clone(cell),
+    extendedCell
+  )
+}
+
+function checkCell (view, value, cell, meetsCondition) {
+  if (cell.extends) {
+    cell = expandExtendedCell(view, value, cell)
+  }
+
+  if (cell.conditions) { // This cell has conditions
+    cell = checkCellConditions(view, value, cell, meetsCondition)
+    if (cell === undefined) {
+      return
+    }
+  }
+
+  if (cell.children) {
+    cell = checkChildren(view, value, cell, meetsCondition)
+  }
+
+  delete cell.conditions
+  delete cell.extends
+  return cell
+}
+
+function checkChildren (view, value, cell, meetsCondition) {
+  const newCell = _.clone(cell)
+  const children = _.map(cell.children, (child) => {
+    return checkCell(view, value, child, meetsCondition)
+  })
+  .filter(isNotUndefined)
+
+  newCell.children = children
+  return newCell
 }
 
 export default function evaluateView (view, value) {
-  const cells = view.cells.map(checkRootContainers(view, value)).filter(isNotUndefined)
+  const cells = view.cells.map(checkRootCells(view, value)).filter(isNotUndefined)
 
   return Object.assign(_.clone(view), {
     cells
