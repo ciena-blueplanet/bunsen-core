@@ -1,5 +1,4 @@
 'use strict'
-var _ = require('lodash')
 var expect = require('chai').expect
 var evaluate = require('../lib/view-conditions')
 

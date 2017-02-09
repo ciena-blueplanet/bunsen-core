@@ -1,7 +1,8 @@
 import _ from 'lodash'
 import immutable from 'seamless-immutable'
-import {CHANGE_VALUE, VALIDATION_RESOLVED, CHANGE_MODEL} from './actions'
+import {CHANGE_VALUE, VALIDATION_RESOLVED, CHANGE_MODEL, CHANGE_VIEW} from './actions'
 import evaluateConditions from './evaluate-conditions'
+import evaluateViewConditions from './view-conditions'
 import {set, unset} from './immutable-utils'
 import {dereference} from './dereference'
 import {getChangeSet} from './change-utils'
@@ -13,6 +14,7 @@ const INITIAL_VALUE = {
   value: null,
   model: {}, // Model calculated by the reducer
   baseModel: {}, // Original model recieved,
+  baseView: null,
   valueChangeSet: null
 }
 
@@ -87,13 +89,21 @@ function getDereferencedModelSchema (model) {
 
 export const actionReducers = {
   '@@redux/INIT': function (state, action) {
-    if (state && state.baseModel) {
+    if (state) {
       let initialValue = state.value || {}
-      state.baseModel = getDereferencedModelSchema(state.baseModel)
-      state.model = evaluateConditions(_.cloneDeep(state.baseModel), recursiveClean(initialValue, state.baseModel))
-      // leave this undefined to force consumers to go through the proper CHANGE_VALUE channel
-      // for value changes
-      state.value = undefined
+      if (state.baseModel) {
+        state.baseModel = getDereferencedModelSchema(state.baseModel)
+        state.model = evaluateConditions(_.cloneDeep(state.baseModel), recursiveClean(initialValue, state.baseModel))
+        // leave this undefined to force consumers to go through the proper CHANGE_VALUE channel
+        // for value changes
+        state.value = undefined
+      }
+      if (state.view && !state.baseView) {
+        state.baseView = state.view
+      }
+      if (state.baseView) {
+        state.view = evaluateViewConditions(state.baseView, initialValue)
+      }
     }
 
     const newState = initialState(state || {})
@@ -114,6 +124,20 @@ export const actionReducers = {
       baseModel: model,
       lastAction: CHANGE_MODEL,
       model: evaluateConditions(_.cloneDeep(model), state.value)
+    }, state)
+  },
+
+  /**
+   * Update the bunsen model
+   * @param {State} state - state to update
+   * @param {Action} action - action
+   * @returns {State} - updated state
+   */
+  [CHANGE_VIEW]: function (state, action) {
+    return _.defaults({
+      baseView: action.view,
+      lastAction: CHANGE_MODEL,
+      view: evaluateViewConditions(action.view, state.value)
     }, state)
   },
 
@@ -159,18 +183,26 @@ export const actionReducers = {
       }
     }
 
+    const newState = {
+      value: newValue,
+      valueChangeSet,
+      lastAction: CHANGE_VALUE
+    }
+
     let model = state.model || state.baseModel
+    let view = state.view || state.baseView
     if (valueChangeSet.size > 0) {
       const newModel = evaluateConditions(_.cloneDeep(state.baseModel), newValue)
       model = _.isEqual(state.model, newModel) ? state.model : newModel
+      if (view) {
+        const newView = evaluateViewConditions(state.baseView, newValue)
+        view = _.isEqual(state.view, newModel) ? state.view : newView
+        newState.view = view
+      }
     }
+    newState.model = model
 
-    return _.defaults({
-      value: newValue,
-      valueChangeSet,
-      model,
-      lastAction: CHANGE_VALUE
-    }, state)
+    return _.defaults(newState, state)
   },
 
   /**
