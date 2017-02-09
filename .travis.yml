@@ -21,7 +21,7 @@ env:
     secure: Y+7+1zbnXXEGd2H1KjcqcMAlrbum7w6vD4DTmt+5oaqJ+bE3Cyy/+9mrGcUzkNEZe+F14DBSt0D7Yeb2ZWFhEeUxoNPvYwPDtVGedNHOphNFh0bjwu6JpqXYA93Ckx+CsEgwqOmpkUDpOvsUO30UBLff1psRPlbajk7XORnqXdVLUaDaUVdZCcDTFS/W21sgmHXEJ7NfC/GSrQo2XRFl+U/msMLxVdBaPhyKa6HdHIeCav30GEpFvou0VzJTieQSVSb136f74dRgh260mRrJqaZg1xzX2LNvYzLNfKx0h+MpSfE5smYGtbszCCOJ/W0tabitdsbiO5Rj2CgEEMG88tyeFZWHBlSz4l4EkZodeNH+AYmyi/egkO1UxiyipVFyam7iy9gqQ5fyyXPPSW7cHSbf4D+nEqZK239FSk4QyS2uHZRkUR8Tynj6jWKWd98miiLdEAr9r5E+J6rwyEjKpkYYci6E24iZP6jzEuDPVZrlHip8QF0mPpDo8Dk/3mtjNBjobEms4muwcfgWenJmkgQ1rFRnmswvT4Mh7FZd9URvoFZO3te4a0oDAe4raklwAZ1EHriUuDK5gSrGpV5da9Z5Fz9znZp6CncEEcJayQISEjiqybsrPI3bnX+sakQMAbZ//0Ehssp8p6sEGuiSrLBYVL4DdRXXFuXXPaQOLXM=
 
 before_install:
-- npm install -g coveralls sandersky/pr-bumper
+- npm install -g coveralls pr-bumper
 
 install:
 - $(npm root -g)/pr-bumper/.travis/maybe-install.sh
