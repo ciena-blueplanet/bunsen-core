@@ -36,9 +36,6 @@ script:
 after_success:
 - $(npm root -g)/pr-bumper/.travis/publish-coverage.sh
 
-before_deploy:
-- pr-bumper bump
-
 deploy:
   provider: npm
   email: npm.ciena@gmail.com
