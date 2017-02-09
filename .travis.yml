@@ -6,7 +6,7 @@ branches:
   except:
   - /^v[0-9\.]+/
 before_install:
-- npm install -g coveralls pr-bumper
+- npm install -g coveralls sandersky/pr-bumper
 - pr-bumper check
 after_success:
 - cat coverage/lcov.info | coveralls
@@ -31,7 +31,7 @@ deploy:
     secure: DetqtRglZqss1t4aBLH+lU+/9eIQtWS8ONw3qLs7cNvWuOmNrhRZEux8mMR4yK5VMcu35EKObr5gXkr/Rxl9A4AdwihRxmYqBWaoNyhJvAnbKAi6X2DCmhy38jnRgtfLzSmKai1NzJJne28KZUqQtH8SFehu5bIvCzKw3EPLoYbXvnLlDdofkglUwXBvCWVQxmIwlRf0W9B6S/ISMdhKC0NALIY0t3Rxg3E/de7gJs8iqahd29TRT7QmKr3JE4UUv0zh3FQavdy7mtyHbTu7D6VSZOaJ1AQqovh9WELkBISUQJtERcwYEks/FssEEG8krBpJE8O9MKOzSQ/u84bsvyM9auIqrRcxoo4ovkIk4YwZANxR3e0MWxKY3RJUEayPavxoerVLwVoTcNhIl4BnoaOWNz0ZneGEKFp91HEn0YhAxCSn+KRa+QkNcENKbHQ8LoKDl+L7Jyg7JJSSMAqlp9phhkG96ymotj7QTerMmjquSavm2GZUl9RQ0Lvu52IywFCJKtfjZtMKlwUu9RyJ+/MBfIbQsrkF4VHHxZmfYzg/fDYm2NfS4tU/MDICDHAy40qu02TXV1vD0MnONhZhh7Fwse5C+rh/gBTZXhPOc0+JJIY93Is4IOg70q2Pb3tceGlv92HE3MX0XhBU8AIAJdDVYB/a4OZ1CXkkK4O+zes=
   on:
     branch: master
-    tags: false
+    tags: true
 notifications:
   slack:
     secure: ePUtSN72jEK5iQAZrHhheTy5wN4RcFYaN6Vk57C0k7fzjk2vf6Rm7S9R0aOgXJFFEHNeMXcpDS9wdwt8e7/Rz83FWCPwApz/WEnpj7NOOji15g2jWMYDbUDzjEhcV9Rkm1pJGDIRZKaDHF6MvMNn7VLpuV3vlTTJ1NPvufdSf1RoTXKDoablANL9te78MpApACoQmXRNQ5wk4bZV6OrPvClQbeQjKuXwMJzAVwbjI7XBsULuKnJxPQWOAYmf/aOoQELMgG4wfcqDuBGTJpclAT+igOBrQ4BcaOiEKVKj9ZSz3OIlCyvV6ol9jeEtMrW+FVRGeqO4Z/S/hST9kCSQnkU/BMRvfaFBlwuoJ0s+GDFCU0Ut4QfZlpdBov/XWigNMHLsf/r8dysJPTv5qO6gM525Dn5tjqF5Z68OSJcFG8/H2wbnx3lOt6USxj57l8TtorK4fQHAaW7cpjWnTNTeowmiRA6pn9FkzQwp8v2MFTZKq/rQkW8LSuVccw5LwZkrZywRn8m9ZQcaQN6FsN55bdmigQup/GcT0yqGSuOviqxmiqAktDXX5MUHt4821loPwNhHeQjmJBnWXQqR9T5QuTMjfuBZCnGYa5p5ytv1PdrCY3ZUCv8OZIcPJVmGxdpz1eQimXG0oK6Fv3W6PDIZUEDPINCN24jb4xxm/U46rT4=
