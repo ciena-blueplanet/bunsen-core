@@ -1,28 +1,44 @@
 language: node_js
+
 sudo: false
+
 node_js:
-- '5.11.1'
-branches:
-  except:
-  - /^v[0-9\.]+/
-before_install:
-- npm install -g coveralls sandersky/pr-bumper
-- pr-bumper check
-after_success:
-- cat coverage/lcov.info | coveralls
+- '5.11'
+- '6.9'
+- stable
+
 addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.8
+
 env:
   matrix:
   - CXX=g++-4.8
   global:
     secure: Y+7+1zbnXXEGd2H1KjcqcMAlrbum7w6vD4DTmt+5oaqJ+bE3Cyy/+9mrGcUzkNEZe+F14DBSt0D7Yeb2ZWFhEeUxoNPvYwPDtVGedNHOphNFh0bjwu6JpqXYA93Ckx+CsEgwqOmpkUDpOvsUO30UBLff1psRPlbajk7XORnqXdVLUaDaUVdZCcDTFS/W21sgmHXEJ7NfC/GSrQo2XRFl+U/msMLxVdBaPhyKa6HdHIeCav30GEpFvou0VzJTieQSVSb136f74dRgh260mRrJqaZg1xzX2LNvYzLNfKx0h+MpSfE5smYGtbszCCOJ/W0tabitdsbiO5Rj2CgEEMG88tyeFZWHBlSz4l4EkZodeNH+AYmyi/egkO1UxiyipVFyam7iy9gqQ5fyyXPPSW7cHSbf4D+nEqZK239FSk4QyS2uHZRkUR8Tynj6jWKWd98miiLdEAr9r5E+J6rwyEjKpkYYci6E24iZP6jzEuDPVZrlHip8QF0mPpDo8Dk/3mtjNBjobEms4muwcfgWenJmkgQ1rFRnmswvT4Mh7FZd9URvoFZO3te4a0oDAe4raklwAZ1EHriUuDK5gSrGpV5da9Z5Fz9znZp6CncEEcJayQISEjiqybsrPI3bnX+sakQMAbZ//0Ehssp8p6sEGuiSrLBYVL4DdRXXFuXXPaQOLXM=
+
+before_install:
+- npm install -g coveralls sandersky/pr-bumper
+
+install:
+- $(npm root -g)/pr-bumper/.travis/maybe-install.sh
+
+before_script:
+- $(npm root -g)/pr-bumper/.travis/maybe-check-scope.sh
+
+script:
+- $(npm root -g)/pr-bumper/.travis/maybe-test.sh
+- $(npm root -g)/pr-bumper/.travis/maybe-bump-version.sh
+
+after_success:
+- $(npm root -g)/pr-bumper/.travis/publish-coverage.sh
+
 before_deploy:
 - pr-bumper bump
+
 deploy:
   provider: npm
   email: npm.ciena@gmail.com
@@ -30,8 +46,10 @@ deploy:
   api_key:
     secure: DetqtRglZqss1t4aBLH+lU+/9eIQtWS8ONw3qLs7cNvWuOmNrhRZEux8mMR4yK5VMcu35EKObr5gXkr/Rxl9A4AdwihRxmYqBWaoNyhJvAnbKAi6X2DCmhy38jnRgtfLzSmKai1NzJJne28KZUqQtH8SFehu5bIvCzKw3EPLoYbXvnLlDdofkglUwXBvCWVQxmIwlRf0W9B6S/ISMdhKC0NALIY0t3Rxg3E/de7gJs8iqahd29TRT7QmKr3JE4UUv0zh3FQavdy7mtyHbTu7D6VSZOaJ1AQqovh9WELkBISUQJtERcwYEks/FssEEG8krBpJE8O9MKOzSQ/u84bsvyM9auIqrRcxoo4ovkIk4YwZANxR3e0MWxKY3RJUEayPavxoerVLwVoTcNhIl4BnoaOWNz0ZneGEKFp91HEn0YhAxCSn+KRa+QkNcENKbHQ8LoKDl+L7Jyg7JJSSMAqlp9phhkG96ymotj7QTerMmjquSavm2GZUl9RQ0Lvu52IywFCJKtfjZtMKlwUu9RyJ+/MBfIbQsrkF4VHHxZmfYzg/fDYm2NfS4tU/MDICDHAy40qu02TXV1vD0MnONhZhh7Fwse5C+rh/gBTZXhPOc0+JJIY93Is4IOg70q2Pb3tceGlv92HE3MX0XhBU8AIAJdDVYB/a4OZ1CXkkK4O+zes=
   on:
-    branch: master
+    all_branches: true
+    node: '6.9.1'
     tags: true
+
 notifications:
   slack:
     secure: ePUtSN72jEK5iQAZrHhheTy5wN4RcFYaN6Vk57C0k7fzjk2vf6Rm7S9R0aOgXJFFEHNeMXcpDS9wdwt8e7/Rz83FWCPwApz/WEnpj7NOOji15g2jWMYDbUDzjEhcV9Rkm1pJGDIRZKaDHF6MvMNn7VLpuV3vlTTJ1NPvufdSf1RoTXKDoablANL9te78MpApACoQmXRNQ5wk4bZV6OrPvClQbeQjKuXwMJzAVwbjI7XBsULuKnJxPQWOAYmf/aOoQELMgG4wfcqDuBGTJpclAT+igOBrQ4BcaOiEKVKj9ZSz3OIlCyvV6ol9jeEtMrW+FVRGeqO4Z/S/hST9kCSQnkU/BMRvfaFBlwuoJ0s+GDFCU0Ut4QfZlpdBov/XWigNMHLsf/r8dysJPTv5qO6gM525Dn5tjqF5Z68OSJcFG8/H2wbnx3lOt6USxj57l8TtorK4fQHAaW7cpjWnTNTeowmiRA6pn9FkzQwp8v2MFTZKq/rQkW8LSuVccw5LwZkrZywRn8m9ZQcaQN6FsN55bdmigQup/GcT0yqGSuOviqxmiqAktDXX5MUHt4821loPwNhHeQjmJBnWXQqR9T5QuTMjfuBZCnGYa5p5ytv1PdrCY3ZUCv8OZIcPJVmGxdpz1eQimXG0oK6Fv3W6PDIZUEDPINCN24jb4xxm/U46rT4=
