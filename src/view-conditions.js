@@ -42,8 +42,9 @@ function checkCellConditions (view, value, cell) {
     // Returns undefined if conditions aren't met so we can filter
     return
   }
+  cell = _.clone(cell)
   if (condition.then) { // Cell has conditional properties, so add them
-    cell = Object.assign(_.clone(cell), condition.then)
+    cell = Object.assign(cell, condition.then)
   }
   return cell
 }
@@ -53,6 +54,11 @@ function expandExtendedCell (view, cell) {
   if (extendedCell.extends) {
     extendedCell = expandExtendedCell(view, extendedCell)
     delete extendedCell.extends
+  }
+
+  if (extendedCell.itemCell && extendedCell.itemCell.extends) {
+    extendedCell = _.clone(extendedCell)
+    extendedCell.itemCell = expandExtendedCell(view, extendedCell.itemCell)
   }
 
   if (extendedCell.children) {

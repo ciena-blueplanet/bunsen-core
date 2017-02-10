@@ -190,13 +190,12 @@ export const actionReducers = {
     }
 
     let model = state.model || state.baseModel
-    let view = state.view || state.baseView
     if (valueChangeSet.size > 0) {
       const newModel = evaluateConditions(_.cloneDeep(state.baseModel), newValue)
       model = _.isEqual(state.model, newModel) ? state.model : newModel
-      if (view) {
+      if (state.baseView) {
         const newView = evaluateViewConditions(state.baseView, newValue)
-        view = _.isEqual(state.view, newModel) ? state.view : newView
+        const view = _.isEqual(state.view, newView) ? state.view : newView
         newState.view = view
       }
     }
