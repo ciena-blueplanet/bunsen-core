@@ -7,6 +7,7 @@
 import _ from 'lodash'
 import {pathFinder, meetsCondition} from './utils/conditionals'
 
+/* eslint-disable complexity */
 export default function evaluate (model, value, getPreviousValue) {
   // In some error conditions, model might be empty, and not crashing helps in debugging
   // because the validation error can actually be seen then -- ARM
@@ -56,11 +57,11 @@ export default function evaluate (model, value, getPreviousValue) {
   let depsMet = {}
   let props = {}
 
-  const getValue = pathFinder(value, getPreviousValue)
-
   if (!model.properties) {
     return retModel
   }
+
+  const getValue = pathFinder(value, getPreviousValue)
 
   retModel.properties = _.clone(model.properties)
   _.forEach(retModel.properties, function (subSchema, propName) {

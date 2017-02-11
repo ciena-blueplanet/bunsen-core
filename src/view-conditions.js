@@ -1,12 +1,23 @@
-
 import {meetsCondition} from './utils/conditionals'
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 
+/**
+ * Function used for filtering out undefined values from arrays.
+ *
+ * @param {any} item Item we want to check the value of
+ * @returns {boolean} True if the provided value is not undefined
+ */
 function isNotUndefined (item) {
   return item !== undefined
 }
 
+/**
+ * Check a list conditions for a cell against a provided value
+ *
+ * @param {ValueWrapper} value The wrapped value we want to check the conditions against
+ * @returns {Function} Function that returns true if a condition has been met
+ */
 function checkConditions (value) {
   return function (condition) {
     const metCondition = conditionItem =>
@@ -28,12 +39,27 @@ function checkConditions (value) {
   }
 }
 
+/**
+ * Check the root cells of a view
+ *
+ * @param {View} view View we are checking
+ * @param {ValueWrapper} value The wrapped value we want to check the conditions against
+ * @returns {Function} Iterator function to check cells
+ */
 function checkRootCells (view, value) {
   return function (cell) {
-    return checkCell(view, value, cell)
+    return checkCell(view, value, Immutable.from(cell)).asMutable()
   }
 }
 
+/**
+ * Check a cell for conditions and apply any conditional properties if a condition is met.
+ *
+ * @param {View} view View the cell is a part of
+ * @param {ValueWrapper} value The wrapped value we want to check the conditions against
+ * @param {Cell} cell Cell to check
+ * @returns {Cell} The cell after conditions have been processed. If a condition is not met undefined is returned
+ */
 function checkCellConditions (view, value, cell) {
   // Find a condition that has been met
   const meetsCondition = checkConditions(value)
@@ -42,27 +68,33 @@ function checkCellConditions (view, value, cell) {
     // Returns undefined if conditions aren't met so we can filter
     return
   }
-  cell = _.clone(cell)
+
   if (condition.then) { // Cell has conditional properties, so add them
-    cell = Object.assign(cell, condition.then)
+    cell = Immutable.merge(cell, condition.then)
   }
   return cell
 }
 
+/**
+ * Copy properties from an extended cell. Extends child cells recrusively.
+ *
+ * @param {View} view View the cell is a part of
+ * @param {Cell} cell Cell to copy properties onto
+ * @returns {Cell} Resulting cell after applying properties from extended cells
+ */
 function expandExtendedCell (view, cell) {
+  const cellProps = {}
   let extendedCell = view.cellDefinitions[cell.extends]
   if (extendedCell.extends) {
-    extendedCell = expandExtendedCell(view, extendedCell)
-    delete extendedCell.extends
+    extendedCell = Immutable.without(expandExtendedCell(view, extendedCell), 'extends')
   }
 
   if (extendedCell.itemCell && extendedCell.itemCell.extends) {
-    extendedCell = _.clone(extendedCell)
-    extendedCell.itemCell = expandExtendedCell(view, extendedCell.itemCell)
+    cellProps.itemCell = expandExtendedCell(view, extendedCell.itemCell)
   }
 
   if (extendedCell.children) {
-    extendedCell.children = extendedCell.children.map(child => {
+    cellProps.children = extendedCell.children.map(child => {
       if (child.extends) {
         return expandExtendedCell(view, child)
       }
@@ -70,12 +102,17 @@ function expandExtendedCell (view, cell) {
     })
   }
 
-  return _.defaults(
-    _.clone(cell),
-    extendedCell
-  )
+  return Immutable.merge(cell, extendedCell, cellProps)
 }
 
+/**
+ * Check a cell of a view to make sure the value meets any conditions the cell provides
+ *
+ * @param {View} view View we are checking
+ * @param {ValueWrapper} value The wrapped value we want to check the conditions against
+ * @param {Cell} cell Cell to check
+ * @returns {Cell} Cell with properties from any extended cells
+ */
 function checkCell (view, value, cell) {
   if (cell.extends) {
     cell = expandExtendedCell(view, cell)
@@ -94,31 +131,55 @@ function checkCell (view, value, cell) {
     cell = checkChildren(view, value, cell)
   }
 
-  delete cell.conditions
-  delete cell.extends
-  return cell
+  return Immutable.without(cell, 'conditions', 'extends')
 }
 
+/**
+ * Check conditions of a cell's children
+ *
+ * @param {View} view View we are checking
+ * @param {ValueWrapper} value The wrapped value we want to check the conditions against
+ * @param {Cell} cell Cell to check
+ * @returns {Cell} Cell with the children checked
+ */
 function checkChildren (view, value, cell) {
-  const newCell = _.clone(cell)
   const children = _.map(cell.children, (child) => {
     return checkCell(view, value, child)
   })
   .filter(isNotUndefined)
 
-  newCell.children = children
-  return newCell
+  return Immutable.set(cell, 'children', children)
 }
 
+/**
+ * Apply conditions (and extensions) to the cells of a view
+ *
+ * @export
+ * @param {View} view View to process
+ * @param {any} value The value we want to check conditions against
+ * @returns {View} View after conditions have been applied
+ */
 export default function evaluateView (view, value) {
-  value = new ValueWrapper(value, [])
-  const cells = view.cells.map(checkRootCells(view, value)).filter(isNotUndefined)
+  const wrappedValue = new ValueWrapper(value, [])
+  const immutableView = Immutable.from(view)
+
+  const cells = _.chain(view.cells)
+    .map(checkRootCells(immutableView, wrappedValue))
+    .filter(isNotUndefined)
+    .value()
 
   return Object.assign(_.clone(view), {
     cells
   })
 }
-
+/* eslint-disable complexity */
+/**
+ * Find how many path elements we have to go back in order to find the absolute path
+ *
+ * @param {string[]} path Array of path elements. THIS ARRAY IS MUTATED BY THE FUNCTION
+ * @param {number} [index=0] How many elements we've already gone back
+ * @returns {number} How many elements back we need go
+ */
 function findRelativePath (path, index = 0) {
   let nextInPath = _.last(path)
 
@@ -145,7 +206,13 @@ function findRelativePath (path, index = 0) {
     }
   }
 }
+/* eslint-enable complexity */
 
+/**
+ * Class to wrap value objects to find values based on relative and absolute paths
+ *
+ * @class ValueWrapper
+ */
 class ValueWrapper {
   static pathAsArray (path) {
     if (!Array.isArray(path)) {
@@ -153,10 +220,12 @@ class ValueWrapper {
     }
     return path
   }
+
   constructor (value, curPath) {
     this.value = value
-    this.path = Immutable(ValueWrapper.pathAsArray(curPath))
+    this.path = ValueWrapper.pathAsArray(curPath)
   }
+
   get (path) {
     let absolutePath
     if (path === undefined) {
