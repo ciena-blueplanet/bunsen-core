@@ -136,7 +136,7 @@ export const actionReducers = {
   [CHANGE_VIEW]: function (state, action) {
     return _.defaults({
       baseView: action.view,
-      lastAction: CHANGE_MODEL,
+      lastAction: CHANGE_VIEW,
       view: evaluateViewConditions(action.view, state.value)
     }, state)
   },

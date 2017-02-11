@@ -26,7 +26,7 @@ export function changeModel (model) {
 
 export function changeView (view) {
   return {
-    type: CHANGE_MODEL,
+    type: CHANGE_VIEW,
     view
   }
 }
