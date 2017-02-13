@@ -1,6 +1,7 @@
 import './typedefs'
 import _ from 'lodash'
 
+/* eslint-disable complexity */
 /**
  * Check if the given model includes a required field
  * @param {Model} model - the model definition
@@ -31,6 +32,7 @@ export function doesModelContainRequiredField (model) {
     }
   }
 }
+/* eslint-enable complexity */
 
 /**
  * Get the user-visible label from the model instance
@@ -64,7 +66,7 @@ export function getLabel (label, model, id) {
  * @returns {String} the proper dotted path in the model schema (or undefined if it's a bad path)
  */
 export function getModelPath (reference, dependencyReference) {
-  const pattern = /^[^\.](.*[^\.])?$/
+  const pattern = /^[^\.](.*[^\.])?$/ // eslint-disable-line no-useless-escape
   let path = pattern.test(reference) ? `properties.${reference.split('.').join('.properties.')}` : undefined
 
   if (typeof path === 'string' || path instanceof String) {
@@ -130,6 +132,7 @@ export function findValue (obj, valuePath, startPath = '') {
   return _.get(obj, absValueKey)
 }
 
+/* eslint-disable complexity */
 /**
  * finds variables in orch-style queryParam values
  * @param {Object} valueObj - the value object to mine for query values
@@ -162,6 +165,7 @@ export function parseVariables (valueObj, queryJSON, startPath = '', allowEmpty 
 
   return queryJSON
 }
+/* eslint-enable complexity */
 
 /**
  * grooms the query for variables using a ${variableName} syntax and populates the values

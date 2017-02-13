@@ -95,19 +95,26 @@ function getSchema (pathStack, model, resolveRef) {
   return {}
 }
 
-function findDefaults (value, path, model, resolveRef, required) {
-  let schema
-
+function findSchema (model, path, resolveRef) {
   if (model.$ref !== undefined) {
-    schema = getSchema(null, model, resolveRef)
+    return getSchema(null, model, resolveRef)
   } else if (path === null) {
-    schema = model
-  } else {
-    const pathStack = path && path.split('.').reverse() || []
-    schema = getSchema(pathStack, model, resolveRef)
+    return model
   }
+
+  const pathStack = path && path.split('.').reverse() || []
+  return getSchema(pathStack, model, resolveRef)
+}
+
+function isObjectSchema (schema) {
+  return schema.type === 'object' || schema.properties
+}
+
+function findDefaults (value, path, model, resolveRef, required) {
+  const schema = findSchema(model, path, resolveRef)
+
   const schemaDefault = _.clone(schema.default)
-  if (model.type === 'object' || model.properties) { // Recursing only makes sense for objects
+  if (isObjectSchema(model)) { // Recursing only makes sense for objects
     let subSchemaDefaults = {}
     let hasDefaults = required || false
     _.forEach(schema.properties, function (subSchema, propName) {
@@ -124,7 +131,7 @@ function findDefaults (value, path, model, resolveRef, required) {
       }
     })
     if (hasDefaults) { // If we didn't find any defaults, we don't want to try to modify the return
-      return _.defaults(schemaDefault || {}, subSchemaDefaults)
+      return _.defaults({}, schemaDefault, subSchemaDefaults)
     }
   } else if (value !== undefined) {
     return value
@@ -132,6 +139,18 @@ function findDefaults (value, path, model, resolveRef, required) {
   return schemaDefault
 }
 
+function isEmptyValue (value) {
+  return [undefined, null].indexOf(value) !== -1 ||
+  (_.isObject(value) && Object.keys(value).length === 0) // Check if empty object
+}
+
+function dispatchUpdatedResults (dispatch, results) {
+  const aggregatedResult = aggregateResults(results)
+  // TODO: Dispatch an err action
+  dispatch(updateValidationResults(aggregatedResult))
+}
+
+/*eslint-disable complexity */
 /**
  * Validate action
  * @param {String} bunsenId - bunsen ID of what changed
@@ -140,6 +159,7 @@ function findDefaults (value, path, model, resolveRef, required) {
  * @param {Array<Function>} validators - custom validators
  * @param {Function} [all=Promise.all] - framework specific Promise.all method
  * @param {Boolean} [forceValidation=false] - whether or not to force validation
+ * @returns {Function} Function to asynchronously validate
  */
 export function validate (
   bunsenId, inputValue, renderModel, validators, all = Promise.all, forceValidation = false
@@ -147,10 +167,7 @@ export function validate (
   return function (dispatch, getState) {
     let formValue = getState().value
 
-    const isInputValueEmpty = (
-      [undefined, null].indexOf(inputValue) !== -1 ||
-      (_.isObject(inputValue) && Object.keys(inputValue).length === 0) // Check if empty object
-    )
+    const isInputValueEmpty = isEmptyValue(inputValue)
 
     const previousValue = _.get(formValue, bunsenId)
 
@@ -159,7 +176,6 @@ export function validate (
     if (isInputValueEmpty && previousValue === undefined) {
       const resolveRef = schemaFromRef(renderModel.definitions)
       const defaultValue = findDefaults(inputValue, bunsenId, renderModel, resolveRef, false)
-
       if (bunsenId === null && defaultValue === undefined) {
         inputValue = {}
       } else if (defaultValue !== undefined) {
@@ -187,7 +203,8 @@ export function validate (
     })
 
     // Promise.all fails in Node when promises array is empty
-    if (all === Promise.all && promises.length === 0) {
+    if (promises.length === 0) {
+      dispatchUpdatedResults(dispatch, [result])
       return
     }
 
@@ -195,10 +212,7 @@ export function validate (
       .then((snapshots) => {
         const results = _.map(snapshots, 'value')
         results.push(result)
-
-        const aggregatedResult = aggregateResults(results)
-        // TODO: Dispatch an err action
-        dispatch(updateValidationResults(aggregatedResult))
+        dispatchUpdatedResults(dispatch, results)
       })
   }
 }

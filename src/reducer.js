@@ -60,9 +60,11 @@ function immutableOnce (object) {
   return immutableObject
 }
 
+/* eslint-disable complexity */
 /**
  * We want to go through a state.value object and pull out any references to null
  * @param {Object} value - our current value POJO
+ * @param {Object} model Schema for the given value
  * @returns {Object} a value cleaned of any `null`s
  */
 function recursiveClean (value, model) {
@@ -218,6 +220,7 @@ export const actionReducers = {
     }, state)
   }
 }
+/* eslint-enable complexity */
 
 /**
  * Update the state

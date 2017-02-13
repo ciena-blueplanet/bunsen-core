@@ -98,6 +98,7 @@ function _validateRootAttributes (view, model, cellValidator) {
   return aggregateResults(results)
 }
 
+/* eslint-disable complexity */
 /**
  * Validate the given view
  * @param {String|View} view - the view to validate (as an object or JSON string)
@@ -161,5 +162,6 @@ export function validate (view, model, renderers, validateRenderer, validateMode
 
   return aggregateResults(results)
 }
+/* eslint-enable complexity */
 
 export default validate

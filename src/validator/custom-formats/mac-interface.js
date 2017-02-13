@@ -1,6 +1,7 @@
 import isMacAddress from './mac-address'
 import {isMacMaskValid, macAddressBits, macMulticastMaskRegex, isMacMulticastAddress} from './utils'
 
+/* eslint-disable complexity */
 /**
  * Validate value as an MAC address interface
  * @param {Any} value - value to validate
@@ -30,3 +31,4 @@ export default function (value) {
 
   return !/^(0+|1+)$/.test(hostBits)
 }
+/* eslint-enable complexity */

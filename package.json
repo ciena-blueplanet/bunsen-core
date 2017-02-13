@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "babel src -d lib --presets es2015 --plugins add-module-exports",
-    "lint": "eslint *.js lib tests",
+    "lint": "eslint *.js src lib tests",
     "test": "npm run lint && npm run utest",
     "utest": "npm run build && istanbul cover _mocha -- --recursive tests"
   },

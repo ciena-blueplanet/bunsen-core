@@ -39,8 +39,8 @@ export function hexToBinary (length, hexString) {
  * @returns {Boolean} whether or not network mask is valid
  */
 export function networkMaskValid (value, ipv6 = false) {
-  const max = ipv6 ? networkMaskIpv6Max: networkMaskIpv4Max
-  const min = ipv6 ? networkMaskIpv6Min: networkMaskIpv4Min
+  const max = ipv6 ? networkMaskIpv6Max : networkMaskIpv4Max
+  const min = ipv6 ? networkMaskIpv6Min : networkMaskIpv4Min
   const networkMask = parseInt(value, 10)
 
   return (
