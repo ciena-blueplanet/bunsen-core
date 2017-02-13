@@ -1,3 +1,4 @@
+import './typedefs'
 import {meetsCondition} from './utils/conditionals'
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
@@ -42,7 +43,7 @@ function checkConditions (value) {
 /**
  * Check the root cells of a view
  *
- * @param {View} view View we are checking
+ * @param {BunsenView} view View we are checking
  * @param {ValueWrapper} value The wrapped value we want to check the conditions against
  * @returns {Function} Iterator function to check cells
  */
@@ -55,10 +56,10 @@ function checkRootCells (view, value) {
 /**
  * Check a cell for conditions and apply any conditional properties if a condition is met.
  *
- * @param {View} view View the cell is a part of
+ * @param {BunsenView} view View the cell is a part of
  * @param {ValueWrapper} value The wrapped value we want to check the conditions against
- * @param {Cell} cell Cell to check
- * @returns {Cell} The cell after conditions have been processed. If a condition is not met undefined is returned
+ * @param {BunsenCell} cell Cell to check
+ * @returns {BunsenCell} The cell after conditions have been processed. If a condition is not met undefined is returned
  */
 function checkCellConditions (view, value, cell) {
   // Find a condition that has been met
@@ -78,9 +79,9 @@ function checkCellConditions (view, value, cell) {
 /**
  * Copy properties from an extended cell. Extends child cells recrusively.
  *
- * @param {View} view View the cell is a part of
- * @param {Cell} cell Cell to copy properties onto
- * @returns {Cell} Resulting cell after applying properties from extended cells
+ * @param {BunsenView} view View the cell is a part of
+ * @param {BunsenCell} cell Cell to copy properties onto
+ * @returns {BunsenCell} Resulting cell after applying properties from extended cells
  */
 function expandExtendedCell (view, cell) {
   const cellProps = {}
@@ -108,10 +109,10 @@ function expandExtendedCell (view, cell) {
 /**
  * Check a cell of a view to make sure the value meets any conditions the cell provides
  *
- * @param {View} view View we are checking
+ * @param {BunsenView} view View we are checking
  * @param {ValueWrapper} value The wrapped value we want to check the conditions against
- * @param {Cell} cell Cell to check
- * @returns {Cell} Cell with properties from any extended cells
+ * @param {BunsenCell} cell Cell to check
+ * @returns {BunsenCell} Cell with properties from any extended cells
  */
 function checkCell (view, value, cell) {
   if (cell.extends) {
@@ -137,10 +138,10 @@ function checkCell (view, value, cell) {
 /**
  * Check conditions of a cell's children
  *
- * @param {View} view View we are checking
+ * @param {BunsenView} view View we are checking
  * @param {ValueWrapper} value The wrapped value we want to check the conditions against
- * @param {Cell} cell Cell to check
- * @returns {Cell} Cell with the children checked
+ * @param {BunsenCell} cell Cell to check
+ * @returns {BunsenCell} Cell with the children checked
  */
 function checkChildren (view, value, cell) {
   const children = _.map(cell.children, (child) => {
@@ -155,9 +156,9 @@ function checkChildren (view, value, cell) {
  * Apply conditions (and extensions) to the cells of a view
  *
  * @export
- * @param {View} view View to process
+ * @param {BunsenView} view View to process
  * @param {any} value The value we want to check conditions against
- * @returns {View} View after conditions have been applied
+ * @returns {BunsenView} View after conditions have been applied
  */
 export default function evaluateView (view, value) {
   const wrappedValue = new ValueWrapper(value, [])
@@ -226,6 +227,17 @@ class ValueWrapper {
     this.path = ValueWrapper.pathAsArray(curPath)
   }
 
+  /**
+   * Get the value at an absolute or relative path. Paths with a leading './' or '../' are treated as relative,
+   * and others are treated as absolute.
+   *
+   * Relative paths are relative to a stored path. To add to the path use the pushPath method.
+   *
+   * @param {string | string[]} path Path to the desired value.
+   * @returns {any} Value at the given path.
+   *
+   * @memberOf ValueWrapper
+   */
   get (path) {
     let absolutePath
     if (path === undefined) {
@@ -248,6 +260,14 @@ class ValueWrapper {
     return _.get(this.value, absolutePath.join('.'))
   }
 
+  /**
+   * Creates another value wrapper with a relative path
+   *
+   * @param {string | string[]} path Element(s) to add to the currently stored path
+   * @returns {ValueWrapper} A value wrapper with the new path elements
+   *
+   * @memberOf ValueWrapper
+   */
   pushPath (path) {
     if (path === undefined) {
       return this
