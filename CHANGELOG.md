@@ -1,3 +1,6 @@
+# 0.22.2
+**Fixed** issue where a check for required array properties was not following the recursive schema definition correctly
+
 # 0.22.1
 
 * Added queryForCurrentValue to select renderer options schema
