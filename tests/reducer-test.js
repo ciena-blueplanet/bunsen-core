@@ -355,6 +355,43 @@ describe('reducer', function () {
       changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: [], bunsenId: 'bar.baz'})
       expect(changedState.value).to.eql({foo: ['foo item'], bar: {baz: []}})
     })
+    it('handles arrays within arrays', function () {
+      var model = {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'array',
+            items: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  bar: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  }
+                },
+                required: ['bar']
+              }
+            }
+          }
+        },
+        required: ['foo']
+      }
+      var initialState = {
+        errors: {},
+        validationResult: {warnings: [], errors: []},
+        foo: [[{
+          bar: ['some array element']
+        }]],
+        baseModel: model,
+        model
+      }
+      var changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: [], bunsenId: 'foo.0.0.bar'})
+      expect(changedState.value).to.eql({foo: [[{bar: []}]]})
+    })
   })
 
   describe('can set the validation', function () {
