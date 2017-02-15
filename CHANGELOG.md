@@ -1,3 +1,7 @@
+# 0.23.0
+Added processing of conditional cells in views. Conditions follow the same format as the ones for model properties.
+
+
 # 0.22.2
 **Fixed** issue where a check for required array properties was not following the recursive schema definition correctly
 

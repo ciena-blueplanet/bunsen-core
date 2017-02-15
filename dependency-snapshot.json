@@ -1,6 +1,6 @@
 {
   "name": "bunsen-core",
-  "version": "0.22.2",
+  "version": "0.23.0",
   "dependencies": {
     "abbrev": {
       "version": "1.0.9",
@@ -1811,9 +1811,9 @@
       "dev": true
     },
     "seamless-immutable": {
-      "version": "6.3.0",
-      "from": "seamless-immutable@>=6.1.1 <7.0.0",
-      "resolved": "https://registry.npmjs.org/seamless-immutable/-/seamless-immutable-6.3.0.tgz"
+      "version": "7.0.1",
+      "from": "seamless-immutable@>=7.0.1 <8.0.0",
+      "resolved": "https://registry.npmjs.org/seamless-immutable/-/seamless-immutable-7.0.1.tgz"
     },
     "set-immediate-shim": {
       "version": "1.0.1",
