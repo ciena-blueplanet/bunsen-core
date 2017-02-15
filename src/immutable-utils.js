@@ -26,6 +26,7 @@ function unsetObject (obj, path, segments) {
   return obj.set(key, newValue)
 }
 
+/* eslint-disable complexity */
 export function set (item, path, value) {
   const segments = path.split('.')
   const segment = segments.shift()
@@ -53,6 +54,7 @@ export function set (item, path, value) {
 
   return object.set(segment, newValue)
 }
+/* eslint-enable complexity */
 
 /**
  * Unset value in an object given a path to the key to unset

@@ -5,40 +5,9 @@
  */
 
 import _ from 'lodash'
+import {pathFinder, meetsCondition} from './utils/conditionals'
 
-function pathFinder (valueObj, prevPath) {
-  return function (path) {
-    if (!Array.isArray(path)) {
-      path = path.split('.').reverse()
-    }
-    let nextInPath = _.last(path)
-
-    if (nextInPath === '') {
-      path.pop()
-      if (_.last(path) === '') {
-        path.pop()
-        path.push(path.pop().replace('/', ''))
-        return prevPath(path)
-      } else {
-        path.push(path.pop().replace('/', ''))
-      }
-    }
-    return _.get(valueObj, path.reverse().join('.'))
-  }
-}
-const possibleConditions = {
-  equals: _.isEqual,
-  greaterThan: function (value, expected) { value > expected },
-  lessThan: function (value, expected) { value < expected },
-  notEqual: _.negate(_.isEqual)
-}
-// (value, condition)->boolean
-function meetsCondition (value, condition) {
-  return _.reduce(condition, function (memo, expected, conditionName) {
-    return memo || possibleConditions[conditionName](value, expected)
-  }, false)
-}
-
+/* eslint-disable complexity */
 export default function evaluate (model, value, getPreviousValue) {
   // In some error conditions, model might be empty, and not crashing helps in debugging
   // because the validation error can actually be seen then -- ARM
@@ -88,11 +57,11 @@ export default function evaluate (model, value, getPreviousValue) {
   let depsMet = {}
   let props = {}
 
-  const getValue = pathFinder(value, getPreviousValue)
-
   if (!model.properties) {
     return retModel
   }
+
+  const getValue = pathFinder(value, getPreviousValue)
 
   retModel.properties = _.clone(model.properties)
   _.forEach(retModel.properties, function (subSchema, propName) {

@@ -3,6 +3,8 @@ import './typedefs'
 import {
   CHANGE_MODEL,
   changeModel,
+  CHANGE_VIEW,
+  changeView,
   CHANGE_VALUE,
   changeValue,
   updateValidationResults,
@@ -13,6 +15,8 @@ import {
 export const actions = {
   CHANGE_MODEL,
   changeModel,
+  CHANGE_VIEW,
+  changeView,
   CHANGE_VALUE,
   changeValue,
   updateValidationResults,

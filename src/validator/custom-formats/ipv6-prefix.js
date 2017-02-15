@@ -5,6 +5,7 @@
 import ipv6Address from './ipv6-address'
 import {ipv6AddressBits, networkMaskValid} from './utils'
 
+/* eslint-disable complexity */
 /**
  * Validate value as an IPv6 prefix
  * @param {Any} value - value to validate
@@ -34,3 +35,4 @@ export default function (value) {
 
   return /^0+$/.test(zeroBits)
 }
+/* eslint-enable complexity */

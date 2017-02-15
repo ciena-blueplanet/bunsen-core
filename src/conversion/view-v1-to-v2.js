@@ -71,18 +71,15 @@ function convertRenderer (cell) {
   if (renderer === undefined) {
     return
   }
-  switch (renderer) {
-    case 'boolean':
-    case 'string':
-    case 'number':
-      return {name: renderer}
-    case 'button-group':
-    case 'select':
-    case 'multi-select':
-    case 'textarea':
-    default:
-      return customRenderer(renderer, cell.properties)
+  const basicRenderers = [
+    'boolean',
+    'string',
+    'number'
+  ]
+  if (basicRenderers.indexOf(renderer) >= 0) {
+    return {name: renderer}
   }
+  return customRenderer(renderer, cell.properties)
 }
 
 /**
@@ -140,7 +137,7 @@ export function convertCell (cell) {
 /**
  * Converts rows of v1 cells to v2 cells. Simplifies the row structure when possible.
  *
- * @param {object[][]} rows A set of rows to convert
+ * @param {Array<object>[]} rows A set of rows to convert
  * @returns {object} A v2 cell
  */
 function rowsToCells (rows) {

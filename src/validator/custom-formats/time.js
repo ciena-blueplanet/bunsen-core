@@ -15,6 +15,7 @@ function inRange (value, min, max) {
   )
 }
 
+/* eslint-disable complexity */
 /**
  * Validate value as time
  * @param {Any} value - value to validate
@@ -56,3 +57,4 @@ export default function (value) {
     (!seconds || inRange(seconds, 0, 59))
   )
 }
+/* eslint-enable complexity */

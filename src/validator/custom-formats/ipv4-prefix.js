@@ -7,6 +7,7 @@ import {ipv4AddressBits, networkMaskValid} from './utils'
 
 const firstOctetMax = 253
 
+/* eslint-disable complexity */
 /**
  * Validate value as an IPv4 prefix
  * @param {Any} value - value to validate
@@ -42,3 +43,4 @@ export default function (value) {
 
   return /^0+$/.test(zeroBits)
 }
+/* eslint-enable complexity */

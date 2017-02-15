@@ -196,6 +196,7 @@ export default createFactory({
     return aggregateResults(results)
   },
 
+  /* eslint-disable complexity */
   /**
    * Validate the given cell
    * @param {String} path - the path the given row
@@ -245,6 +246,7 @@ export default createFactory({
 
     return aggregateResults(results)
   },
+  /* eslint-enable complexity */
 
   /**
    * Validate the given config
