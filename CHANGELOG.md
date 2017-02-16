@@ -1,3 +1,6 @@
+# 0.23.1
+**Fixed** minor issues related to the evaluation of view conditions.
+
 # 0.23.0
 Added processing of conditional cells in views. Conditions follow the same format as the ones for model properties.
 
