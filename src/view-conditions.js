@@ -85,7 +85,7 @@ function checkCellConditions (view, value, cell) {
  */
 function expandExtendedCell (view, cell) {
   const cellProps = {}
-  let extendedCell = view.cellDefinitions[cell.extends]
+  let extendedCell = _.get(view.cellDefinitions, cell.extends)
   if (extendedCell.extends) {
     extendedCell = Immutable.without(expandExtendedCell(view, extendedCell), 'extends')
   }
@@ -163,15 +163,23 @@ function checkChildren (view, value, cell) {
 export default function evaluateView (view, value) {
   const wrappedValue = new ValueWrapper(value, [])
   const immutableView = Immutable.from(view)
+  if (view.cells === undefined) {
+    return view
+  }
+  try {
+    const cells = _.chain(view.cells)
+      .map(checkRootCells(immutableView, wrappedValue))
+      .filter(isNotUndefined)
+      .value()
 
-  const cells = _.chain(view.cells)
-    .map(checkRootCells(immutableView, wrappedValue))
-    .filter(isNotUndefined)
-    .value()
-
-  return Object.assign(_.clone(view), {
-    cells
-  })
+    return Object.assign(_.clone(view), {
+      cells
+    })
+  } catch (e) {
+    // Unfortunately this is necessary because view validation happens outside of the reducer,
+    // so we have no guarantee that the view is valid and it may cause run time errors. Returning
+    return view
+  }
 }
 /* eslint-disable complexity */
 /**
