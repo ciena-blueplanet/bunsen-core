@@ -1,3 +1,8 @@
+# 0.19.6
+
+* **Fixed** array item removal when removing only item in array.
+
+
 # 0.19.5
 **Fixed** a recursive property check to determine if a property is required.
 
