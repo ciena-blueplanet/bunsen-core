@@ -42,7 +42,7 @@ function subModel (model, modelPath) {
   }
   const pathSeg = modelPath.pop()
   if (isArrayItem(pathSeg)) {
-    return subModel(model, modelPath.items)
+    return subModel(model.items, modelPath)
   }
   return subModel(model.properties[pathSeg], modelPath)
 }
