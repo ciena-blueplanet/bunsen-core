@@ -48,9 +48,12 @@ export default {
         name: {
           enum: ['boolean'],
           type: 'string'
-        }
+        },
 
-        // no options yet
+        options: {
+          additionalProperties: true,
+          type: 'object'
+        }
       },
       type: 'object'
     },
@@ -63,6 +66,11 @@ export default {
         name: {
           enum: ['button-group'],
           type: 'string'
+        },
+
+        options: {
+          additionalProperties: true,
+          type: 'object'
         },
 
         // Size of buttons (small, large, etc)
@@ -255,6 +263,11 @@ export default {
           }
         },
 
+        options: {
+          additionalProperties: true,
+          type: 'object'
+        },
+
         // Size of buttons (small, large, etc)
         size: {
           type: 'string'
@@ -323,6 +336,11 @@ export default {
           type: 'string'
         },
 
+        options: {
+          additionalProperties: true,
+          type: 'object'
+        },
+
         // named route to use for link
         route: {
           type: 'string'
@@ -344,9 +362,12 @@ export default {
         name: {
           enum: ['number'],
           type: 'string'
-        }
+        },
 
-        // no options yet
+        options: {
+          additionalProperties: true,
+          type: 'object'
+        }
       },
       type: 'object'
     },
@@ -371,9 +392,12 @@ export default {
         name: {
           enum: ['password'],
           type: 'string'
-        }
+        },
 
-        // no options yet
+        options: {
+          additionalProperties: true,
+          type: 'object'
+        }
       },
       type: 'object'
     },
@@ -382,6 +406,41 @@ export default {
     selectRenderer: {
       additionalProperties: false,
       properties: {
+        // the attribute for specifying data to populate the list with
+        data: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              label: {
+                type: 'string'
+              },
+              value: {
+                type: ['string', 'number', 'integer', 'boolean', 'object']
+              }
+            }
+          }
+        },
+
+        // description: the API endpoint for list-based inputs
+        endpoint: {
+          type: 'string'
+        },
+
+        // the attribute to enable local filtering
+        localFiltering: {
+          type: 'boolean'
+        },
+
+        // the attribute of the listed items to use as a label
+        labelAttribute: {
+          type: 'string'
+        },
+
+        // description: the type of model to fetch for list-based inputs
+        modelType: {
+          type: 'string'
+        },
 
         // the only valid names for a select are 'select' and 'multi-select'
         name: {
@@ -389,86 +448,48 @@ export default {
           type: 'string'
         },
 
-        // the options specific to a select renderer
         options: {
-          additionalProperties: false,
+          additionalProperties: true,
+          type: 'object'
+        },
+
+        // specifies if none should be available as an option
+        none: {
+          type: 'object',
           properties: {
-            // the attribute for specifying data to populate the list with
-            data: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  label: {
-                    type: 'string'
-                  },
-                  value: {
-                    type: ['string', 'number', 'integer', 'boolean', 'object']
-                  }
-                }
-              }
-            },
-
-            // description: the API endpoint for list-based inputs
-            endpoint: {
+            label: {
               type: 'string'
             },
-
-            // the attribute to enable local filtering
-            localFiltering: {
+            present: {
               type: 'boolean'
             },
-
-            // the attribute of the listed items to use as a label
-            labelAttribute: {
-              type: 'string'
-            },
-
-            // description: the type of model to fetch for list-based inputs
-            modelType: {
-              type: 'string'
-            },
-
-            // specifies if none should be available as an option
-            none: {
-              type: 'object',
-              properties: {
-                label: {
-                  type: 'string'
-                },
-                present: {
-                  type: 'boolean'
-                },
-                value: {
-                  type: ['string', 'number', 'integer', 'boolean', 'object']
-                }
-              }
-            },
-
-            // description: a hash of key/value pairs to use as query string to fetch values for list-based inputs
-            query: {
-              additionalProperties: {
-                type: 'string'
-              },
-              type: 'object'
-            },
-
-            // whether or not to try to query for the current value when Ember Data is used to populate options
-            queryForCurrentValue: {
-              type: 'boolean'
-            },
-
-            // description: where in API response to find records for list-based inputs
-            recordsPath: {
-              type: 'string'
-            },
-
-            // the attribute of the listed items to use as a value
-            valueAttribute: {
-              type: 'string'
+            value: {
+              type: ['string', 'number', 'integer', 'boolean', 'object']
             }
+          }
+        },
+
+        // description: a hash of key/value pairs to use as query string to fetch values for list-based inputs
+        query: {
+          additionalProperties: {
+            type: 'string'
           },
           type: 'object'
+        },
+
+        // whether or not to try to query for the current value when Ember Data is used to populate options
+        queryForCurrentValue: {
+          type: 'boolean'
+        },
+
+        // description: where in API response to find records for list-based inputs
+        recordsPath: {
+          type: 'string'
+        },
+
+        // the attribute of the listed items to use as a value
+        valueAttribute: {
+          type: 'string'
         }
       },
       type: 'object'
@@ -482,6 +503,11 @@ export default {
         name: {
           enum: ['string'],
           type: 'string'
+        },
+
+        options: {
+          additionalProperties: true,
+          type: 'object'
         },
 
         // Input type (text, password, datetime, etc)
@@ -519,6 +545,11 @@ export default {
           type: 'string'
         },
 
+        options: {
+          additionalProperties: true,
+          type: 'object'
+        },
+
         rows: {
           type: 'integer'
         }
@@ -549,9 +580,12 @@ export default {
         name: {
           enum: ['url'],
           type: 'string'
-        }
+        },
 
-        // no options yet
+        options: {
+          additionalProperties: true,
+          type: 'object'
+        }
       },
       type: 'object'
     }
