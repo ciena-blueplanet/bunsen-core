@@ -218,7 +218,7 @@ export default {
             {'$ref': '#/definitions/linkRenderer'},
             {'$ref': '#/definitions/numberRenderer'},
             {'$ref': '#/definitions/passwordRenderer'},
-            {'$ref': '#/definitions/selectRenderer'},
+            {'$ref': '#/definitions/'},
             {'$ref': '#/definitions/stringRenderer'},
             {'$ref': '#/definitions/textareaRenderer'},
             {'$ref': '#/definitions/urlRenderer'}
@@ -450,6 +450,82 @@ export default {
 
         options: {
           additionalProperties: true,
+          properties: {
+            // the attribute for specifying data to populate the list with
+            data: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  label: {
+                    type: 'string'
+                  },
+                  value: {
+                    type: ['string', 'number', 'integer', 'boolean', 'object']
+                  }
+                }
+              }
+            },
+
+            // description: the API endpoint for list-based inputs
+            endpoint: {
+              type: 'string'
+            },
+
+            // the attribute to enable local filtering
+            localFiltering: {
+              type: 'boolean'
+            },
+
+            // the attribute of the listed items to use as a label
+            labelAttribute: {
+              type: 'string'
+            },
+
+            // description: the type of model to fetch for list-based inputs
+            modelType: {
+              type: 'string'
+            },
+
+            // specifies if none should be available as an option
+            none: {
+              type: 'object',
+              properties: {
+                label: {
+                  type: 'string'
+                },
+                present: {
+                  type: 'boolean'
+                },
+                value: {
+                  type: ['string', 'number', 'integer', 'boolean', 'object']
+                }
+              }
+            },
+
+            // description: a hash of key/value pairs to use as query string to fetch values for list-based inputs
+            query: {
+              additionalProperties: {
+                type: 'string'
+              },
+              type: 'object'
+            },
+
+            // whether or not to try to query for the current value when Ember Data is used to populate options
+            queryForCurrentValue: {
+              type: 'boolean'
+            },
+
+            // description: where in API response to find records for list-based inputs
+            recordsPath: {
+              type: 'string'
+            },
+
+            // the attribute of the listed items to use as a value
+            valueAttribute: {
+              type: 'string'
+            }
+          },
           type: 'object'
         },
 
