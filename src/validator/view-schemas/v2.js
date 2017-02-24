@@ -218,7 +218,7 @@ export default {
             {'$ref': '#/definitions/linkRenderer'},
             {'$ref': '#/definitions/numberRenderer'},
             {'$ref': '#/definitions/passwordRenderer'},
-            {'$ref': '#/definitions/'},
+            {'$ref': '#/definitions/selectRenderer'},
             {'$ref': '#/definitions/stringRenderer'},
             {'$ref': '#/definitions/textareaRenderer'},
             {'$ref': '#/definitions/urlRenderer'}
