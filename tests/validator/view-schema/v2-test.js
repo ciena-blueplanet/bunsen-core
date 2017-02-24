@@ -53,10 +53,12 @@ describe('v2 schema validation', () => {
           value.cells[0].renderer.data[0].value = 1
           expect(schemaValidator.validate(value, model)).to.equal(true)
         })
+
         it('passes validation when value is boolean', function () {
           value.cells[0].renderer.data[0].value = true
           expect(schemaValidator.validate(value, model)).to.equal(true)
         })
+
         it('passes validation when value is object', function () {
           value.cells[0].renderer.data[0].value = {}
           expect(schemaValidator.validate(value, model)).to.equal(true)
@@ -87,10 +89,12 @@ describe('v2 schema validation', () => {
           value.cells[0].renderer.none.value = 1
           expect(schemaValidator.validate(value, model)).to.equal(true)
         })
+
         it('passes validation when value is boolean', function () {
           value.cells[0].renderer.none.value = true
           expect(schemaValidator.validate(value, model)).to.equal(true)
         })
+
         it('passes validation when value is object', function () {
           value.cells[0].renderer.none.value = {}
           expect(schemaValidator.validate(value, model)).to.equal(true)
@@ -150,10 +154,12 @@ describe('v2 schema validation', () => {
           value.cells[0].renderer.options.data[0].value = 1
           expect(schemaValidator.validate(value, model)).to.equal(true)
         })
+
         it('passes validation when value is boolean', function () {
           value.cells[0].renderer.options.data[0].value = true
           expect(schemaValidator.validate(value, model)).to.equal(true)
         })
+
         it('passes validation when value is object', function () {
           value.cells[0].renderer.options.data[0].value = {}
           expect(schemaValidator.validate(value, model)).to.equal(true)
@@ -184,10 +190,12 @@ describe('v2 schema validation', () => {
           value.cells[0].renderer.options.none.value = 1
           expect(schemaValidator.validate(value, model)).to.equal(true)
         })
+
         it('passes validation when value is boolean', function () {
           value.cells[0].renderer.options.none.value = true
           expect(schemaValidator.validate(value, model)).to.equal(true)
         })
+
         it('passes validation when value is object', function () {
           value.cells[0].renderer.options.none.value = {}
           expect(schemaValidator.validate(value, model)).to.equal(true)
