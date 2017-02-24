@@ -1,3 +1,8 @@
+# 0.24.0
+
+* **Added** support for passthrough options (spread options). This allows new properties of downstream to be leveraged as soon as they are available, with the downside of them not being validated at the bunsen level.
+
+
 # 0.23.1
 **Fixed** minor issues related to the evaluation of view conditions.
 
