@@ -12,6 +12,7 @@ var modelWithDeepConditionals = require('./fixtures/conditions/deep-model')
 var modelWithRelativePaths = require('./fixtures/conditions/relative-paths-model')
 var modelWithArray = require('./fixtures/conditions/array-model')
 var modelWithDefinitions = require('./fixtures/conditions/definitions-model')
+var modelWithUnless = require('./fixtures/conditions/unless-model')
 
 /**
  * Used to deference the
@@ -48,6 +49,55 @@ describe('evaluate-conditions', () => {
           'enum': ['untagged', 'single-tagged', 'double-tagged', 'foo-tagged']
         }
       }
+    })
+  })
+
+  describe('conditional properties with "unless"', function () {
+    it('are hidden if an "unless" condition is met', function () {
+      var data = {
+        tagType: 'untagged'
+      }
+      model = _.cloneDeep(modelWithUnless)
+      var newModel = dereferenceAndEval(model, data)
+      expect(newModel).to.eql({
+        'type': 'object',
+        'properties': {
+          'tagType': {
+            'type': 'string',
+            'enum': ['untagged', 'single-tagged', 'double-tagged']
+          }
+        }
+      })
+    })
+    it('are not hidden if an "unless" no condition is met', function () {
+      var data = {
+        tagType: 'double-tagged'
+      }
+      model = _.cloneDeep(modelWithUnless)
+      var newModel = dereferenceAndEval(model, data)
+      expect(newModel).to.eql({
+        type: 'object',
+        properties: {
+          tagType: {
+            type: 'string',
+            enum: ['untagged', 'single-tagged', 'double-tagged']
+          },
+          tag: {
+            type: 'number',
+            default: 20,
+            multipleOf: 1.0,
+            minimum: 0,
+            maximum: 4094
+          },
+          tag2: {
+            type: 'number',
+            default: 3000,
+            multipleOf: 1.0,
+            minimum: 0,
+            maximum: 4094
+          }
+        }
+      })
     })
   })
 
