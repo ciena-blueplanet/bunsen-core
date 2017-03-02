@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash'
-import {pathFinder, meetsCondition} from './utils/conditionals'
+import {meetsCondition, pathFinder} from './utils/conditionals'
 
 /* eslint-disable complexity */
 export default function evaluate (model, value, getPreviousValue) {
@@ -74,12 +74,23 @@ export default function evaluate (model, value, getPreviousValue) {
   })
   _.forEach(conditionalProperties, function (depSchema, key) {
     depsMet[key] = _.some(depSchema.conditions, function (enableConditions) {
-      const hasDependencyMet = _.some(enableConditions.if, function (conditionList) {
-        return _.every(conditionList, function (conditionValue, dependencyKey) {
-          const dependencyValue = getValue(dependencyKey)
-          return meetsCondition(dependencyValue, conditionValue)
+      let hasDependencyMet = true
+      const metCondition = conditionItem =>
+        _.every(conditionItem, (condition, propName) => {
+          const value = getValue(propName)
+          return meetsCondition(value, condition)
         })
-      })
+
+      if (enableConditions.unless) {
+        const unless = enableConditions.unless.find(metCondition)
+        if (unless !== undefined) {
+          return false
+        }
+      }
+      if (enableConditions.if) {
+        hasDependencyMet = enableConditions.if.find(metCondition) !== undefined
+      }
+
       if (hasDependencyMet && enableConditions.then !== undefined) {
         props[key] = _.cloneDeep(enableConditions.then)
       }
