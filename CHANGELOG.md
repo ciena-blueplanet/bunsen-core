@@ -1,3 +1,6 @@
+# 0.24.1
+**Added** "unless" functionality to model conditionals
+
 # 0.24.0
 
 * **Added** support for passthrough options (spread options). This allows new properties of downstream to be leveraged as soon as they are available, with the downside of them not being validated at the bunsen level.
