@@ -29,11 +29,24 @@ export function pathFinder (valueObj, prevPath) {
     return _.get(valueObj, path.reverse().join('.'))
   }
 }
-const possibleConditions = {
+
+const BUILT_IN_CONDITIONS = {
   equals: _.isEqual,
   greaterThan: function (value, expected) { return value > expected },
   lessThan: function (value, expected) { return value < expected },
   notEqual: _.negate(_.isEqual)
+}
+
+let possibleConditions = BUILT_IN_CONDITIONS
+
+/**
+ * Adds custom conditions globally to bunsen
+ *
+ * @export
+ * @param {Object} conditions Hash of condition functions
+ */
+export function addConditions (conditions) {
+  possibleConditions = _.merge({}, possibleConditions, conditions)
 }
 
 /**
