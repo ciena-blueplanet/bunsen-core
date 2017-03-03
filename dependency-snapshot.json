@@ -1,6 +1,6 @@
 {
   "name": "bunsen-core",
-  "version": "0.24.1",
+  "version": "0.25.0",
   "dependencies": {
     "abbrev": {
       "version": "1.0.9",
@@ -506,9 +506,9 @@
       "dev": true
     },
     "chai-subset": {
-      "version": "1.4.0",
+      "version": "1.5.0",
       "from": "chai-subset@>=1.3.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/chai-subset/-/chai-subset-1.4.0.tgz",
+      "resolved": "https://registry.npmjs.org/chai-subset/-/chai-subset-1.5.0.tgz",
       "dev": true
     },
     "chalk": {
@@ -802,9 +802,9 @@
       "dev": true
     },
     "eslint-plugin-standard": {
-      "version": "2.0.1",
+      "version": "2.1.1",
       "from": "eslint-plugin-standard@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/eslint-plugin-standard/-/eslint-plugin-standard-2.0.1.tgz",
+      "resolved": "https://registry.npmjs.org/eslint-plugin-standard/-/eslint-plugin-standard-2.1.1.tgz",
       "dev": true
     },
     "espree": {
@@ -1253,9 +1253,9 @@
       "dev": true
     },
     "js-yaml": {
-      "version": "3.8.1",
+      "version": "3.8.2",
       "from": "js-yaml@>=3.5.1 <4.0.0",
-      "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-3.8.1.tgz",
+      "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-3.8.2.tgz",
       "dev": true
     },
     "jsesc": {
@@ -1975,9 +1975,9 @@
       "dev": true
     },
     "uglify-js": {
-      "version": "2.8.4",
+      "version": "2.8.5",
       "from": "uglify-js@>=2.6.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.4.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.5.tgz",
       "dev": true,
       "optional": true,
       "dependencies": {

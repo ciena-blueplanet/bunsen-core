@@ -1,3 +1,7 @@
+# 0.25.0
+**Added** ability to specify custom conditions globally
+
+
 # 0.24.1
 **Added** "unless" functionality to model conditionals
 
