@@ -1,3 +1,6 @@
+# 0.26.0
+- added 'table' renderer support to the spec
+
 # 0.25.0
 **Added** ability to specify custom conditions globally
 
