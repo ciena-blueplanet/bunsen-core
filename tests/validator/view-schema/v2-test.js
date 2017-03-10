@@ -213,4 +213,68 @@ describe('v2 schema validation', () => {
       })
     })
   })
+
+  describe('tableRenderer', function () {
+    let tableValue
+    beforeEach(function () {
+      tableValue = {
+        type: 'form',
+        version: '2.0',
+        cells: [
+          {
+            model: 'foo',
+            renderer: {
+              name: 'table'
+            }
+          }
+        ]
+      }
+    })
+
+    it('passes validation with no options', function () {
+      expect(schemaValidator.validate(tableValue, model)).to.equal(true)
+    })
+
+    describe('with fields option', function () {
+      it('fails validation if not an array', function () {
+        tableValue.cells[0].renderer.columns = 'foo,bar,bazz'
+        expect(schemaValidator.validate(tableValue, model)).to.equal(false)
+      })
+
+      it('passes validation with only string names provided', function () {
+        tableValue.cells[0].renderer.columns = ['foo', 'bar', 'bazz']
+        expect(schemaValidator.validate(tableValue, model)).to.equal(true)
+      })
+
+      it('passes validation with objects with "key" provided', function () {
+        tableValue.cells[0].renderer.columns = [{key: 'foo'}]
+        expect(schemaValidator.validate(tableValue, model)).to.equal(true)
+      })
+
+      it('fails validation with objects if no "key" provided', function () {
+        tableValue.cells[0].renderer.columns = [{}]
+        expect(schemaValidator.validate(tableValue, model)).to.equal(false)
+      })
+
+      it('passes validation with objects with "label" provided', function () {
+        tableValue.cells[0].renderer.columns = [{key: 'foo', label: 'Foo'}]
+        expect(schemaValidator.validate(tableValue, model)).to.equal(true)
+      })
+
+      it('passes validation with objects with "align" provided', function () {
+        tableValue.cells[0].renderer.columns = [{key: 'foo', label: 'Foo', align: 'center'}]
+        expect(schemaValidator.validate(tableValue, model)).to.equal(true)
+      })
+
+      it('passes validation with objects and strings provided', function () {
+        tableValue.cells[0].renderer.columns = ['fizz', {key: 'foo', label: 'Foo'}]
+        expect(schemaValidator.validate(tableValue, model)).to.equal(true)
+      })
+
+      it('fails validation with objects with some random attr', function () {
+        tableValue.cells[0].renderer.columns = [{key: 'foo', someRandomThing: 'blarg'}]
+        expect(schemaValidator.validate(tableValue, model)).to.equal(false)
+      })
+    })
+  })
 })

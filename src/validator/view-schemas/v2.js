@@ -220,6 +220,7 @@ export default {
             {'$ref': '#/definitions/passwordRenderer'},
             {'$ref': '#/definitions/selectRenderer'},
             {'$ref': '#/definitions/stringRenderer'},
+            {'$ref': '#/definitions/tableRenderer'},
             {'$ref': '#/definitions/textareaRenderer'},
             {'$ref': '#/definitions/urlRenderer'}
           ]
@@ -307,7 +308,7 @@ export default {
         name: {
           type: 'string',
           /* eslint-disable max-len */
-          pattern: '^(?!boolean$|button-group$|checkbox-array$|link$|multi-select$|number$|password$|select$|string|textarea$|url$).*'
+          pattern: '^(?!boolean$|button-group$|checkbox-array$|link$|multi-select$|number$|password$|select$|string$|table$|textarea$|url$).*'
           /* eslint-enable max-len */
         }
       },
@@ -604,6 +605,40 @@ export default {
         to: {type: 'string'}
       },
       required: ['from', 'to'],
+      type: 'object'
+    },
+
+    // Table renderer options
+    tableRenderer: {
+      additionalProperties: false,
+      properties: {
+        columns: {
+          type: 'array',
+          items: {
+            oneOf: [
+              {
+                additionalProperties: false,
+                properties: {
+                  key: {type: 'string'},
+                  label: {type: 'string'},
+                  align: {type: 'string'}
+                },
+                required: ['key'],
+                type: 'object'
+              },
+              {type: 'string'}
+            ]
+          }
+        },
+        name: {
+          enum: ['table'],
+          type: 'string'
+        },
+        options: {
+          additionalProperties: true,
+          type: 'object'
+        }
+      },
       type: 'object'
     },
 
