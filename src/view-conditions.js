@@ -167,7 +167,8 @@ export default function evaluateView (view, value) {
     return view
   }
   try {
-    const cells = _.chain(view.cells)
+    // Make sure we preserve non-array value so we get useful validation errors
+    const cells = !Array.isArray(view.cells) ? view.cells : _.chain(view.cells)
       .map(checkRootCells(immutableView, wrappedValue))
       .filter(isNotUndefined)
       .value()

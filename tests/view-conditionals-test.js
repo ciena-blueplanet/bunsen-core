@@ -221,4 +221,16 @@ describe('views with conditionals', function () {
       )
     })
   })
+
+  describe('do not convert invalid cells type to array', function () {
+    expect({
+      cells: 'main',
+      type: 'form',
+      version: '2.0'
+    }, {}).to.eql({
+      cells: 'main',
+      type: 'form',
+      version: '2.0'
+    })
+  })
 })
