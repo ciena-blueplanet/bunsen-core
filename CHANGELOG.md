@@ -1,3 +1,6 @@
+# 0.27.0
+* UIS2 spec now includes `width` option for select
+
 # 0.26.1
 
 * **Fixed** regression where validation errors were misleading when supplying a string as the value for the views `cells` property.
