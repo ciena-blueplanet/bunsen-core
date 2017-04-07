@@ -33,7 +33,7 @@ export default function evaluate (model, value, getPreviousValue) {
         }
       })
       if (itemSchemas.length > 1) {
-        retModel.items = {anyOf: itemSchemas}
+        retModel.items = potentialSchemas
       } else if (itemSchemas.length === 0) {
         retModel.items = _.clone(model.items)
       } else {
