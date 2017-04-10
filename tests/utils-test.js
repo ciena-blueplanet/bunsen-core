@@ -2,37 +2,162 @@
 
 const expect = require('chai').expect
 const utils = require('../lib/utils')
+const dependenciesModel = require('./fixtures/dependencies-model.js')
 
 describe('utils', () => {
   describe('.getModelPath()', () => {
+    it('is not yet implemented', function () {
+      expect(true).to.be.false()
+    })
+  })
+  describe('._getModelPath()', () => {
     it('handles top-level properties', () => {
-      expect(utils.getModelPath('fooBar')).to.equal('properties.fooBar')
+      expect(utils._getModelPath('fooBar')).to.eql(['fooBar'])
     })
 
     it('handles nested properties', () => {
-      expect(utils.getModelPath('foo.bar.baz')).to.equal('properties.foo.properties.bar.properties.baz')
+      const expected = ['foo', 'bar', 'baz']
+      expect(utils._getModelPath('foo.bar.baz')).to.eql(expected)
     })
 
     it('handles invalid trailing dot reference', () => {
-      expect(utils.getModelPath('foo.bar.')).to.equal(undefined)
+      expect(utils._getModelPath('foo.bar.')).to.eql(undefined)
     })
 
     it('handles invalid leading dot reference', () => {
-      expect(utils.getModelPath('.foo.bar')).to.equal(undefined)
+      expect(utils._getModelPath('.foo.bar')).to.eql(undefined)
     })
 
     it('handles model with dependency', () => {
-      const expected = 'dependencies.useEft.properties.routingNumber'
-      expect(utils.getModelPath('routingNumber', 'useEft')).to.equal(expected)
+      const expected = ['$dependencies', 'useEft', 'routingNumber']
+      expect(utils._getModelPath('routingNumber', 'useEft')).to.eql(expected)
     })
 
     it('handles model with dependency', () => {
-      const expected = 'properties.paymentInfo.dependencies.useEft.properties.routingNumber'
-      expect(utils.getModelPath('paymentInfo.routingNumber', 'paymentInfo.useEft')).to.equal(expected)
+      const expected = ['paymentInfo', '$dependencies', 'useEft', 'routingNumber']
+      expect(utils._getModelPath('paymentInfo.routingNumber', 'paymentInfo.useEft')).to.eql(expected)
     })
 
     it('handles properties on array items', () => {
-      expect(utils.getModelPath('foo.bar.0.baz')).to.equal('properties.foo.properties.bar.items.properties.baz')
+      const expected = ['foo', 'bar', '0', 'baz']
+      expect(utils._getModelPath('foo.bar.0.baz')).to.eql(expected)
+    })
+  })
+
+  describe('getSubModel', function () {
+    it('returns the model from a simplified dot-notation path', function () {
+      const model = {
+        type: 'object',
+        properties: {
+          someProp: {
+            type: 'string'
+          }
+        }
+      }
+      expect(utils.getSubModel(model, 'someProp')).to.be.eql({
+        type: 'string'
+      })
+    })
+    it('returns a model from a deep path', function () {
+      const model = {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'object',
+            properties: {
+              bar: {
+                type: 'object',
+                properties: {
+                  baz: {
+                    type: 'object',
+                    properties: {
+                      qux: {
+                        type: 'string'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      expect(utils.getSubModel(model, 'foo.bar.baz')).to.be.eql({
+        type: 'object',
+        properties: {
+          qux: {
+            type: 'string'
+          }
+        }
+      })
+    })
+    it('returns a model for an array item', function () {
+      const model = {
+        type: 'object',
+        properties: {
+          arrayProp: {
+            type: 'array',
+            items: {
+              type: 'string'
+            }
+          }
+        }
+      }
+      expect(utils.getSubModel(model, 'arrayProp')).to.be.eql({
+        type: 'array',
+        items: {
+          type: 'string'
+        }
+      })
+    })
+    it('returns a model for an array item specified by index', function () {
+      const model = {
+        type: 'object',
+        properties: {
+          arrayProp: {
+            type: 'array',
+            items: {
+              type: 'string'
+            }
+          }
+        }
+      }
+      expect(utils.getSubModel(model, 'arrayProp.0')).to.be.eql({
+        type: 'string'
+      })
+    })
+    describe('handles tuple arrays', function () {
+      const model = {
+        type: 'object',
+        properties: {
+          arrayProp: {
+            type: 'array',
+            items: [{
+              type: 'string'
+            }, {
+              type: 'number'
+            }],
+            additionalItems: {
+              type: 'boolean'
+            }
+          }
+        }
+      }
+      it('with index references', function () {
+        expect(utils.getSubModel(model, 'arrayProp.1')).to.be.eql({
+          type: 'number'
+        })
+      })
+      it('with an additionalItems schema', function () {
+        expect(utils.getSubModel(model, 'arrayProp.5')).to.be.eql({
+          type: 'boolean'
+        })
+      })
+    })
+    it('handles dependencies correctly', function () {
+      expect(utils.getSubModel(dependenciesModel, 'paymentInfo.accountNumber', 'paymentInfo.useEft')).to.be.eql({
+        type: 'string'
+      })
     })
   })
 

@@ -63,26 +63,69 @@ export function getLabel (label, model, id) {
  *
  * @param {String} reference - the dotted reference to the model
  * @param {String} [dependencyReference] - the dotted reference to the model dependency
- * @returns {String} the proper dotted path in the model schema (or undefined if it's a bad path)
+ * @returns {String[]} the proper dotted path in the model schema (or undefined if it's a bad path)
  */
-export function getModelPath (reference, dependencyReference) {
+export function _getModelPath (reference, dependencyReference) {
   const pattern = /^[^\.](.*[^\.])?$/ // eslint-disable-line no-useless-escape
-  let path = pattern.test(reference) ? `properties.${reference.split('.').join('.properties.')}` : undefined
-
-  if (typeof path === 'string' || path instanceof String) {
-    path = path.replace(/\.properties\.(\d+)\./g, '.items.') // Replace array index with "items"
+  if (!pattern.test(reference)) {
+    return
   }
 
+  const pathArr = reference.split('.')
   if (dependencyReference) {
     const dependencyName = dependencyReference.split('.').pop()
-    const pathArr = path.split('.')
-    pathArr.splice(-2, 0, 'dependencies', dependencyName)
-    path = pathArr.join('.')
+    pathArr.splice(-1, 0, '$dependencies', dependencyName)
   }
 
-  return path
+  return pathArr
 }
 
+export function getModelPath (model, reference, dependencyReference) {
+
+}
+
+function getArraySubModel (model, path) {
+  let subModel
+  const nextIsNumber = !isNaN(_.last(path))
+  if (Array.isArray(model.items)) {
+    if (nextIsNumber) {
+      subModel = _.get(model, `items.${path.pop()}`)
+      if (subModel === undefined && typeof model.additionalItems === 'object') {
+        subModel = model.additionalItems
+      }
+    }
+  } else {
+    if (nextIsNumber) {
+      path.pop()
+    }
+    subModel = model.items
+  }
+  return subModel
+}
+
+function getObjectSubModel (model, path) {
+  let subModel
+  if (_.last(path) === '$dependencies') {
+    path.pop()
+    subModel = model.dependencies[path.pop()]
+  } else {
+    subModel = _.get(model, `properties.${path.pop()}`)
+  }
+  return subModel
+}
+
+function _getSubModel (model, path) {
+  if (path.length <= 0 || model === undefined) {
+    return model
+  }
+  let subModel
+  if (model.type === 'object') {
+    subModel = getObjectSubModel(model, path)
+  } else if (model.type === 'array') {
+    subModel = getArraySubModel(model, path)
+  }
+  return _getSubModel(subModel, path)
+}
 /**
  * Get the sub-model for a given dotted reference
  * @param {BunsenModel} model - the starting model
@@ -91,8 +134,10 @@ export function getModelPath (reference, dependencyReference) {
  * @returns {BunsenModel} the sub-model
  */
 export function getSubModel (model, reference, dependencyReference) {
-  const path = getModelPath(reference, dependencyReference)
-  return _.get(model, path)
+  const path = _getModelPath(reference, dependencyReference)
+  if (path !== undefined) {
+    return _getSubModel(model, path.reverse())
+  }
 }
 
 /**

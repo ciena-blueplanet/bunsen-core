@@ -453,12 +453,17 @@ describe('validator', () => {
   })
   it('allows tuple style arrays', function () {
     const model = {
-      type: 'array',
-      items: [{
-        type: 'boolean'
-      }, {
-        type: 'string'
-      }]
+      type: 'object',
+      properties: {
+        foo: {
+          type: 'array',
+          items: [{
+            type: 'boolean'
+          }, {
+            type: 'string'
+          }]
+        }
+      }
     }
     const view = {
       cells: [
