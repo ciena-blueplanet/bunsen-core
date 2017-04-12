@@ -55,7 +55,6 @@ export default function evaluate (model, value, getPreviousValue) {
   }
 
   let depsMet = {}
-  let props = {}
 
   if (!model.properties) {
     return retModel
@@ -73,7 +72,7 @@ export default function evaluate (model, value, getPreviousValue) {
     }
   })
   _.forEach(conditionalProperties, function (depSchema, key) {
-    depsMet[key] = _.some(depSchema.conditions, function (enableConditions) {
+    depsMet[key] = _.find(depSchema.conditions, function (enableConditions) {
       let hasDependencyMet = true
       const metCondition = conditionItem =>
         _.every(conditionItem, (condition, propName) => {
@@ -90,21 +89,30 @@ export default function evaluate (model, value, getPreviousValue) {
       if (enableConditions.if) {
         hasDependencyMet = enableConditions.if.find(metCondition) !== undefined
       }
-
-      if (hasDependencyMet && enableConditions.then !== undefined) {
-        props[key] = _.cloneDeep(enableConditions.then)
-      }
       return hasDependencyMet
     })
   })
+  const required = []
   _.forEach(depsMet, function (dependencyMet, depName) {
     const baseSchema = retModel.properties[depName]
-    if (dependencyMet && !baseSchema.set || !dependencyMet && baseSchema.set) {
-      retModel.properties[depName] = _.omit(_.defaults(props[depName] || {}, baseSchema), ['conditions', 'set'])
+    if (dependencyMet) {
+      retModel.properties[depName] = _.omit(_.defaults(dependencyMet.then || {}, baseSchema), ['conditions'])
+      if (dependencyMet.required) {
+        required.push(depName)
+      }
     } else {
       delete retModel.properties[depName]
     }
   })
-
+  if (required.length > 0) {
+    retModel.required = addNewRequired(required, retModel.required)
+  }
   return retModel
+}
+
+function addNewRequired (newItems, oldItems) {
+  if (!oldItems || oldItems.length <= 0) {
+    return newItems
+  }
+  return _.uniq([].concat(oldItems, newItems))
 }
