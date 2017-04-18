@@ -81,7 +81,7 @@ export function _getModelPath (reference, dependencyReference) {
 }
 
 export function getModelPath (model, reference, dependencyReference) {
-
+  return new BunsenModelPath(model, reference)
 }
 
 function getArraySubModel (model, path) {
@@ -134,10 +134,8 @@ function _getSubModel (model, path) {
  * @returns {BunsenModel} the sub-model
  */
 export function getSubModel (model, reference, dependencyReference) {
-  const path = _getModelPath(reference, dependencyReference)
-  if (path !== undefined) {
-    return _getSubModel(model, path.reverse())
-  }
+  const path = getModelPath(model, reference).modelPath()
+  return _.get(model, path)
 }
 
 /**
@@ -245,4 +243,110 @@ export function hasValidQueryValues (value, queryDef, startPath) {
     return false
   }
   return Object.keys(query).every((key) => String(query[key]) !== '')
+}
+
+export class BunsenModelPath {
+  static objectPrePath (model, pathSeg) {
+    if (model.properties[pathSeg]) {
+      return 'properties'
+    }
+    const dependency = _.findKey(model.dependencies, (dep) => {
+      return !Array.isArray(dep) && dep.properties !== undefined && dep.properties[pathSeg] !== undefined
+    })
+    if (dependency) {
+      return `dependencies.${dependency}.properties`
+    }
+  }
+  static arrayPrePath (model, pathSeg) {
+    if (Array.isArray(model.items) &&
+      !isNaN(pathSeg) &&
+      _.get(model.items, pathSeg) === undefined &&
+      typeof model.additionalItems === 'object'
+    ) {
+      return 'additionalItems'
+    } else if (model.items !== undefined) {
+      return 'items'
+    }
+  }
+  static createPathSegment (curModel, prePath, pathSeg) {
+    if (prePath) {
+      if (prePath === 'items' && !Array.isArray(curModel.items) || prePath === 'additionalItems') {
+        // skip path segment for array items
+        return prePath
+      } else {
+        return `${prePath}.${pathSeg}`
+      }
+    }
+    return pathSeg
+  }
+
+  constructor (model, initialPath) {
+    this._model = model
+    this._currentModel = model
+    this._path = []
+    this._valid = true
+    if (typeof initialPath === 'string') {
+      initialPath = initialPath.split('.')
+      this.append(initialPath)
+    }
+  }
+
+  append (pathSeg) {
+    if (!this._valid) {
+      return
+    }
+    if (Array.isArray(pathSeg)) {
+      pathSeg.forEach(seg => this.append(seg))
+      return
+    }
+    const curModel = this._currentModel
+    let prePath
+    if (curModel.type === 'object') {
+      prePath = BunsenModelPath.objectPrePath(curModel, pathSeg)
+    } else if (curModel.type === 'array') {
+      prePath = BunsenModelPath.arrayPrePath(curModel, pathSeg)
+    }
+    const nextSeg = BunsenModelPath.createPathSegment(curModel, prePath, pathSeg)
+    const nextModel = _.get(curModel, nextSeg)
+    if (nextModel === undefined) {
+      this._valid = false
+      return
+    }
+    this._currentModel = nextModel
+    this._path.push(nextSeg)
+  }
+
+  pop () {
+    if (this._valid) {
+      const last = this._path.pop()
+      this._currentModel = _.get(this._model, this.modelPath())
+      return last
+    }
+  }
+
+  last () {
+    return _.last(this._path)
+  }
+
+  toString () {
+    if (this._valid) {
+      return this._path.join('.')
+    }
+    return ''
+  }
+
+  valuePath () {
+    if (this._valid) {
+      return this._path.map((element) => element.split('.').pop())
+    }
+  }
+
+  modelPath () {
+    if (this._valid) {
+      return this._path.join('.')
+    }
+  }
+  get isValid () {
+    return this._valid
+  }
 }

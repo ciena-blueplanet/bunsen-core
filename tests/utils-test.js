@@ -6,8 +6,13 @@ const dependenciesModel = require('./fixtures/dependencies-model.js')
 
 describe('utils', () => {
   describe('.getModelPath()', () => {
-    it('is not yet implemented', function () {
-      expect(true).to.be.false()
+    it('returns a BunsenModelPath', function () {
+      const model = {
+
+      }
+      const path = ''
+      const modelPath = utils.getModelPath(model, path)
+      expect(modelPath).to.be.instanceOf(utils.BunsenModelPath)
     })
   })
   describe('._getModelPath()', () => {
@@ -253,6 +258,330 @@ describe('utils', () => {
 
     it('returns null when query dependency is not present', function () {
       expect(utils.populateQuery({}, {node: '${./node}'})).to.equal(null)
+    })
+  })
+  describe('BunsenPath class', function () {
+    it('finds a path in nested object schemas', function () {
+      const model = {
+        type: 'object',
+        properties: {
+          foo: {type: 'object',
+            properties: {
+              bar: {
+                type: 'object',
+                properties: {
+                  baz: {
+                    type: 'string'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      const path = 'foo.bar.baz'
+      const modelPath = new utils.BunsenModelPath(model, path)
+      expect(modelPath.toString()).to.be.equal('properties.foo.properties.bar.properties.baz')
+    })
+    it('finds a path in object schemas with dependencies', function () {
+      const model = {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'string'
+          }
+        },
+        dependencies: {
+          foo: {
+            properties: {
+              fooBar: {
+                type: 'object',
+                properties: {
+                  foo: {
+                    type: 'string'
+                  }
+                },
+                dependencies: {
+                  foo: {
+                    properties: {
+                      bar: {
+                        type: 'object',
+                        properties: {
+                          foo: {
+                            type: 'string'
+                          }
+                        },
+                        dependencies: {
+                          foo: {
+                            properties: {
+                              baz: {
+                                type: 'number'
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      const path = 'fooBar.bar.baz'
+      const modelPath = new utils.BunsenModelPath(model, path)
+      expect(modelPath.toString()).to.be.equal(
+        'dependencies.foo.properties.fooBar.dependencies.foo.properties.bar.dependencies.foo.properties.baz'
+      )
+    })
+    it('finds a path in array schemas', function () {
+      const model = {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                bar: {
+                  type: 'array',
+                  items: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      const path = 'foo.0.bar.0.0'
+      const modelPath = new utils.BunsenModelPath(model, path)
+      expect(modelPath.toString()).to.be.equal('properties.foo.items.properties.bar.items.items')
+    })
+    it('finds a path in tuple array schemas', function () {
+      const model = {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'array',
+            items: [{
+              type: 'string'
+            }, {
+              type: 'object',
+              properties: {
+                bar: {
+                  type: 'array',
+                  items: {
+                    type: 'array',
+                    items: [{
+                      type: 'number'
+                    }, {
+                      type: 'boolean'
+                    }]
+                  }
+                }
+              }
+            }]
+          }
+        }
+      }
+      const path = 'foo.1.bar.0.1'
+      const modelPath = new utils.BunsenModelPath(model, path)
+      expect(modelPath.toString()).to.be.equal('properties.foo.items.1.properties.bar.items.items.1')
+    })
+    it('finds a path in tuple array schemas with additionalItems', function () {
+      const model = {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'array',
+            items: [{
+              type: 'string'
+            }],
+            additionalItems: {
+              type: 'object',
+              properties: {
+                bar: {
+                  type: 'array',
+                  items: {
+                    type: 'array',
+                    items: [{
+                      type: 'number'
+                    }, {
+                      type: 'boolean'
+                    }],
+                    additionalItems: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      const path = 'foo.1.bar.0.5'
+      const modelPath = new utils.BunsenModelPath(model, path)
+      expect(modelPath.toString()).to.be.equal('properties.foo.additionalItems.properties.bar.items.additionalItems')
+    })
+    it('provides a path from a fairly complex schema', function () {
+      const model = {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'object',
+              properties: {
+                bar: {
+                  type: 'array',
+                  items: [{
+                    type: 'string'
+                  }, {
+                    type: 'object',
+                    properties: {
+                      baz: {
+                        type: 'array',
+                        items: [{
+                          type: 'string'
+                        }],
+                        additionalItems: {
+                          type: 'object',
+                          properties: {
+                            qux: {type: 'string'}
+                          }
+                        }
+                      }
+                    }
+                  }]
+                }
+              }
+            },
+            bar: {
+              type: 'string'
+            }
+          },
+          dependencies: {
+            foo: ['bar']
+          }
+        }
+      }
+      const path = '0.foo.bar.1.baz.4.qux'
+      const modelPath = new utils.BunsenModelPath(model, path)
+      expect(modelPath.toString()).to.be.equal(
+        'items.properties.foo.properties.bar.items.1.properties.baz.additionalItems.properties.qux'
+      )
+    })
+    describe('when a path on invalid path', function () {
+      let modelPath
+      beforeEach(function () {
+        const model = {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'object',
+              properties: {
+                bar: {
+                  type: 'string'
+                }
+              }
+            }
+          }
+        }
+        const path = 'foo.baz'
+        modelPath = new utils.BunsenModelPath(model, path)
+      })
+      it('the path isValid is set to false', function () {
+        expect(modelPath.isValid).to.be.equal(false)
+      })
+      it('the path can not be added to', function () {
+        modelPath.append('bar')
+        expect(modelPath._path).to.be.eql(['properties.foo'])
+      })
+      it('returns undefined for the path', function () {
+        const path = modelPath.modelPath()
+        expect(path).to.be.equal(undefined)
+      })
+      it('returns an empty string toString()', function () {
+        const str = modelPath.toString()
+        expect(str).to.equal('')
+      })
+    })
+    it('.pop() removes the last item', function () {
+      const model = {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'object',
+              properties: {
+                bar: {
+                  type: 'array',
+                  items: [{
+                    type: 'string'
+                  }, {
+                    type: 'object',
+                    properties: {
+                      baz: {
+                        type: 'array',
+                        items: [{
+                          type: 'string'
+                        }],
+                        additionalItems: {
+                          type: 'object',
+                          properties: {
+                            qux: {type: 'string'}
+                          }
+                        }
+                      }
+                    }
+                  }]
+                }
+              }
+            },
+            bar: {
+              type: 'string'
+            }
+          },
+          dependencies: {
+            foo: ['bar']
+          }
+        }
+      }
+      const path = '0.foo.bar.1.baz.4.qux'
+      const modelPath = new utils.BunsenModelPath(model, path)
+      expect(modelPath.toString()).to.be.equal(
+        'items.properties.foo.properties.bar.items.1.properties.baz.additionalItems.properties.qux'
+      )
+      modelPath.pop()
+      expect(modelPath.toString()).to.be.equal(
+        'items.properties.foo.properties.bar.items.1.properties.baz.additionalItems'
+      )
+      modelPath.pop()
+      expect(modelPath.toString()).to.be.equal(
+        'items.properties.foo.properties.bar.items.1.properties.baz'
+      )
+      modelPath.pop()
+      expect(modelPath.toString()).to.be.equal(
+        'items.properties.foo.properties.bar.items.1'
+      )
+      modelPath.pop()
+      expect(modelPath.toString()).to.be.equal(
+        'items.properties.foo.properties.bar'
+      )
+      modelPath.pop()
+      expect(modelPath.toString()).to.be.equal(
+        'items.properties.foo'
+      )
+      modelPath.pop()
+      expect(modelPath.toString()).to.be.equal(
+        'items'
+      )
     })
   })
 })
