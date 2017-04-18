@@ -181,7 +181,6 @@ export default createFactory({
     const dependencyModel = getSubModel(model, cell.dependsOn)
 
     if (dependencyModel === undefined) {
-      debugger
       addErrorResult(results, `${path}/dependsOn`, `Invalid model reference "${cell.dependsOn}"`)
       return aggregateResults(results)
     }

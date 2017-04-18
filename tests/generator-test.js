@@ -6,6 +6,8 @@ var simpleModel = require('./fixtures/simple-model')
 var simpleView = require('./fixtures/simple-view-2')
 var arrayModel = require('./fixtures/array-model')
 var arrayView = require('./fixtures/array-view-2')
+var tupleModel = require('./fixtures/tuple-model')
+var tupleView = require('./fixtures/tuple-view')
 var dependenciesModel = require('./fixtures/dependencies-model')
 var dependenciesView = require('./fixtures/dependencies-view')
 
@@ -23,12 +25,14 @@ describe('generator', function () {
     })
 
     describe('array schema', function () {
-      beforeEach(() => {
+      it('creates proper array layout', function () {
         result = generateView(arrayModel)
+        expect(result).deep.equal(arrayView)
       })
 
-      it('creates proper array layout', function () {
-        expect(result).deep.equal(arrayView)
+      it('creates a layout for tuple arrays', function () {
+        result = generateView(tupleModel)
+        expect(result).deep.equal(tupleView)
       })
     })
 
