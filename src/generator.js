@@ -117,8 +117,8 @@ function addModelCell (propertyName, model, cellDefinitions) {
  * Add a property to default layout
  * @param {String} propertyName - the name of the property that holds this model
  * @param {BunsenModel} model - the actual model
- * @param {BunsenRow[]} children - the children we're adding the given model wrapper to
- * @param {BunsenCell[]} cellDefinitions - the set of all cells
+ * @param {BunsenCell[]} cellDefinitions - the set of all cell definitions
+ * @returns {BunsenCell} - the new cell
  */
 function addModel (propertyName, model, cellDefinitions) {
   let cell = {
@@ -146,8 +146,8 @@ function addModel (propertyName, model, cellDefinitions) {
  * @param {String} propertyName - the name of the property that holds this model
  * @param {String} dependencyName - the name of the dependency of this model
  * @param {BunsenModel} model - the actual model
- * @param {BunsenRow[]} children - the children we're adding the given model wrapper to
- * @param {BunsenCell[]} cellDefinitions - the set of all cells
+ * @param {BunsenCell[]} cellDefinitions - the set of all cell definitions
+ * @returns {BunsenCell} - The new cell
  */
 function addDependentModel (propertyName, dependencyName, model, cellDefinitions) {
   const cell = addModel(propertyName, model, cellDefinitions)

@@ -185,10 +185,7 @@ export default createFactory({
       return aggregateResults(results)
     }
 
-    const parts = cell.model.split('.')
-    const last = parts.pop()
-    const modelArg = (/^\d+$/.test(last)) ? parts.join('.') : cell.model
-    const subModel = getSubModel(model, modelArg, cell.dependsOn)
+    const subModel = getSubModel(model, cell.model, cell.dependsOn)
     results.push(
       this._validateModelCell(path, cell, subModel)
     )
@@ -213,10 +210,7 @@ export default createFactory({
         this._validateDependentModelCell(path, cell, model)
       )
     } else if (cell.model) {
-      const parts = cell.model.split('.')
-      const last = parts.pop()
-      const modelArg = (/^\d+$/.test(last)) ? parts.join('.') : cell.model
-      subModel = getSubModel(model, modelArg)
+      subModel = getSubModel(model, cell.model)
       results.push(
         this._validateModelCell(path, cell, subModel)
       )

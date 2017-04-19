@@ -84,48 +84,6 @@ export function getModelPath (model, reference, dependencyReference) {
   return new BunsenModelPath(model, reference)
 }
 
-function getArraySubModel (model, path) {
-  let subModel
-  const nextIsNumber = !isNaN(_.last(path))
-  if (Array.isArray(model.items)) {
-    if (nextIsNumber) {
-      subModel = _.get(model, `items.${path.pop()}`)
-      if (subModel === undefined && typeof model.additionalItems === 'object') {
-        subModel = model.additionalItems
-      }
-    }
-  } else {
-    if (nextIsNumber) {
-      path.pop()
-    }
-    subModel = model.items
-  }
-  return subModel
-}
-
-function getObjectSubModel (model, path) {
-  let subModel
-  if (_.last(path) === '$dependencies') {
-    path.pop()
-    subModel = model.dependencies[path.pop()]
-  } else {
-    subModel = _.get(model, `properties.${path.pop()}`)
-  }
-  return subModel
-}
-
-function _getSubModel (model, path) {
-  if (path.length <= 0 || model === undefined) {
-    return model
-  }
-  let subModel
-  if (model.type === 'object') {
-    subModel = getObjectSubModel(model, path)
-  } else if (model.type === 'array') {
-    subModel = getArraySubModel(model, path)
-  }
-  return _getSubModel(subModel, path)
-}
 /**
  * Get the sub-model for a given dotted reference
  * @param {BunsenModel} model - the starting model
@@ -268,6 +226,13 @@ export class BunsenModelPath {
       return 'items'
     }
   }
+  static getPrePath (model, pathSeg) {
+    if (model.type === 'object') {
+      return BunsenModelPath.objectPrePath(model, pathSeg)
+    } else if (model.type === 'array') {
+      return BunsenModelPath.arrayPrePath(model, pathSeg)
+    }
+  }
   static createPathSegment (curModel, prePath, pathSeg) {
     if (prePath) {
       if (prePath === 'items' && !Array.isArray(curModel.items) || prePath === 'additionalItems') {
@@ -300,12 +265,7 @@ export class BunsenModelPath {
       return
     }
     const curModel = this._currentModel
-    let prePath
-    if (curModel.type === 'object') {
-      prePath = BunsenModelPath.objectPrePath(curModel, pathSeg)
-    } else if (curModel.type === 'array') {
-      prePath = BunsenModelPath.arrayPrePath(curModel, pathSeg)
-    }
+    const prePath = BunsenModelPath.getPrePath(curModel, pathSeg)
     const nextSeg = BunsenModelPath.createPathSegment(curModel, prePath, pathSeg)
     const nextModel = _.get(curModel, nextSeg)
     if (nextModel === undefined) {
