@@ -5,7 +5,7 @@ module.exports = {
     extends: 'main'
   }],
   cellDefinitions: {
-    'foo.0': {
+    'foo/0': {
       children: [{
         model: 'bar'
       }]
@@ -19,16 +19,16 @@ module.exports = {
       children: [{
         model: 'foo',
         arrayOptions: {
+          tupleCells: [{
+            model: '0',
+            extends: 'foo/0'
+          }, {
+            model: '1'
+          }],
           itemCell: {
             extends: 'fooItems'
           }
-        },
-        children: [{
-          model: '0',
-          extends: 'foo.0'
-        }, {
-          model: '1'
-        }]
+        }
       }]
     }
   }
