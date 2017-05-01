@@ -44,38 +44,63 @@ export function normalizeCell (state, cell, parents) {
 
     state = {
       model: addBunsenModelProperty(state.model, cell.model, modelPath),
-      view: normalizeCellModelProperty(cell, parents, modelPath)
+      view: normalizeCellModelProperty(parents.concat(cell), modelPath)
     }
   }
 
   return normalizeChildren(state, cell, parents)
 }
 
-export function normalizeCellModelProperty (cell, parents, modelPath) {
-  const view = Object.assign({}, parents.shift())
-  const next = parents.shift()
-
-  if (next === view.cells) {
-    //
-  } else if (next === view.cellDefinitions) {
-    //
-  }
+export function normalizeCellModelProperty (nodes, modelPath) {
+  const view = Object.assign({}, nodes.shift())
+  const next = nodes.shift()
 
   let pointer = view
 
-  while (parents.length) {
-    const parent = parents.shift()
-    const index = pointer.children.indexOf(parent)
+  if (next === view.cells) {
+    const cell = nodes.shift()
+    const index = view.cells.indexOf(cell)
 
-    // return new array with same children except a shallow clone for parent
-    pointer.children = pointer.children.slice(0, index) // get all items before parent
-      .concat(Object.assign({}, parent)) // shallow clone parent
-      .concat(pointer.children.slice(index + 1)) // get all items after parent
+    pointer = Object.assign({}, cell)
 
-    pointer = parent
+    // return new array with same cells except a shallow clone for cell
+    view.cells = view.cells.slice(0, index) // get all cells before cell
+      .concat(pointer) // shallow clone cell
+      .concat(view.cells.slice(index + 1)) // get all cells after cell
+  } else if (next === view.cellDefinitions) {
+    view.cellDefinitions = Object.assign({}, view.cellDefinitions)
+    const def = nodes.shift()
+
+    let defKey
+
+    Object.keys(view.cellDefinitions).find((key) => {
+      const result = view.cellDefinitions[key] === def
+      if (result) defKey = key
+      return result
+    })
+
+    pointer = view.cellDefinitions[defKey] = Object.assign({}, def)
   }
 
-  // TODO: update cell model property and update cell in parent
+  while (nodes.length) {
+    if (pointer.children) {
+      nodes.shift() // children
+
+      const child = nodes.shift()
+      const index = pointer.children.indexOf(child)
+      const clone = Object.assign({}, child)
+
+      // return new array with same children except a shallow clone for parent
+      pointer.children = pointer.children.slice(0, index) // get all items before parent
+        .concat(clone) // shallow clone parent
+        .concat(pointer.children.slice(index + 1)) // get all items after parent
+
+      pointer = clone
+    }
+  }
+
+  pointer.model = modelPath
+  delete pointer.id
 
   return view
 }
