@@ -6,7 +6,6 @@ import {getChangeSet} from './change-utils'
 import {dereference} from './dereference'
 import evaluateConditions from './evaluate-conditions'
 import {set, unset} from './immutable-utils'
-import normalizeModelAndView from './normalize-model-and-view'
 import evaluateViewConditions from './view-conditions'
 
 const INITIAL_VALUE = {
@@ -138,19 +137,11 @@ export const actionReducers = {
    * @returns {State} - updated state
    */
   [CHANGE_VIEW]: function (state, action) {
-    const {model, view} = normalizeModelAndView({
-      model: state.baseModel,
-      view: action.view
-    })
-
     const newState = {
       baseView: action.view,
       lastAction: CHANGE_VIEW,
-      view: evaluateViewConditions(view, state.value)
+      view: evaluateViewConditions(action.view, state.value)
     }
-
-    // If our view injected new properties into the model
-    if (model !== state.baseModel) newState.baseModel = model
 
     return _.defaults(newState, state)
   },
