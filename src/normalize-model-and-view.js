@@ -38,20 +38,20 @@ export function normalizeCellDefinitions (state) {
 
 export function normalizeCell (state, cell, parents) {
   if (typeof cell.model === 'object') {
-    const id = cell.id
     const isInternal = cell.internal === true
-    const modelPath = getModelPath(isInternal ? `form.${id}` : id)
+    const id = isInternal ? `internal.${cell.id}` : cell.id
+    const modelPath = getModelPath(id)
 
     state = {
       model: addBunsenModelProperty(state.model, cell.model, modelPath),
-      view: normalizeCellModelProperty(parents.concat(cell), modelPath)
+      view: normalizeCellProperties(parents.concat(cell), id)
     }
   }
 
   return normalizeChildren(state, cell, parents)
 }
 
-export function normalizeCellModelProperty (nodes, modelPath) {
+export function normalizeCellProperties (nodes, modelPath) {
   const view = Object.assign({}, nodes.shift())
   const next = nodes.shift()
 
@@ -101,6 +101,7 @@ export function normalizeCellModelProperty (nodes, modelPath) {
 
   pointer.model = modelPath
   delete pointer.id
+  delete pointer.internal
 
   return view
 }
