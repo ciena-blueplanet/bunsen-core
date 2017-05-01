@@ -191,6 +191,14 @@ const definitions = {
         type: 'boolean'
       },
 
+      id: {
+        type: 'string'
+      },
+
+      internal: {
+        type: 'string'
+      },
+
       // The user-visible label for this cell
       label: {
         type: 'string'
