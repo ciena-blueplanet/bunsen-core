@@ -1020,10 +1020,6 @@ describe('normalize model and view', function () {
         },
         type: 'object'
       },
-      parents: [
-        actual.view,
-        actual.view.cells
-      ],
       view: {
         cells: [
           {
@@ -1112,6 +1108,73 @@ describe('normalize model and view', function () {
               }
             ],
             label: 'Test'
+          }
+        ],
+        type: 'form',
+        version: '2.0'
+      }
+    })
+  })
+
+  it('default export normalizes everything', () => {
+    const state = Object.freeze({
+      model: Object.freeze({
+        properties: Object.freeze({
+          //
+        }),
+        type: 'object'
+      }),
+      view: Object.freeze({
+        cellDefinitions: Object.freeze({
+          main: Object.freeze({
+            id: 'foo',
+            model: Object.freeze({
+              type: 'string'
+            })
+          })
+        }),
+        cells: Object.freeze([
+          Object.freeze({
+            extends: 'main'
+          }),
+          Object.freeze({
+            id: 'bar',
+            model: Object.freeze({
+              type: 'number'
+            })
+          })
+        ]),
+        type: 'form',
+        version: '2.0'
+      })
+    })
+
+    const actual = stuff.default(state)
+
+    expect(actual).to.eql({
+      model: {
+        properties: {
+          bar: {
+            type: 'number'
+          },
+          foo: {
+            type: 'string'
+          }
+        },
+        type: 'object'
+      },
+      view: {
+        cellDefinitions: {
+          main: {
+            model: 'foo'
+          }
+        },
+        cells: [
+          {
+            extends: 'main'
+          },
+          {
+            model: 'bar'
           }
         ],
         type: 'form',

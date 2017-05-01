@@ -1,5 +1,12 @@
 import {getModelPath} from './utils'
 
+/**
+ * Add property model into full model
+ * @param {BunsenModel} bunsenModel - full model
+ * @param {BunsenModel} propertyModel - property model
+ * @param {String} modelPath - path to property in full model
+ * @returns {BunsenModel} full model with property model inserted
+ */
 export function addBunsenModelProperty (bunsenModel, propertyModel, modelPath) {
   const model = Object.assign({}, bunsenModel)
   const segments = modelPath.split('.')
@@ -26,6 +33,11 @@ export function addBunsenModelProperty (bunsenModel, propertyModel, modelPath) {
   return model
 }
 
+/**
+ * Normalize cell definitions
+ * @param {Object} state – unnormalized state (contains model and view)
+ * @returns {Object} - normalized state (contains model and view)
+ */
 export function normalizeCellDefinitions (state) {
   if (!state.view || !state.view.cellDefinitions) return state
 
@@ -49,6 +61,13 @@ export function normalizeCellDefinitions (state) {
   return newState
 }
 
+/**
+ * Normalize view cell
+ * @param {Object} state - unnormalized state (contains model and view)
+ * @param {BunsenCell} cell - cell to normalize
+ * @param {Array<BunsenView | BunsenCell>} parents - parent nodes
+ * @returns {Object} - normalized state (contains model, view, and parents)
+ */
 export function normalizeCell (state, cell, parents) {
   if (typeof cell.model === 'object') {
     const isInternal = cell.internal === true
@@ -70,6 +89,12 @@ export function normalizeCell (state, cell, parents) {
   return normalizeChildren(state, cell, parents)
 }
 
+/**
+ * Normalize properties on a view cell
+ * @param {Array<BunsenView | BunsenCell>} nodes - cell node and all parent nodes
+ * @param {String} modelPath - model path
+ * @returns {Object} - normalized state (contains model and view)
+ */
 export function normalizeCellProperties (nodes, modelPath) {
   const view = Object.assign({}, nodes.shift())
   const next = nodes.shift()
@@ -133,18 +158,34 @@ export function normalizeCellProperties (nodes, modelPath) {
   }
 }
 
+/**
+ * Normalize top level cells
+ * @param {Object} state – unnormalized state (contains model and view)
+ * @returns {Object} - normalized state (contains model and view)
+ */
 export function normalizeCells (state) {
   if (!state.view || !Array.isArray(state.view.cells)) return state
 
-  return state.view.cells.reduce(
+  const newState = state.view.cells.reduce(
     (_state, cell) => {
       const parents = [_state.view, _state.view.cells]
       return normalizeCell(_state, cell, parents)
     },
     state
   )
+
+  delete newState.parents
+
+  return newState
 }
 
+/**
+ * Normalize view cell's children
+ * @param {Object} state - unnormalized state (contains model and view)
+ * @param {BunsenCell} cell - cell that contains children to normalize
+ * @param {Array<BunsenView | BunsenCell>} parents - parent nodes
+ * @returns {Object} - normalized state (contains model, view, and parents)
+ */
 export function normalizeChildren (state, cell, parents) {
   if (!Array.isArray(cell.children)) return state
 
@@ -164,6 +205,12 @@ export function normalizeChildren (state, cell, parents) {
   return newState
 }
 
+/**
+ * Normalize bunsen model and view from model partials defined in view
+ * @param {BunsenModel} model - bunsen model
+ * @param {BunsenView} view - bunsen view
+ * @returns {Object} - normalized state (contains model and view)
+ */
 export default function ({model, view}) {
   return [
     normalizeCellDefinitions,
