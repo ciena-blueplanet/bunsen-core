@@ -539,6 +539,11 @@ const definitions = {
             type: 'string'
           },
 
+          // an explicit width to set on the select component
+          width: {
+            type: 'number'
+          },
+
           // the attribute of the listed items to use as a value
           valueAttribute: {
             type: 'string'
@@ -579,6 +584,11 @@ const definitions = {
       // description: where in API response to find records for list-based inputs
       recordsPath: {
         type: 'string'
+      },
+
+      // set an explicit width for the select component
+      width: {
+        type: 'number'
       },
 
       // the attribute of the listed items to use as a value
