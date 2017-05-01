@@ -138,7 +138,10 @@ export const actionReducers = {
    * @returns {State} - updated state
    */
   [CHANGE_VIEW]: function (state, action) {
-    const {model, view} = normalizeModelAndView(state.baseModel, action.view)
+    const {model, view} = normalizeModelAndView({
+      model: state.baseModel,
+      view: action.view
+    })
 
     const newState = {
       baseView: action.view,
