@@ -136,18 +136,13 @@ export function normalizeChildren (state, cell, parents) {
   if (!Array.isArray(cell.children)) return state
 
   const newState = cell.children.reduce(
-    (_state, child) => {
-      let childParents
-
-      if (_state.parents) {
-        childParents = _state.parents.slice(0, parents.length + 2)
-      } else {
-        childParents = parents.concat([cell, cell.children])
-      }
-
+    (_state, child, index) => {
+      const childParents = _state.parents.slice(0, parents.length + 2)
       return normalizeCell(_state, child, childParents)
     },
-    state
+    Object.assign({}, state, {
+      parents: parents.concat([cell, cell.children])
+    })
   )
 
   // Make sure outbound parents are just clones of inbound parents
