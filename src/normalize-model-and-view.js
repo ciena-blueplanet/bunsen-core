@@ -29,11 +29,24 @@ export function addBunsenModelProperty (bunsenModel, propertyModel, modelPath) {
 export function normalizeCellDefinitions (state) {
   if (!state.view || !state.view.cellDefinitions) return state
 
-  Object.keys(state.model.cellDefinitions).forEach((key) => {
-    //
-  })
+  const newState = Object.keys(state.view.cellDefinitions)
+    .reduce(
+      (_state, key) => {
+        const cell = _state.view.cellDefinitions[key]
 
-  return state
+        const parents = [
+          _state.view,
+          _state.view.cellDefinitions
+        ]
+
+        return normalizeCell(_state, cell, parents)
+      },
+      state
+    )
+
+  delete newState.parents
+
+  return newState
 }
 
 export function normalizeCell (state, cell, parents) {

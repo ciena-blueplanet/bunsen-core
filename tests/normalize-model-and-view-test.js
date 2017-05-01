@@ -106,6 +106,77 @@ describe('normalize model and view', function () {
     })
   })
 
+  it('normalizeCellDefinitions() normalizes cell definitions', () => {
+    const state = Object.assign({
+      model: Object.assign({
+        properties: Object.assign({}),
+        type: 'object'
+      }),
+      view: Object.freeze({
+        cellDefinitions: Object.freeze({
+          bar: Object.freeze({
+            id: 'bar',
+            model: Object.freeze({
+              type: 'string'
+            })
+          }),
+          foo: Object.freeze({
+            id: 'foo',
+            model: Object.freeze({
+              type: 'number'
+            })
+          })
+        }),
+        cells: Object.freeze([
+          Object.freeze({
+            extends: 'foo'
+          }),
+          Object.freeze({
+            extends: 'bar'
+          })
+        ]),
+        type: 'form',
+        version: '2.0'
+      })
+    })
+
+    const actual = stuff.normalizeCellDefinitions(state)
+
+    expect(actual).to.eql({
+      model: {
+        properties: {
+          bar: {
+            type: 'string'
+          },
+          foo: {
+            type: 'number'
+          }
+        },
+        type: 'object'
+      },
+      view: {
+        cellDefinitions: {
+          bar: {
+            model: 'bar'
+          },
+          foo: {
+            model: 'foo'
+          }
+        },
+        cells: [
+          {
+            extends: 'foo'
+          },
+          {
+            extends: 'bar'
+          }
+        ],
+        type: 'form',
+        version: '2.0'
+      }
+    })
+  })
+
   describe('normalizeCell()', () => {
     it('normalizes cell without children', () => {
       const state = Object.freeze({
