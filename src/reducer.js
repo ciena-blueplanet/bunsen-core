@@ -6,6 +6,7 @@ import {getChangeSet} from './change-utils'
 import {dereference} from './dereference'
 import evaluateConditions from './evaluate-conditions'
 import {set, unset} from './immutable-utils'
+import normalizeModelAndView from './normalize-model-and-view'
 import evaluateViewConditions from './view-conditions'
 
 const INITIAL_VALUE = {
@@ -122,7 +123,12 @@ export const actionReducers = {
    * @returns {State} - updated state
    */
   [CHANGE_MODEL]: function (state, action) {
-    const model = getDereferencedModelSchema(action.model)
+    let model = getDereferencedModelSchema(action.model)
+
+    if (state.unnormalizedView) {
+      model = normalizeModelAndView({model, view: state.unnormalizedView}).model
+    }
+
     return _.defaults({
       baseModel: model,
       lastAction: CHANGE_MODEL,
@@ -140,6 +146,7 @@ export const actionReducers = {
     const newState = {
       baseView: action.view,
       lastAction: CHANGE_VIEW,
+      unnormalizedView: action.unnormalizedView,
       view: evaluateViewConditions(action.view, state.value)
     }
 

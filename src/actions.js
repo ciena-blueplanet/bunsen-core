@@ -42,6 +42,7 @@ export function changeView (nextView) {
 
     dispatch({
       type: CHANGE_VIEW,
+      unnormalizedView: nextView,
       view
     })
   }
