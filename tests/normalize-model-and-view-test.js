@@ -4,7 +4,7 @@ const stuff = require('../lib/normalize-model-and-view')
 
 describe('normalize model and view', function () {
   describe('addBunsenModelProperty()', () => {
-    let model
+    var model
 
     beforeEach(() => {
       model = Object.freeze({
