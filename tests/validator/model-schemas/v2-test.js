@@ -4,7 +4,7 @@ const ZSchema = require('z-schema')
 const modelSchema = require('../../../lib/validator/model-schemas/v2')
 
 describe('v2 model schema', () => {
-  let validator
+  var validator
 
   beforeEach(function () {
     validator = new ZSchema({
