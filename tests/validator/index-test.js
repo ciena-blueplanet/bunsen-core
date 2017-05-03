@@ -451,4 +451,45 @@ describe('validator', () => {
       })
     })
   })
+  it('allows tuple style arrays', function () {
+    const model = {
+      type: 'object',
+      properties: {
+        foo: {
+          type: 'array',
+          items: [{
+            type: 'boolean'
+          }, {
+            type: 'string'
+          }]
+        }
+      }
+    }
+    const view = {
+      cells: [
+        {
+          model: 'foo.0'
+        },
+        {
+          model: 'foo.1'
+        }
+      ],
+      type: 'form',
+      version: '2.0'
+    }
+
+    const renderers = []
+
+    function validateRenderer (rendererName) {
+      return rendererName === 'foo-bar-renderer'
+    }
+
+    function validateModelType () {
+      return true
+    }
+
+    const result = validator.validate(view, model, renderers, validateRenderer, validateModelType)
+    expect(result.warnings).to.have.length(0)
+    expect(result.errors).to.have.length(0)
+  })
 })

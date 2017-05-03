@@ -34,6 +34,14 @@ const definitions = {
       sortable: {
         type: 'boolean',
         default: false
+      },
+
+      // When present, arrays can be heterogeneous
+      tupleCells: {
+        type: 'array',
+        items: {
+          '$ref': '#/definitions/cell'
+        }
       }
     }
   },

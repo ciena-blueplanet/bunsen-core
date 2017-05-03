@@ -97,14 +97,9 @@ function _validateArray (path, model, validateModelType) {
       results.push(validateSubModel(subPath, model.items, validateModelType))
     }
   } else if (Array.isArray(model.items)) {
-    results.push({
-      errors: [
-        {
-          path: subPath,
-          message: 'Tuple notation not supported at this time'
-        }
-      ],
-      warnings: []
+    _.forEach(model.items, (item, index) => {
+      const itemSubPath = `${subPath}/${index}`
+      results.push(validateSubModel(itemSubPath, item, validateModelType))
     })
   }
 

@@ -26,6 +26,14 @@ function unsetObject (obj, path, segments) {
   return obj.set(key, newValue)
 }
 
+function padArray (array, desiredLength) {
+  const newItems = []
+  for (var i = array.length; i < desiredLength; i++) {
+    newItems.push(undefined)
+  }
+  return array.concat(newItems)
+}
+
 /* eslint-disable complexity */
 export function set (item, path, value) {
   const segments = path.split('.')
@@ -36,12 +44,9 @@ export function set (item, path, value) {
     item = item || []
     const index = parseInt(segment)
 
-    for (let i = 0; i < index + 1; i++) {
-      if (item.length < (i + 1)) {
-        item.concat(null)
-      }
+    if (index + 1 > item.length) {
+      item = padArray(item, index)
     }
-
     const newValue = segments.length > 0 ? set(item[index], segments.join('.'), value) : value
 
     // Return immutable array with item at index updated

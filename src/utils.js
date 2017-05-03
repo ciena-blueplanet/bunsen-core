@@ -63,24 +63,25 @@ export function getLabel (label, model, id) {
  *
  * @param {String} reference - the dotted reference to the model
  * @param {String} [dependencyReference] - the dotted reference to the model dependency
- * @returns {String} the proper dotted path in the model schema (or undefined if it's a bad path)
+ * @returns {String[]} the proper dotted path in the model schema (or undefined if it's a bad path)
  */
-export function getModelPath (reference, dependencyReference) {
+export function _getModelPath (reference, dependencyReference) {
   const pattern = /^[^\.](.*[^\.])?$/ // eslint-disable-line no-useless-escape
-  let path = pattern.test(reference) ? `properties.${reference.split('.').join('.properties.')}` : undefined
-
-  if (typeof path === 'string' || path instanceof String) {
-    path = path.replace(/\.properties\.(\d+)\./g, '.items.') // Replace array index with "items"
+  if (!pattern.test(reference)) {
+    return
   }
 
+  const pathArr = reference.split('.')
   if (dependencyReference) {
     const dependencyName = dependencyReference.split('.').pop()
-    const pathArr = path.split('.')
-    pathArr.splice(-2, 0, 'dependencies', dependencyName)
-    path = pathArr.join('.')
+    pathArr.splice(-1, 0, '$dependencies', dependencyName)
   }
 
-  return path
+  return pathArr
+}
+
+export function getModelPath (model, reference, dependencyReference) {
+  return new BunsenModelPath(model, reference)
 }
 
 /**
@@ -91,7 +92,7 @@ export function getModelPath (reference, dependencyReference) {
  * @returns {BunsenModel} the sub-model
  */
 export function getSubModel (model, reference, dependencyReference) {
-  const path = getModelPath(reference, dependencyReference)
+  const path = getModelPath(model, reference).modelPath()
   return _.get(model, path)
 }
 
@@ -200,4 +201,112 @@ export function hasValidQueryValues (value, queryDef, startPath) {
     return false
   }
   return Object.keys(query).every((key) => String(query[key]) !== '')
+}
+
+export class BunsenModelPath {
+  static objectPrePath (model, pathSeg) {
+    if (model.properties[pathSeg]) {
+      return 'properties'
+    }
+    const dependency = _.findKey(model.dependencies, (dep) => {
+      return !Array.isArray(dep) && dep.properties !== undefined && dep.properties[pathSeg] !== undefined
+    })
+    if (dependency) {
+      return `dependencies.${dependency}.properties`
+    }
+  }
+  static arrayPrePath (model, pathSeg) {
+    if (Array.isArray(model.items) &&
+      !isNaN(pathSeg) &&
+      _.get(model.items, pathSeg) === undefined &&
+      typeof model.additionalItems === 'object'
+    ) {
+      return 'additionalItems'
+    } else if (model.items !== undefined) {
+      return 'items'
+    }
+  }
+  static getPrePath (model, pathSeg) {
+    if (model.type === 'object') {
+      return BunsenModelPath.objectPrePath(model, pathSeg)
+    } else if (model.type === 'array') {
+      return BunsenModelPath.arrayPrePath(model, pathSeg)
+    }
+  }
+  static createPathSegment (curModel, prePath, pathSeg) {
+    if (prePath) {
+      if (prePath === 'items' && !Array.isArray(curModel.items) || prePath === 'additionalItems') {
+        // skip path segment for array items
+        return prePath
+      } else {
+        return `${prePath}.${pathSeg}`
+      }
+    }
+    return pathSeg
+  }
+
+  constructor (model, initialPath) {
+    this._model = model
+    this._currentModel = model
+    this._path = []
+    this._valid = true
+    if (typeof initialPath === 'string') {
+      initialPath = initialPath.split('.')
+      this.append(initialPath)
+    }
+  }
+
+  append (pathSeg) {
+    if (!this._valid) {
+      return
+    }
+    if (Array.isArray(pathSeg)) {
+      pathSeg.forEach(seg => this.append(seg))
+      return
+    }
+    const curModel = this._currentModel
+    const prePath = BunsenModelPath.getPrePath(curModel, pathSeg)
+    const nextSeg = BunsenModelPath.createPathSegment(curModel, prePath, pathSeg)
+    const nextModel = _.get(curModel, nextSeg)
+    if (nextModel === undefined) {
+      this._valid = false
+      return
+    }
+    this._currentModel = nextModel
+    this._path.push(nextSeg)
+  }
+
+  pop () {
+    if (this._valid) {
+      const last = this._path.pop()
+      this._currentModel = _.get(this._model, this.modelPath())
+      return last
+    }
+  }
+
+  last () {
+    return _.last(this._path)
+  }
+
+  toString () {
+    if (this._valid) {
+      return this._path.join('.')
+    }
+    return ''
+  }
+
+  valuePath () {
+    if (this._valid) {
+      return this._path.map((element) => element.split('.').pop())
+    }
+  }
+
+  modelPath () {
+    if (this._valid) {
+      return this._path.join('.')
+    }
+  }
+  get isValid () {
+    return this._valid
+  }
 }

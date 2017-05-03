@@ -1,3 +1,11 @@
+# 0.28.0
+
+- **Added** support for conditionally required properties
+- **Added** support for tuple style arrays
+- **Added** support for array models with conditional properties
+- **Changed** getSubModel function
+
+
 # 0.27.0
 * UIS2 spec now includes `width` option for select
 
