@@ -1,4 +1,29 @@
-import {getModelPath} from './utils'
+/**
+ * Convert a model reference to a proper path in the model schema
+ *
+ * hero.firstName => hero.properties.firstName
+ * foo.bar.baz => foo.properties.bar.properties.baz
+ *
+ * Leading or trailing '.' mess up our trivial split().join() and aren't valid anyway, so we
+ * handle them specially, undefined being passed into _.get() will yield undefined, and display
+ * the error we want to display when the model reference is invalid, so we return undefined
+ *
+ * hero. => undefined
+ * .hero => undefined
+ *
+ * @param {String} reference - the dotted reference to the model
+ * @returns {String} the proper dotted path in the model schema (or undefined if it's a bad path)
+ */
+export function getModelPath (reference) {
+  const pattern = /^[^.](.*[^.])?$/
+  let path = pattern.test(reference) ? `properties.${reference.split('.').join('.properties.')}` : undefined
+
+  if (typeof path === 'string' || path instanceof String) {
+    path = path.replace(/\.properties\.(\d+)\./g, '.items.') // Replace array index with "items"
+  }
+
+  return path
+}
 
 /**
  * Add property model into full model
