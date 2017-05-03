@@ -71,7 +71,7 @@ export function normalizeCellDefinitions (state) {
 export function normalizeCell (state, cell, parents) {
   if (typeof cell.model === 'object') {
     const isInternal = cell.internal === true
-    const id = isInternal ? `internal.${cell.id}` : cell.id
+    const id = isInternal ? `_internal.${cell.id}` : cell.id
     const modelPath = getModelPath(id)
     const viewState = normalizeCellProperties(parents.concat(cell), id)
 

@@ -266,16 +266,16 @@ describe('normalize model and view', function () {
       expect(actual).to.eql({
         model: {
           properties: {
-            foo: {
-              type: 'string'
-            },
-            internal: {
+            _internal: {
               properties: {
                 test: {
                   type: 'number'
                 }
               },
               type: 'object'
+            },
+            foo: {
+              type: 'string'
             }
           },
           type: 'object'
@@ -287,7 +287,7 @@ describe('normalize model and view', function () {
         view: {
           cells: [
             {
-              model: 'internal.test'
+              model: '_internal.test'
             }
           ],
           type: 'form',
@@ -432,10 +432,7 @@ describe('normalize model and view', function () {
       expect(actual).to.eql({
         model: {
           properties: {
-            foo: {
-              type: 'string'
-            },
-            internal: {
+            _internal: {
               properties: {
                 test: {
                   properties: {
@@ -450,6 +447,9 @@ describe('normalize model and view', function () {
                 }
               },
               type: 'object'
+            },
+            foo: {
+              type: 'string'
             }
           },
           type: 'object'
@@ -469,7 +469,7 @@ describe('normalize model and view', function () {
                   model: 'bar'
                 }
               ],
-              model: 'internal.test'
+              model: '_internal.test'
             }
           ],
           type: 'form',
@@ -536,10 +536,7 @@ describe('normalize model and view', function () {
       expect(actual).to.eql({
         model: {
           properties: {
-            foo: {
-              type: 'string'
-            },
-            internal: {
+            _internal: {
               properties: {
                 test: {
                   properties: {
@@ -559,6 +556,9 @@ describe('normalize model and view', function () {
                 }
               },
               type: 'object'
+            },
+            foo: {
+              type: 'string'
             }
           },
           type: 'object'
@@ -583,7 +583,7 @@ describe('normalize model and view', function () {
                   model: 'foo'
                 }
               ],
-              model: 'internal.test'
+              model: '_internal.test'
             }
           ],
           type: 'form',
@@ -997,16 +997,7 @@ describe('normalize model and view', function () {
     expect(actual).to.eql({
       model: {
         properties: {
-          alpha: {
-            type: 'boolean'
-          },
-          charlie: {
-            type: 'string'
-          },
-          foo: {
-            type: 'string'
-          },
-          internal: {
+          _internal: {
             properties: {
               bravo: {
                 type: 'number'
@@ -1016,6 +1007,15 @@ describe('normalize model and view', function () {
               }
             },
             type: 'object'
+          },
+          alpha: {
+            type: 'boolean'
+          },
+          charlie: {
+            type: 'string'
+          },
+          foo: {
+            type: 'string'
           }
         },
         type: 'object'
@@ -1029,7 +1029,7 @@ describe('normalize model and view', function () {
             model: 'alpha'
           },
           {
-            model: 'internal.bravo'
+            model: '_internal.bravo'
           },
           {
             children: [
@@ -1037,7 +1037,7 @@ describe('normalize model and view', function () {
                 model: 'charlie'
               },
               {
-                model: 'internal.delta'
+                model: '_internal.delta'
               }
             ],
             label: 'Test'
