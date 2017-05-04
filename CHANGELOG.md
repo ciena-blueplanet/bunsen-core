@@ -1,3 +1,8 @@
+# 0.28.2
+
+* **Fixed** a bug where File objects would be stripped from values
+
+
 # 0.28.1
  * **Fixed** [#85](https://github.com/ciena-blueplanet/bunsen-core/issues/85)
  * **Updated** `eslint-config-frost-standard` to `6.x` and fixed lint errors.
