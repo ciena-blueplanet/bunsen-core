@@ -158,7 +158,7 @@ function checkCell (view, value, cell) {
   if (tupleCells) {
     const itemsCells = value.get().map((val, index) =>
       Immutable.without(
-        checkCell(view, value.pushPath(index + ''), itemCell),
+        checkCell(view, value.pushPath(index + ''), tupleCells[index]),
         'conditions',
         'extends'
       )
@@ -213,7 +213,6 @@ export default function evaluateView (view, value) {
   } catch (e) {
     // Unfortunately this is necessary because view validation happens outside of the reducer,
     // so we have no guarantee that the view is valid and it may cause run time errors. Returning
-    debugger
     return view
   }
 }

@@ -149,6 +149,20 @@ class ExpectedArrayValue extends ExpectedValue {
               ]
             }]
           }
+        }, {
+          label: 'Foo',
+          model: 'foo',
+          arrayOptions: {
+            tupleCells: [{
+              children: [{
+                model: 'bar'
+              }, {
+                model: 'baz'
+              }]
+            }, {
+              model: 'include'
+            }]
+          }
         }
       ],
       cellDefinitions: {
@@ -323,7 +337,8 @@ describe('views with conditionals', function () {
           lastName: 'Parker'
         }, {
           firstName: 'Cher'
-        }]
+        }],
+        foo: [{bar: '', baz: ''}, true]
       })
       expect(result).to.be.eql(
         new ExpectedArrayValue()

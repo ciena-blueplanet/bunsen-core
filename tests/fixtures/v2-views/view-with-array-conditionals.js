@@ -10,6 +10,25 @@ module.exports = {
           extends: 'superhero'
         }
       }
+    }, {
+      label: 'Foo',
+      model: 'foo',
+      arrayOptions: {
+        tupleCells: [{
+          children: [{
+            model: 'bar'
+          }, {
+            model: 'baz',
+            conditions: [{
+              if: [{
+                '../1': {equals: true}
+              }]
+            }]
+          }]
+        }, {
+          model: 'include'
+        }]
+      }
     }
   ],
   cellDefinitions: {
