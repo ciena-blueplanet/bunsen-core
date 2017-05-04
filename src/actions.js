@@ -1,8 +1,8 @@
-
 import _ from 'lodash'
+
+import {getPath} from './dereference'
 import {validateValue} from './validator'
 import {aggregateResults} from './validator/utils'
-import {getPath} from './dereference'
 
 export const CHANGE_VALUE = 'CHANGE_VALUE'
 export const VALIDATION_RESOLVED = 'VALIDATION_RESOLVED'

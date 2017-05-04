@@ -1,19 +1,17 @@
 'use strict'
 
-import '../typedefs'
 import _ from 'lodash'
 import ZSchema from 'z-schema'
 
+import {dereference} from '../dereference'
+import '../typedefs'
+import customFormats from './custom-formats'
 import {
   addErrorResult,
   aggregateResults,
   ensureJsonObject,
   validateRequiredAttribute
 } from './utils'
-
-import {dereference} from '../dereference'
-
-import customFormats from './custom-formats'
 
 // Register custom formats with z-schema
 _.forIn(customFormats, (validator, name) => {

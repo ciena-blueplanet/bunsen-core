@@ -167,7 +167,7 @@ function rowsToCells (rows) {
 export function generateCellDefinitions (containers) {
   return _.chain(containers)
   .map(function (container) {
-    const {collapsible, rows, id, className, label} = container
+    const {className, collapsible, id, label, rows} = container
     const cell = rowsToCells(rows)
 
     if (className !== undefined) {
