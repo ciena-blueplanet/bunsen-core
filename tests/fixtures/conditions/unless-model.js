@@ -1,8 +1,10 @@
+var deepFreeze = require('../../deep-freeze')
+
 /**
  * Simple bunsen model with an 'unless' condition
  */
 
-module.exports = {
+module.exports = deepFreeze({
   type: 'object',
   properties: {
     tagType: {
@@ -37,4 +39,4 @@ module.exports = {
       }]
     }
   }
-}
+})

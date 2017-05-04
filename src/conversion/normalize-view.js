@@ -8,30 +8,39 @@ import _ from 'lodash'
  */
 export function normalizeModelProperty (object) {
   if (Array.isArray(object)) {
-    return object
-      .map((item) => {
-        return normalizeModelProperty(item)
-      })
+    const newArray = object.map((item) => normalizeModelProperty(item))
+    const hasArrayChanged = newArray.some((item, index) => item !== object[index])
+    return hasArrayChanged ? newArray : object
   }
 
+  // Primitive types (booleans, null, numbers, strings, and undefined)
   if (!_.isPlainObject(object)) {
     return object
   }
 
-  Object.keys(object)
-    .forEach((key) => {
+  return Object.keys(object).reduce(
+    (obj, key) => {
       const isModelProperty = key === 'model' && _.isString(object[key])
 
       if (!isModelProperty) {
-        object[key] = normalizeModelProperty(object[key])
-        return
+        const newValue = normalizeModelProperty(object[key])
+
+        if (newValue !== object[key]) {
+          return Object.assign({}, obj, {[key]: newValue})
+        }
+      } else {
+        // Convert foo[0].bar to foo.0.bar
+        const newValue = object[key].replace(/\[/g, '.').replace(/]/g, '')
+
+        if (newValue !== object[key]) {
+          return Object.assign({}, obj, {[key]: newValue})
+        }
       }
 
-      // Convert foo[0].bar to foo.0.bar
-      object[key] = object[key].replace(/\[/g, '.').replace(/]/g, '')
-    })
-
-  return object
+      return obj
+    },
+    object
+  )
 }
 
 /**
@@ -41,11 +50,19 @@ export function normalizeModelProperty (object) {
  */
 function normalizeView (bunsenView) {
   if (bunsenView.cellDefinitions) {
-    normalizeModelProperty(bunsenView.cellDefinitions)
+    const cellDefinitions = normalizeModelProperty(bunsenView.cellDefinitions)
+
+    if (cellDefinitions !== bunsenView.cellDefinitions) {
+      bunsenView = Object.assign({}, bunsenView, {cellDefinitions})
+    }
   }
 
   if (bunsenView.cells) {
-    normalizeModelProperty(bunsenView.cells)
+    const cells = normalizeModelProperty(bunsenView.cells)
+
+    if (cells !== bunsenView.cells) {
+      bunsenView = Object.assign({}, bunsenView, {cells})
+    }
   }
 
   return bunsenView
