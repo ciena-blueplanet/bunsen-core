@@ -1,5 +1,5 @@
 import isMacAddress from './mac-address'
-import {isMacMaskValid, macAddressBits, macMulticastMaskRegex, isMacMulticastAddress} from './utils'
+import {isMacMaskValid, isMacMulticastAddress, macAddressBits, macMulticastMaskRegex} from './utils'
 
 /* eslint-disable complexity */
 /**
