@@ -1,3 +1,8 @@
+# 0.28.3
+
+* **Merged** in changes from `0.27.x` branch.
+
+
 # 0.28.2
 
 * **Fixed** a bug where File objects would be stripped from values
