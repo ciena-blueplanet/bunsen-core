@@ -1,6 +1,6 @@
 {
   "name": "bunsen-core",
-  "version": "0.28.0",
+  "version": "0.28.1",
   "dependencies": {
     "abbrev": {
       "version": "1.0.9",
@@ -758,9 +758,9 @@
       }
     },
     "eslint-config-frost-standard": {
-      "version": "5.3.2",
-      "from": "eslint-config-frost-standard@>=5.0.0 <6.0.0",
-      "resolved": "https://registry.npmjs.org/eslint-config-frost-standard/-/eslint-config-frost-standard-5.3.2.tgz",
+      "version": "6.0.1",
+      "from": "eslint-config-frost-standard@>=6.0.0 <7.0.0",
+      "resolved": "https://registry.npmjs.org/eslint-config-frost-standard/-/eslint-config-frost-standard-6.0.1.tgz",
       "dev": true,
       "dependencies": {
         "eslint-plugin-promise": {
@@ -778,9 +778,9 @@
       "dev": true
     },
     "eslint-plugin-ember-standard": {
-      "version": "0.0.20",
-      "from": "eslint-plugin-ember-standard@0.0.20",
-      "resolved": "https://registry.npmjs.org/eslint-plugin-ember-standard/-/eslint-plugin-ember-standard-0.0.20.tgz",
+      "version": "0.0.22",
+      "from": "eslint-plugin-ember-standard@0.0.22",
+      "resolved": "https://registry.npmjs.org/eslint-plugin-ember-standard/-/eslint-plugin-ember-standard-0.0.22.tgz",
       "dev": true
     },
     "eslint-plugin-mocha": {

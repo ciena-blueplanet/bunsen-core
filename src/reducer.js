@@ -70,8 +70,10 @@ function immutableOnce (object) {
  * @returns {Object} a value cleaned of any `null`s
  */
 function recursiveClean (value, model) {
-  let output = Array.isArray(value) ? [] : {}
-  _.forEach(value, (subValue, key) => {
+  let isValueArray = Array.isArray(value)
+  let output = isValueArray ? [] : {}
+  let iteratorFn = isValueArray ? _.forEach : _.forIn
+  iteratorFn(value, (subValue, key) => {
     const notEmpty = !_.isEmpty(subValue)
     if (Array.isArray(subValue) && (notEmpty || _.includes(_.get(model, 'required'), key))) {
       output[key] = recursiveClean(subValue, _.get(model, 'items'))

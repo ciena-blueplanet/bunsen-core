@@ -1,9 +1,9 @@
 'use strict'
 
-import '../typedefs'
-
-import ZSchema from 'z-schema'
 import _ from 'lodash'
+import ZSchema from 'z-schema'
+
+import '../typedefs'
 
 const schemaValidator = new ZSchema({
   breakOnFirstError: false

@@ -1,16 +1,15 @@
 'use strict'
 
-import '../typedefs'
 import _ from 'lodash'
 
+import '../typedefs'
 import {getSubModel} from '../utils'
-import viewSchema from './view-schemas/v2'
-
 import {
   addErrorResult,
   addWarningResult,
   aggregateResults
 } from './utils'
+import viewSchema from './view-schemas/v2'
 
 function createFactory (proto) {
   const factory = function () {
