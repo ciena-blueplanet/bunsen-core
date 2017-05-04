@@ -1,3 +1,4 @@
+/* global File */
 import _ from 'lodash'
 import immutable from 'seamless-immutable'
 
@@ -74,10 +75,11 @@ function recursiveClean (value, model) {
   let output = isValueArray ? [] : {}
   let iteratorFn = isValueArray ? _.forEach : _.forIn
   iteratorFn(value, (subValue, key) => {
-    const notEmpty = !_.isEmpty(subValue)
+    const notEmpty = !_.isEmpty(subValue) || subValue instanceof File
     if (Array.isArray(subValue) && (notEmpty || _.includes(_.get(model, 'required'), key))) {
       output[key] = recursiveClean(subValue, _.get(model, 'items'))
-    } else if (_.isObject(subValue) && (notEmpty || _.includes(_.get(model, 'required'), key))) {
+    } else if (!(subValue instanceof File) && _.isObject(subValue) &&
+      (notEmpty || _.includes(_.get(model, 'required'), key))) {
       output[key] = recursiveClean(subValue, _.get(model, 'properties.' + key))
     } else if (notEmpty || _.isNumber(subValue) || typeof subValue === 'boolean' || subValue instanceof Boolean) {
       output[key] = subValue

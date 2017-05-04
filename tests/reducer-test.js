@@ -1,3 +1,4 @@
+/* global File */
 var expect = require('chai').expect
 var sinon = require('sinon')
 var reducerExports = require('../lib/reducer')
@@ -98,6 +99,12 @@ describe('reducer', function () {
   })
 
   describe('value manipulation', function () {
+    beforeEach(function () {
+      global.File = function () {
+        // Empty so that recursiveClean would normally try to prune it
+      }
+    })
+
     it('can change a value', function () {
       var initialState = {
         errors: {},
@@ -161,6 +168,25 @@ describe('reducer', function () {
             length: 3,
             fizz: 'bang'
           }
+        }
+      }
+
+      var changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: value, bunsenId: null})
+      expect(changedState.value).to.eql(value)
+    })
+
+    it('will not strip Files', function () {
+      var exampleFile = new File()
+      var initialState = {
+        errors: {},
+        validationResult: {warnings: [], errors: []},
+        value: {},
+        baseModel: {}
+      }
+
+      var value = {
+        foo: {
+          bar: exampleFile
         }
       }
 
