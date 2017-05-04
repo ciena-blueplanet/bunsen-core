@@ -1,3 +1,7 @@
+# 0.27.2
+Please add a description of your change here, it will be automatically prepended to the `CHANGELOG.md` file.
+
+
 # 0.27.1
  * **Fixed** [#85](https://github.com/ciena-blueplanet/bunsen-core/issues/85)
  * **Updated** `eslint-config-frost-standard` to `6.x` and fixed lint errors.
