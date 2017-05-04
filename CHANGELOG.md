@@ -1,3 +1,8 @@
+# 0.27.1
+ * **Fixed** [#85](https://github.com/ciena-blueplanet/bunsen-core/issues/85)
+ * **Updated** `eslint-config-frost-standard` to `6.x` and fixed lint errors.
+
+
 # 0.27.0
 * UIS2 spec now includes `width` option for select
 
