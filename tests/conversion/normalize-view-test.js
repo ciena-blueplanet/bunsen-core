@@ -1,9 +1,11 @@
 var expect = require('chai').expect
+
 var normalizeView = require('../../lib/conversion/normalize-view').default
+var deepFreeze = require('../deep-freeze')
 
 describe('normalizeView()', function () {
   it(' normalizes view as expected', function () {
-    const input = {
+    const input = deepFreeze({
       cellDefinitions: {
         test: {
           children: [
@@ -40,7 +42,7 @@ describe('normalizeView()', function () {
       ],
       type: 'form',
       version: '2.0'
-    }
+    })
 
     expect(normalizeView(input)).to.eql({
       cellDefinitions: {
