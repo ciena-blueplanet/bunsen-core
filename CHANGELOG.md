@@ -1,3 +1,7 @@
+# 0.28.1
+ * **Fixed** [#85](https://github.com/ciena-blueplanet/bunsen-core/issues/85)
+ * **Updated** `eslint-config-frost-standard` to `6.x` and fixed lint errors.
+
 # 0.28.0
 
 - **Added** support for conditionally required properties
