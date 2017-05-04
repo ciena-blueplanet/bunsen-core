@@ -7,6 +7,7 @@ var expect = require('chai').expect
 var evaluate = require('../lib/evaluate-conditions')
 var dereference = require('../lib/dereference')
 
+var deepFreeze = require('./deep-freeze')
 var simpleModel = require('./fixtures/conditions/simple-model')
 var modelWithDeepConditionals = require('./fixtures/conditions/deep-model')
 var modelWithRelativePaths = require('./fixtures/conditions/relative-paths-model')
@@ -35,7 +36,7 @@ describe('evaluate-conditions', () => {
     var data = {
       tagType: 'single-tagged'
     }
-    var model = _.cloneDeep(modelWithRequiredConditionals)
+    var model = deepFreeze(modelWithRequiredConditionals)
     var newModel = dereferenceAndEval(model, data)
     expect(newModel).to.eql({
       type: 'object',
@@ -57,7 +58,7 @@ describe('evaluate-conditions', () => {
       var data = {
         tagType: 'untagged'
       }
-      model = _.cloneDeep(modelWithUnless)
+      model = deepFreeze(modelWithUnless)
       var newModel = dereferenceAndEval(model, data)
       expect(newModel).to.eql({
         'type': 'object',
@@ -73,7 +74,7 @@ describe('evaluate-conditions', () => {
       var data = {
         tagType: 'double-tagged'
       }
-      model = _.cloneDeep(modelWithUnless)
+      model = deepFreeze(modelWithUnless)
       var newModel = dereferenceAndEval(model, data)
       expect(newModel).to.eql({
         type: 'object',
@@ -121,7 +122,7 @@ describe('evaluate-conditions', () => {
 
   describe('simple model', () => {
     beforeEach(() => {
-      model = _.cloneDeep(simpleModel)
+      model = deepFreeze(simpleModel)
       expected = _.cloneDeep(simpleModel)
     })
 
@@ -194,8 +195,8 @@ describe('evaluate-conditions', () => {
 
   describe('nested objects', () => {
     beforeEach(() => {
-      model = _.cloneDeep(modelWithDeepConditionals)
-      expected = _.cloneDeep(modelWithDeepConditionals)
+      model = deepFreeze(modelWithDeepConditionals)
+      expected = deepFreeze(modelWithDeepConditionals)
     })
 
     describe('when single-tagged', () => {
@@ -218,8 +219,8 @@ describe('evaluate-conditions', () => {
 
   describe('relative paths', () => {
     beforeEach(() => {
-      model = _.cloneDeep(modelWithRelativePaths)
-      expected = _.cloneDeep(modelWithRelativePaths)
+      model = deepFreeze(modelWithRelativePaths)
+      expected = deepFreeze(modelWithRelativePaths)
     })
 
     describe('when single-tagged', () => {
@@ -241,8 +242,8 @@ describe('evaluate-conditions', () => {
 
   describe('definitions', () => {
     beforeEach(() => {
-      model = _.cloneDeep(modelWithDefinitions)
-      expected = _.cloneDeep(modelWithDefinitions)
+      model = deepFreeze(modelWithDefinitions)
+      expected = deepFreeze(modelWithDefinitions)
     })
 
     describe('when single-tagged', () => {
@@ -266,8 +267,8 @@ describe('evaluate-conditions', () => {
 
   describe('arrays', () => {
     beforeEach(() => {
-      model = _.cloneDeep(modelWithArray)
-      expected = _.cloneDeep(modelWithArray)
+      model = deepFreeze(modelWithArray)
+      expected = deepFreeze(modelWithArray)
     })
 
     describe('when items have different tagTypes', () => {

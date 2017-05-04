@@ -1,26 +1,27 @@
 var expect = require('chai').expect
 
 const stuff = require('../lib/normalize-model-and-view')
+const deepFreeze = require('./deep-freeze')
 
 describe('normalize model and view', function () {
   describe('addBunsenModelProperty()', () => {
     var model
 
     beforeEach(() => {
-      model = Object.freeze({
-        properties: Object.freeze({
-          bar: Object.freeze({
-            properties: Object.freeze({
-              baz: Object.freeze({
+      model = deepFreeze({
+        properties: {
+          bar: {
+            properties: {
+              baz: {
                 type: 'string'
-              })
-            }),
+              }
+            },
             type: 'object'
-          }),
-          foo: Object.freeze({
+          },
+          foo: {
             type: 'string'
-          })
-        }),
+          }
+        },
         type: 'object'
       })
     })
@@ -107,37 +108,37 @@ describe('normalize model and view', function () {
   })
 
   it('normalizeCellDefinitions() normalizes cell definitions', () => {
-    const state = Object.assign({
-      model: Object.assign({
-        properties: Object.assign({}),
+    const state = deepFreeze({
+      model: {
+        properties: {},
         type: 'object'
-      }),
-      view: Object.freeze({
-        cellDefinitions: Object.freeze({
-          bar: Object.freeze({
+      },
+      view: {
+        cellDefinitions: {
+          bar: {
             id: 'bar',
-            model: Object.freeze({
+            model: {
               type: 'string'
-            })
-          }),
-          foo: Object.freeze({
+            }
+          },
+          foo: {
             id: 'foo',
-            model: Object.freeze({
+            model: {
               type: 'number'
-            })
-          })
-        }),
-        cells: Object.freeze([
-          Object.freeze({
+            }
+          }
+        },
+        cells: [
+          {
             extends: 'foo'
-          }),
-          Object.freeze({
+          },
+          {
             extends: 'bar'
-          })
-        ]),
+          }
+        ],
         type: 'form',
         version: '2.0'
-      })
+      }
     })
 
     const actual = stuff.normalizeCellDefinitions(state)
@@ -179,27 +180,27 @@ describe('normalize model and view', function () {
 
   describe('normalizeCell()', () => {
     it('normalizes cell without children', () => {
-      const state = Object.freeze({
-        model: Object.freeze({
-          properties: Object.freeze({
-            foo: Object.freeze({
+      const state = deepFreeze({
+        model: {
+          properties: {
+            foo: {
               type: 'string'
-            })
-          }),
+            }
+          },
           type: 'object'
-        }),
-        view: Object.freeze({
-          cells: Object.freeze([
-            Object.freeze({
+        },
+        view: {
+          cells: [
+            {
               id: 'test',
-              model: Object.freeze({
+              model: {
                 type: 'number'
-              })
-            })
-          ]),
+              }
+            }
+          ],
           type: 'form',
           version: '2.0'
-        })
+        }
       })
 
       const cell = state.view.cells[0]
@@ -235,28 +236,28 @@ describe('normalize model and view', function () {
     })
 
     it('normalizes internal cell without children', () => {
-      const state = Object.freeze({
-        model: Object.freeze({
-          properties: Object.freeze({
-            foo: Object.freeze({
+      const state = deepFreeze({
+        model: {
+          properties: {
+            foo: {
               type: 'string'
-            })
-          }),
+            }
+          },
           type: 'object'
-        }),
-        view: Object.freeze({
-          cells: Object.freeze([
-            Object.freeze({
+        },
+        view: {
+          cells: [
+            {
               id: 'test',
               internal: true,
-              model: Object.freeze({
+              model: {
                 type: 'number'
-              })
-            })
-          ]),
+              }
+            }
+          ],
           type: 'form',
           version: '2.0'
-        })
+        }
       })
 
       const cell = state.view.cells[0]
@@ -297,43 +298,43 @@ describe('normalize model and view', function () {
     })
 
     it('normalizes cell with children', () => {
-      const state = Object.freeze({
-        model: Object.freeze({
-          properties: Object.freeze({
-            foo: Object.freeze({
+      const state = deepFreeze({
+        model: {
+          properties: {
+            foo: {
               type: 'string'
-            })
-          }),
+            }
+          },
           type: 'object'
-        }),
-        view: Object.freeze({
-          cells: Object.freeze([
-            Object.freeze({
-              children: Object.freeze([
-                Object.freeze({
+        },
+        view: {
+          cells: [
+            {
+              children: [
+                {
                   model: 'foo'
-                }),
-                Object.freeze({
+                },
+                {
                   model: 'bar'
-                })
-              ]),
+                }
+              ],
               id: 'test',
-              model: Object.freeze({
-                properties: Object.freeze({
-                  bar: Object.freeze({
+              model: {
+                properties: {
+                  bar: {
                     type: 'number'
-                  }),
-                  foo: Object.freeze({
+                  },
+                  foo: {
                     type: 'string'
-                  })
-                }),
+                  }
+                },
                 type: 'object'
-              })
-            })
-          ]),
+              }
+            }
+          ],
           type: 'form',
           version: '2.0'
-        })
+        }
       })
 
       const cell = state.view.cells[0]
@@ -385,44 +386,44 @@ describe('normalize model and view', function () {
     })
 
     it('normalizes internal cell with children', () => {
-      const state = Object.freeze({
-        model: Object.freeze({
-          properties: Object.freeze({
-            foo: Object.freeze({
+      const state = deepFreeze({
+        model: {
+          properties: {
+            foo: {
               type: 'string'
-            })
-          }),
+            }
+          },
           type: 'object'
-        }),
-        view: Object.freeze({
-          cells: Object.freeze([
-            Object.freeze({
-              children: Object.freeze([
-                Object.freeze({
+        },
+        view: {
+          cells: [
+            {
+              children: [
+                {
                   model: 'foo'
-                }),
-                Object.freeze({
+                },
+                {
                   model: 'bar'
-                })
-              ]),
+                }
+              ],
               id: 'test',
               internal: true,
-              model: Object.freeze({
-                properties: Object.freeze({
-                  bar: Object.freeze({
+              model: {
+                properties: {
+                  bar: {
                     type: 'number'
-                  }),
-                  foo: Object.freeze({
+                  },
+                  foo: {
                     type: 'string'
-                  })
-                }),
+                  }
+                },
                 type: 'object'
-              })
-            })
-          ]),
+              }
+            }
+          ],
           type: 'form',
           version: '2.0'
-        })
+        }
       })
 
       const cell = state.view.cells[0]
@@ -479,54 +480,54 @@ describe('normalize model and view', function () {
     })
 
     it('normalizes internal cell with nested children', () => {
-      const state = Object.freeze({
-        model: Object.freeze({
-          properties: Object.freeze({
-            foo: Object.freeze({
+      const state = deepFreeze({
+        model: {
+          properties: {
+            foo: {
               type: 'string'
-            })
-          }),
+            }
+          },
           type: 'object'
-        }),
-        view: Object.freeze({
-          cells: Object.freeze([
-            Object.freeze({
-              children: Object.freeze([
-                Object.freeze({
-                  children: Object.freeze([
-                    Object.freeze({
+        },
+        view: {
+          cells: [
+            {
+              children: [
+                {
+                  children: [
+                    {
                       model: 'bar'
-                    }),
-                    Object.freeze({
+                    },
+                    {
                       model: 'baz'
-                    })
-                  ]),
+                    }
+                  ],
                   model: 'foo'
-                })
-              ]),
+                }
+              ],
               id: 'test',
               internal: true,
-              model: Object.freeze({
-                properties: Object.freeze({
-                  foo: Object.freeze({
-                    properties: Object.freeze({
-                      bar: Object.freeze({
+              model: {
+                properties: {
+                  foo: {
+                    properties: {
+                      bar: {
                         type: 'number'
-                      }),
-                      baz: Object.freeze({
+                      },
+                      baz: {
                         type: 'string'
-                      })
-                    }),
+                      }
+                    },
                     type: 'object'
-                  })
-                }),
+                  }
+                },
                 type: 'object'
-              })
-            })
-          ]),
+              }
+            }
+          ],
           type: 'form',
           version: '2.0'
-        })
+        }
       })
 
       const cell = state.view.cells[0]
@@ -593,31 +594,31 @@ describe('normalize model and view', function () {
     })
 
     it('normalizes nested cell without children', () => {
-      const state = Object.freeze({
-        model: Object.freeze({
+      const state = deepFreeze({
+        model: {
           properties: {},
           type: 'object'
-        }),
-        view: Object.freeze({
-          cells: Object.freeze([
-            Object.freeze({
-              children: Object.freeze([
-                Object.freeze({
-                  children: Object.freeze([
-                    Object.freeze({
+        },
+        view: {
+          cells: [
+            {
+              children: [
+                {
+                  children: [
+                    {
                       id: 'foo',
-                      model: Object.freeze({
+                      model: {
                         type: 'string'
-                      })
-                    })
-                  ])
-                })
-              ])
-            })
-          ]),
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
           type: 'form',
           version: '2.0'
-        })
+        }
       })
 
       const cell = state.view.cells[0]
@@ -658,44 +659,44 @@ describe('normalize model and view', function () {
     })
 
     it('normalizes nested sibling cells without children', () => {
-      const state = Object.freeze({
-        model: Object.freeze({
+      const state = deepFreeze({
+        model: {
           properties: {
-            test: Object.freeze({
+            test: {
               type: 'string'
-            })
+            }
           },
           type: 'object'
-        }),
-        view: Object.freeze({
-          cells: Object.freeze([
-            Object.freeze({
-              children: Object.freeze([
-                Object.freeze({
+        },
+        view: {
+          cells: [
+            {
+              children: [
+                {
                   model: 'test'
-                }),
-                Object.freeze({
-                  children: Object.freeze([
-                    Object.freeze({
+                },
+                {
+                  children: [
+                    {
                       id: 'foo',
-                      model: Object.freeze({
+                      model: {
                         type: 'string'
-                      })
-                    }),
-                    Object.freeze({
+                      }
+                    },
+                    {
                       id: 'bar',
-                      model: Object.freeze({
+                      model: {
                         type: 'string'
-                      })
-                    })
-                  ])
-                })
-              ])
-            })
-          ]),
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
           type: 'form',
           version: '2.0'
-        })
+        }
       })
 
       const cell = state.view.cells[0]
@@ -750,15 +751,15 @@ describe('normalize model and view', function () {
 
   describe('normalizeCellProperties()', () => {
     it('updates view when top level cell', () => {
-      const view = Object.freeze({
-        cells: Object.freeze([
-          Object.freeze({
+      const view = deepFreeze({
+        cells: [
+          {
             id: 'test',
-            model: Object.freeze({
+            model: {
               type: 'string'
-            })
-          })
-        ]),
+            }
+          }
+        ],
         type: 'form',
         version: '2.0'
       })
@@ -784,19 +785,19 @@ describe('normalize model and view', function () {
     })
 
     it('updates view when nested in top level cell', () => {
-      const view = Object.freeze({
-        cells: Object.freeze([
-          Object.freeze({
-            children: Object.freeze([
-              Object.freeze({
+      const view = deepFreeze({
+        cells: [
+          {
+            children: [
+              {
                 id: 'test',
-                model: Object.freeze({
+                model: {
                   type: 'string'
-                })
-              })
-            ])
-          })
-        ]),
+                }
+              }
+            ]
+          }
+        ],
         type: 'form',
         version: '2.0'
       })
@@ -835,20 +836,20 @@ describe('normalize model and view', function () {
     })
 
     it('updates view when top level cell definition', () => {
-      const view = Object.freeze({
-        cellDefinitions: Object.freeze({
-          main: Object.freeze({
+      const view = deepFreeze({
+        cellDefinitions: {
+          main: {
             id: 'test',
-            model: Object.freeze({
+            model: {
               type: 'string'
-            })
-          })
-        }),
-        cells: Object.freeze([
-          Object.freeze({
+            }
+          }
+        },
+        cells: [
+          {
             extends: 'main'
-          })
-        ]),
+          }
+        ],
         type: 'form',
         version: '2.0'
       })
@@ -879,24 +880,24 @@ describe('normalize model and view', function () {
     })
 
     it('updates view when nested in cell definition', () => {
-      const view = Object.freeze({
-        cellDefinitions: Object.freeze({
-          main: Object.freeze({
-            children: Object.freeze([
-              Object.freeze({
+      const view = deepFreeze({
+        cellDefinitions: {
+          main: {
+            children: [
+              {
                 id: 'test',
-                model: Object.freeze({
+                model: {
                   type: 'string'
-                })
-              })
-            ])
-          })
-        }),
-        cells: Object.freeze([
-          Object.freeze({
+                }
+              }
+            ]
+          }
+        },
+        cells: [
+          {
             extends: 'main'
-          })
-        ]),
+          }
+        ],
         type: 'form',
         version: '2.0'
       })
@@ -941,55 +942,55 @@ describe('normalize model and view', function () {
   })
 
   it('normalizeCells() normalizes various types of cells', () => {
-    const state = Object.freeze({
-      model: Object.freeze({
-        properties: Object.freeze({
-          foo: Object.freeze({
+    const state = deepFreeze({
+      model: {
+        properties: {
+          foo: {
             type: 'string'
-          })
-        }),
+          }
+        },
         type: 'object'
-      }),
-      view: Object.freeze({
-        cells: Object.freeze([
-          Object.freeze({
+      },
+      view: {
+        cells: [
+          {
             model: 'foo'
-          }),
-          Object.freeze({
+          },
+          {
             id: 'alpha',
-            model: Object.freeze({
+            model: {
               type: 'boolean'
-            })
-          }),
-          Object.freeze({
+            }
+          },
+          {
             id: 'bravo',
             internal: true,
-            model: Object.freeze({
+            model: {
               type: 'number'
-            })
-          }),
-          Object.freeze({
-            children: Object.freeze([
-              Object.freeze({
+            }
+          },
+          {
+            children: [
+              {
                 id: 'charlie',
-                model: Object.freeze({
+                model: {
                   type: 'string'
-                })
-              }),
-              Object.freeze({
+                }
+              },
+              {
                 id: 'delta',
                 internal: true,
                 model: {
                   type: 'number'
                 }
-              })
-            ]),
+              }
+            ],
             label: 'Test'
-          })
-        ]),
+          }
+        ],
         type: 'form',
         version: '2.0'
-      })
+      }
     })
 
     const actual = stuff.normalizeCells(state)
@@ -1050,32 +1051,32 @@ describe('normalize model and view', function () {
   })
 
   it('normalizeChildren() normalizes children', () => {
-    const state = Object.freeze({
-      model: Object.freeze({
-        properties: Object.freeze({
-          foo: Object.freeze({
+    const state = deepFreeze({
+      model: {
+        properties: {
+          foo: {
             type: 'string'
-          })
-        }),
+          }
+        },
         type: 'object'
-      }),
-      view: Object.freeze({
-        cells: Object.freeze([
-          Object.freeze({
-            children: Object.freeze([
-              Object.freeze({
+      },
+      view: {
+        cells: [
+          {
+            children: [
+              {
                 id: 'bar',
-                model: Object.freeze({
+                model: {
                   type: 'number'
-                })
-              })
-            ]),
+                }
+              }
+            ],
             label: 'Test'
-          })
-        ]),
+          }
+        ],
         type: 'form',
         version: '2.0'
-      })
+      }
     })
 
     const cell = state.view.cells[0]
@@ -1117,36 +1118,36 @@ describe('normalize model and view', function () {
   })
 
   it('default export normalizes everything', () => {
-    const state = Object.freeze({
-      model: Object.freeze({
-        properties: Object.freeze({
+    const state = deepFreeze({
+      model: {
+        properties: {
           //
-        }),
+        },
         type: 'object'
-      }),
-      view: Object.freeze({
-        cellDefinitions: Object.freeze({
-          main: Object.freeze({
+      },
+      view: {
+        cellDefinitions: {
+          main: {
             id: 'foo',
-            model: Object.freeze({
+            model: {
               type: 'string'
-            })
-          })
-        }),
-        cells: Object.freeze([
-          Object.freeze({
+            }
+          }
+        },
+        cells: [
+          {
             extends: 'main'
-          }),
-          Object.freeze({
+          },
+          {
             id: 'bar',
-            model: Object.freeze({
+            model: {
               type: 'number'
-            })
-          })
-        ]),
+            }
+          }
+        ],
         type: 'form',
         version: '2.0'
-      })
+      }
     })
 
     const actual = stuff.default(state)

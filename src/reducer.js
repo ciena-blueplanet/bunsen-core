@@ -97,7 +97,7 @@ export const actionReducers = {
       let initialValue = state.value || {}
       if (state.baseModel) {
         state.baseModel = getDereferencedModelSchema(state.baseModel)
-        state.model = evaluateConditions(_.cloneDeep(state.baseModel), recursiveClean(initialValue, state.baseModel))
+        state.model = evaluateConditions(state.baseModel, recursiveClean(initialValue, state.baseModel))
         // leave this undefined to force consumers to go through the proper CHANGE_VALUE channel
         // for value changes
         state.value = undefined
@@ -132,7 +132,7 @@ export const actionReducers = {
     return _.defaults({
       baseModel: model,
       lastAction: CHANGE_MODEL,
-      model: evaluateConditions(_.cloneDeep(model), state.value)
+      model: evaluateConditions(model, state.value)
     }, state)
   },
 
@@ -203,7 +203,7 @@ export const actionReducers = {
 
     let model = state.model || state.baseModel
     if (valueChangeSet.size > 0) {
-      const newModel = evaluateConditions(_.cloneDeep(state.baseModel), newValue)
+      const newModel = evaluateConditions(state.baseModel, newValue)
       model = _.isEqual(state.model, newModel) ? state.model : newModel
       if (state.baseView) {
         const newView = evaluateViewConditions(state.baseView, newValue)
