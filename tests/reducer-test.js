@@ -147,6 +147,27 @@ describe('reducer', function () {
       expect(changedState.value).to.eql({baz: 22})
     })
 
+    it('can handle a value with a "length" property', function () {
+      var initialState = {
+        errors: {},
+        validationResult: {warnings: [], errors: []},
+        value: {},
+        baseModel: {}
+      }
+
+      var value = {
+        foo: {
+          bar: {
+            length: 3,
+            fizz: 'bang'
+          }
+        }
+      }
+
+      var changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: value, bunsenId: null})
+      expect(changedState.value).to.eql(value)
+    })
+
     it('will prune all the dead wood when setting root object', function () {
       var model = {
         type: 'object',

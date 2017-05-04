@@ -1,24 +1,22 @@
 'use strict'
 
-import '../typedefs'
 import _ from 'lodash'
 
+import viewV1ToV2 from '../conversion/view-v1-to-v2'
 import {dereference} from '../dereference'
-
+import '../typedefs'
+import {getSubModel} from '../utils'
+import cellValidatorFactory from './cell'
+export {validate as validateModel} from './model'
 import {
   addWarningResult,
   aggregateResults,
   ensureJsonObject,
   validateRequiredAttribute
 } from './utils'
-
-import cellValidatorFactory from './cell'
-import viewSchema from './view-schemas/v2'
-import viewV1ToV2 from '../conversion/view-v1-to-v2'
-import {getSubModel} from '../utils'
-
-export {validate as validateModel} from './model'
 import {validate as _validateValue} from './value'
+import viewSchema from './view-schemas/v2'
+
 export const validateValue = _validateValue
 
 /**

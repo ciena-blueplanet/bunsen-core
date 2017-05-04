@@ -1,15 +1,13 @@
-import './typedefs'
-
 import {
   CHANGE_MODEL,
-  changeModel,
-  CHANGE_VIEW,
-  changeView,
   CHANGE_VALUE,
+  CHANGE_VIEW,
+  VALIDATION_RESOLVED,
+  changeModel,
   changeValue,
+  changeView,
   updateValidationResults,
-  validate,
-  VALIDATION_RESOLVED
+  validate
 } from './actions'
 
 export const actions = {
@@ -53,6 +51,8 @@ export const dereference = {
   processRef,
   recurse
 }
+
+import './typedefs'
 
 export {default as generateView} from './generator'
 export {default as reducer} from './reducer'

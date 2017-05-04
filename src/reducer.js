@@ -1,11 +1,12 @@
 import _ from 'lodash'
 import immutable from 'seamless-immutable'
-import {CHANGE_VALUE, VALIDATION_RESOLVED, CHANGE_MODEL, CHANGE_VIEW} from './actions'
-import evaluateConditions from './evaluate-conditions'
-import evaluateViewConditions from './view-conditions'
-import {set, unset} from './immutable-utils'
-import {dereference} from './dereference'
+
+import {CHANGE_MODEL, CHANGE_VALUE, CHANGE_VIEW, VALIDATION_RESOLVED} from './actions'
 import {getChangeSet} from './change-utils'
+import {dereference} from './dereference'
+import evaluateConditions from './evaluate-conditions'
+import {set, unset} from './immutable-utils'
+import evaluateViewConditions from './view-conditions'
 
 const INITIAL_VALUE = {
   lastAction: null,
@@ -68,8 +69,10 @@ function immutableOnce (object) {
  * @returns {Object} a value cleaned of any `null`s
  */
 function recursiveClean (value, model) {
-  let output = Array.isArray(value) ? [] : {}
-  _.forEach(value, (subValue, key) => {
+  let isValueArray = Array.isArray(value)
+  let output = isValueArray ? [] : {}
+  let iteratorFn = isValueArray ? _.forEach : _.forIn
+  iteratorFn(value, (subValue, key) => {
     const notEmpty = !_.isEmpty(subValue)
     if (Array.isArray(subValue) && (notEmpty || _.includes(_.get(model, 'required'), key))) {
       output[key] = recursiveClean(subValue, _.get(model, 'items'))
@@ -150,7 +153,7 @@ export const actionReducers = {
    * @returns {State} - updated state
    */
   [CHANGE_VALUE]: function (state, action) {
-    const {value, bunsenId} = action
+    const {bunsenId, value} = action
     let newValue
     let valueChangeSet = new Map()
 
