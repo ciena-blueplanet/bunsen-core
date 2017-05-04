@@ -90,8 +90,20 @@ function expandExtendedCell (view, cell) {
     extendedCell = Immutable.without(expandExtendedCell(view, extendedCell), 'extends')
   }
 
-  if (extendedCell.itemCell && extendedCell.itemCell.extends) {
-    cellProps.itemCell = expandExtendedCell(view, extendedCell.itemCell)
+  if (extendedCell.arrayOptions) {
+    if (extendedCell.arrayOptions.itemCell && extendedCell.arrayOptions.itemCell.extends) {
+      cellProps.arrayOptions = {
+        itemCell: expandExtendedCell(view, extendedCell.itemCell)
+      }
+    }
+    if (extendedCell.arrayOptions.tupleCells) {
+      cellProps.arrayOptions.tupleCells = extendedCell.arrayOptions.tupleCells.map(child => {
+        if (child.extends) {
+          return expandExtendedCell(view, child)
+        }
+        return child
+      })
+    }
   }
 
   if (extendedCell.children) {
@@ -130,6 +142,28 @@ function checkCell (view, value, cell) {
 
   if (cell.children) {
     cell = checkChildren(view, value, cell)
+  }
+  let itemCell = _.get(cell, 'arrayOptions.itemCell')
+  if (itemCell) {
+    const itemsCells = value.get().map((val, index) =>
+      Immutable.without(
+        checkCell(view, value.pushPath(index + ''), itemCell),
+        'conditions',
+        'extends'
+      )
+    )
+    cell = Immutable.merge(cell, {arrayOptions: {itemCell: itemsCells}})
+  }
+  let tupleCells = _.get(cell, 'arrayOptions.tupleCells')
+  if (tupleCells) {
+    const itemsCells = value.get().map((val, index) =>
+      Immutable.without(
+        checkCell(view, value.pushPath(index + ''), itemCell),
+        'conditions',
+        'extends'
+      )
+    )
+    cell = Immutable.merge(cell, {arrayOptions: {tupleCells: itemsCells}})
   }
 
   return Immutable.without(cell, 'conditions', 'extends')
@@ -179,6 +213,7 @@ export default function evaluateView (view, value) {
   } catch (e) {
     // Unfortunately this is necessary because view validation happens outside of the reducer,
     // so we have no guarantee that the view is valid and it may cause run time errors. Returning
+    debugger
     return view
   }
 }

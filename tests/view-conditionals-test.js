@@ -6,6 +6,7 @@ var evaluate = require('../lib/view-conditions')
 var simpleView = require('./fixtures/v2-views/view-with-conditional')
 var extensionsView = require('./fixtures/v2-views/view-with-extended-conditionals')
 var complexConditional = require('./fixtures/v2-views/complex-conditionals-view')
+var arrayConditional = require('./fixtures/v2-views/view-with-array-conditionals')
 var complexConditionalView = complexConditional.view
 var ExpectedComplexConditional = complexConditional.ExpectedComplexConditional
 var ExpectedValue = require('./fixtures/expected-value')
@@ -97,6 +98,95 @@ class ExpectedExtendedValue extends ExpectedValue {
     })
 
     return this
+  }
+}
+
+class ExpectedArrayValue extends ExpectedValue {
+  constructor () {
+    super({
+      version: '2.0',
+      type: 'form',
+      cells: [
+        {
+          label: 'Main',
+          model: 'superheroes',
+          arrayOptions: {
+            itemCell: [{
+              children: [
+                {
+                  model: 'firstName'
+                },
+                {
+                  model: 'lastName'
+                }
+              ]
+            }, {
+              children: [
+                {
+                  model: 'firstName'
+                },
+                {
+                  model: 'lastName'
+                },
+                {
+                  model: 'alias'
+                }
+              ]
+            }, {
+              children: [
+                {
+                  model: 'firstName'
+                },
+                {
+                  model: 'lastName'
+                }
+              ]
+            }, {
+              children: [
+                {
+                  model: 'firstName'
+                }
+              ]
+            }]
+          }
+        }
+      ],
+      cellDefinitions: {
+        superhero: {
+          children: [
+            {
+              model: 'firstName'
+            },
+            {
+              extends: 'lastName'
+            },
+            {
+              extends: 'alias'
+            }
+          ]
+        },
+        firstName: {
+          model: 'firstName'
+        },
+        lastName: {
+          model: 'lastName',
+          conditions: [{
+            unless: [{
+              './firstName': {equals: 'Cher'}
+            }]
+          }]
+        },
+        alias: {
+          model: 'alias',
+          conditions: [{
+            if: [{
+              './firstName': {equals: 'Bruce'},
+              './lastName': {equals: 'Wayne'}
+            }]
+          }]
+        }
+      }
+    })
   }
 }
 
@@ -217,6 +307,26 @@ describe('views with conditionals', function () {
 
       expect(result).to.be.eql(
         new ExpectedComplexConditional()
+        .value
+      )
+    })
+    it('an array items', function () {
+      var result = evaluate(arrayConditional, {
+        superheroes: [{
+          firstName: 'Luke',
+          lastName: 'Cage'
+        }, {
+          firstName: 'Bruce',
+          lastName: 'Wayne'
+        }, {
+          firstName: 'Peter',
+          lastName: 'Parker'
+        }, {
+          firstName: 'Cher'
+        }]
+      })
+      expect(result).to.be.eql(
+        new ExpectedArrayValue()
         .value
       )
     })
