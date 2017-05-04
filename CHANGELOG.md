@@ -1,3 +1,8 @@
+# 0.27.3
+
+* **Fixed** a bug where File objects would be stripped from values
+
+
 # 0.27.2
 Please add a description of your change here, it will be automatically prepended to the `CHANGELOG.md` file.
 
