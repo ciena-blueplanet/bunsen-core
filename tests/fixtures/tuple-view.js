@@ -10,24 +10,16 @@ module.exports = {
         model: 'bar'
       }]
     },
-    fooItems: {
-      children: [{
-        model: 'baz'
-      }]
-    },
     main: {
       children: [{
         model: 'foo',
         arrayOptions: {
-          tupleCells: [{
+          itemCell: [{
             model: '0',
             extends: 'foo/0'
           }, {
             model: '1'
-          }],
-          itemCell: {
-            extends: 'fooItems'
-          }
+          }]
         }
       }]
     }

@@ -11,6 +11,7 @@ var simpleModel = require('./fixtures/conditions/simple-model')
 var modelWithDeepConditionals = require('./fixtures/conditions/deep-model')
 var modelWithRelativePaths = require('./fixtures/conditions/relative-paths-model')
 var modelWithArray = require('./fixtures/conditions/array-model')
+var modelWithTupleArray = require('./fixtures/conditions/tuple-model')
 var modelWithDefinitions = require('./fixtures/conditions/definitions-model')
 var modelWithUnless = require('./fixtures/conditions/unless-model')
 var modelWithRequiredConditionals = require('./fixtures/conditions/required-conditionals-model')
@@ -265,13 +266,10 @@ describe('evaluate-conditions', () => {
   })
 
   describe('arrays', () => {
-    beforeEach(() => {
-      model = _.cloneDeep(modelWithArray)
-      expected = _.cloneDeep(modelWithArray)
-    })
-
     describe('when items have different tagTypes', () => {
       beforeEach(() => {
+        model = _.cloneDeep(modelWithArray)
+        expected = _.cloneDeep(modelWithArray)
         value = {
           tags: [
             {tagType: 'single-tagged'},
@@ -287,6 +285,41 @@ describe('evaluate-conditions', () => {
           properties: {
             tags: {
               type: 'array',
+              additionalItems: {
+                type: 'object',
+                properties: {
+                  tagType: {
+                    type: 'string',
+                    enum: ['untagged', 'single-tagged', 'double-tagged']
+                  },
+                  tag: {
+                    type: 'number',
+                    default: 20,
+                    multipleOf: 1.0,
+                    minimum: 0,
+                    maximum: 4094,
+                    conditions: [{
+                      if: [{
+                        tagType: {equals: 'single-tagged'}
+                      }, {
+                        tagType: {equals: 'double-tagged'}
+                      }]
+                    }]
+                  },
+                  tag2: {
+                    type: 'number',
+                    default: 3000,
+                    multipleOf: 1.0,
+                    minimum: 0,
+                    maximum: 4094,
+                    conditions: [{
+                      if: [{
+                        tagType: {equals: 'double-tagged'}
+                      }]
+                    }]
+                  }
+                }
+              },
               items: [{
                 type: 'object',
                 properties: {
@@ -329,6 +362,39 @@ describe('evaluate-conditions', () => {
           }
         })
       })
+    })
+    it('handles tuple style arrays', function () {
+      model = _.cloneDeep(modelWithTupleArray)
+      expected = {
+        type: 'object',
+        properties: {
+          kind: {
+            type: 'string',
+            enum: ['type1', 'type2']
+          },
+          foo: {
+            type: 'array',
+            tuple: true,
+            items: [{
+              type: 'string'
+            }, {
+              type: 'number'
+            }],
+            additionalItems: {
+              type: 'object',
+              properties: {
+                baz: {
+                  type: 'string',
+                  enum: ['foo', 'bar', 'baz']
+                }
+              }
+            }
+          }
+        }
+      }
+      value = {kind: 'type1'}
+      newModel = dereferenceAndEval(model, value)
+      expect(newModel).to.eql(expected)
     })
   })
 })

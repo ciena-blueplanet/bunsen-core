@@ -10,22 +10,7 @@ module.exports = {
       items: [{
         type: 'string'
       }, {
-        type: 'number',
-        conditions: [{
-          if: [{
-            kind: {equals: 'type1'}
-          }],
-          then: {
-            maximum: 200
-          }
-        }, {
-          if: [{
-            kind: {equals: 'type2'}
-          }],
-          then: {
-            minimum: 200
-          }
-        }]
+        type: 'number'
       }],
       additionalItems: {
         type: 'object',
@@ -34,7 +19,7 @@ module.exports = {
             type: 'string',
             conditions: [{
               if: [{
-                kind: {equals: 'type1'}
+                '../kind': {equals: 'type1'}
               }],
               then: {
                 enum: ['foo', 'bar', 'baz']

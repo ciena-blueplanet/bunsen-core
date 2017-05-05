@@ -49,14 +49,17 @@ function tupleCell (propertyName, model, cellDefinitions) {
   })
   const cell = {
     model: propertyName,
-    arrayOptions: {
-      tupleCells
-    }
+    arrayOptions: {}
   }
-  if (model.additionalItems && typeof model.additionalItems === 'object') {
-    cell.arrayOptions.itemCell = {
-      extends: addModelCell(propertyName + 'Items', model.additionalItems, cellDefinitions)
+  if (model.tuple) {
+    cell.arrayOptions.tupleCells = tupleCells
+    if (model.additionalItems && typeof model.additionalItems === 'object') {
+      cell.arrayOptions.itemCell = {
+        extends: addModelCell(propertyName + 'Items', model.additionalItems, cellDefinitions)
+      }
     }
+  } else {
+    cell.arrayOptions.itemCell = tupleCells
   }
   return cell
 }
