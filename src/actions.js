@@ -10,6 +10,12 @@ export const VALIDATION_RESOLVED = 'VALIDATION_RESOLVED'
 export const CHANGE_MODEL = 'SET_MODEL'
 export const CHANGE_VIEW = 'CHANGE_VIEW'
 
+/**
+ * Update form value
+ * @param {String} bunsenId - path to form property to update (updates entire form if left empty)
+ * @param {*} value - new form valud for bunsenId
+ * @returns {Object} redux action
+ */
 export function changeValue (bunsenId, value) {
   return {
     type: CHANGE_VALUE,
@@ -18,6 +24,11 @@ export function changeValue (bunsenId, value) {
   }
 }
 
+/**
+ * Update model
+ * @param {BunsenModel} model - new bunsen model
+ * @returns {Object} redux action
+ */
 export function changeModel (model) {
   return {
     type: CHANGE_MODEL,
@@ -25,6 +36,11 @@ export function changeModel (model) {
   }
 }
 
+/**
+ * Update view
+ * @param {BunsenView} nextView - new bunsen view
+ * @returns {Object} redux action
+ */
 export function changeView (nextView) {
   return function (dispatch, getState) {
     const baseModel = getState().baseModel
