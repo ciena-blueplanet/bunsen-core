@@ -50,16 +50,18 @@ export function changeView (nextView) {
       view: nextView
     })
 
-    // If our view injected new properties into the model
-    if (model !== baseModel) {
-      dispatch(changeModel(model))
-    }
-
-    dispatch({
+    const action = {
       type: CHANGE_VIEW,
       unnormalizedView: nextView,
       view
-    })
+    }
+
+    // If our view injected new properties into the model
+    if (model !== baseModel) {
+      action.baseModel = model
+    }
+
+    dispatch(action)
   }
 }
 

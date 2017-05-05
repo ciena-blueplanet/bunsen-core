@@ -204,7 +204,7 @@ const definitions = {
       },
 
       internal: {
-        type: 'string'
+        type: 'boolean'
       },
 
       // The user-visible label for this cell

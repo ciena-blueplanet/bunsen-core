@@ -261,6 +261,13 @@ export const actionReducers = {
       view
     }
 
+    if (action.baseModel) {
+      Object.assign(newState, {
+        baseModel: action.baseModel,
+        model: evaluateConditions(action.baseModel, state.value)
+      })
+    }
+
     return _.defaults(newState, state)
   },
 
