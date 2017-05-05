@@ -87,6 +87,7 @@ function recursiveClean (value, model) {
   })
   return output
 }
+/* eslint-enable complexity */
 
 function getDereferencedModelSchema (model) {
   let dereferencedModel = dereference(model).schema
@@ -95,7 +96,65 @@ function getDereferencedModelSchema (model) {
   return dereferencedModel
 }
 
+/**
+ * Change value of entire form
+ * @param {Object} prevValue - previous form value
+ * @param {Object} nextValue - next form value
+ * @param {BunsenModel} model - model
+ * @returns {Object} new state with value and value changeset
+ */
+function changeEntireFormValue ({model, nextValue, prevValue}) {
+  return {
+    value: immutableOnce(recursiveClean(nextValue, model)),
+    valueChangeSet: getChangeSet(prevValue, nextValue)
+  }
+}
+
+/**
+ * Change value of form at specified path
+ * @param {String} bunsenId - path to part of form to change value of
+ * @param {Object} formValue - current form value
+ * @param {BunsenMOdel} model - model
+ * @param {Object} value - new value for path
+ * @returns {Object} new state with value and value changeset
+ */
+function changeNestedFormValue ({bunsenId, formValue, model, value}) {
+  const valueChangeSet = new Map()
+
+  let newValue = immutableOnce(formValue)
+  const segments = bunsenId.split('.')
+  const lastSegment = segments.pop()
+
+  if (isArrayItem(lastSegment)) {
+    valueChangeSet.set(bunsenId, {
+      value,
+      type: 'set'
+    })
+    newValue = set(newValue, bunsenId, value)
+  } else if (_.includes([null, ''], value) ||
+    (Array.isArray(value) && value.length === 0 && !isRequired(model, bunsenId))
+  ) {
+    valueChangeSet.set(bunsenId, {
+      value,
+      type: 'unset'
+    })
+    newValue = unset(newValue, bunsenId)
+  } else if (!_.isEqual(value, _.get(newValue, bunsenId))) {
+    valueChangeSet.set(bunsenId, {
+      value,
+      type: 'set'
+    })
+    newValue = set(newValue, bunsenId, value)
+  }
+
+  return {
+    value: newValue,
+    valueChangeSet
+  }
+}
+
 export const actionReducers = {
+  /* eslint-disable complexity */
   '@@redux/INIT': function (state, action) {
     if (state) {
       let initialValue = state.value || {}
@@ -119,6 +178,7 @@ export const actionReducers = {
     newState.value = immutable(newState.value)
     return newState
   },
+  /* eslint-enable complexity */
 
   /**
    * Update the bunsen model
@@ -127,17 +187,26 @@ export const actionReducers = {
    * @returns {State} - updated state
    */
   [CHANGE_MODEL]: function (state, action) {
-    let model = getDereferencedModelSchema(action.model)
-
-    if (state.unnormalizedView) {
-      model = normalizeModelAndView({model, view: state.unnormalizedView}).model
+    const newState = {
+      lastAction: CHANGE_MODEL
     }
 
-    return _.defaults({
-      baseModel: model,
-      lastAction: CHANGE_MODEL,
-      model: evaluateConditions(model, state.value)
-    }, state)
+    // Replace $ref's with definitions so consumers don't have to parse references
+    newState.baseModel = getDereferencedModelSchema(action.model)
+
+    // If we have an unnormalized view then we need to update our model to make
+    // sure any model extensions defined in the view get applied
+    if (state.unnormalizedView) {
+      newState.baseModel = normalizeModelAndView({
+        model: newState.baseModel,
+        view: state.unnormalizedView
+      }).model
+    }
+
+    // Evaluate and remove model conditions so consumers don't have to parse conditions
+    newState.model = evaluateConditions(newState.baseModel, state.value)
+
+    return _.defaults(newState, state)
   },
 
   /**
@@ -147,16 +216,20 @@ export const actionReducers = {
    * @returns {State} - updated state
    */
   [CHANGE_VIEW]: function (state, action) {
+    // Apply coniditions to view cells
+    const view = evaluateViewConditions(action.view, state.value)
+
     const newState = {
       baseView: action.view,
       lastAction: CHANGE_VIEW,
       unnormalizedView: action.unnormalizedView,
-      view: evaluateViewConditions(action.view, state.value)
+      view
     }
 
     return _.defaults(newState, state)
   },
 
+  /* eslint-disable complexity */
   /**
    * Update the bunsen value
    * @param {State} state - state to update
@@ -165,60 +238,43 @@ export const actionReducers = {
    */
   [CHANGE_VALUE]: function (state, action) {
     const {bunsenId, value} = action
-    let newValue
-    let valueChangeSet = new Map()
-
-    if (bunsenId === null) {
-      valueChangeSet = getChangeSet(state.value, value)
-      newValue = immutableOnce(recursiveClean(value, state.model))
-    } else {
-      newValue = immutableOnce(state.value)
-      const segments = bunsenId.split('.')
-      const lastSegment = segments.pop()
-
-      if (isArrayItem(lastSegment)) {
-        valueChangeSet.set(bunsenId, {
-          value,
-          type: 'set'
-        })
-        newValue = set(newValue, bunsenId, value)
-      } else if (_.includes([null, ''], value) ||
-        (Array.isArray(value) && value.length === 0 && !isRequired(state.model, bunsenId))
-      ) {
-        valueChangeSet.set(bunsenId, {
-          value,
-          type: 'unset'
-        })
-        newValue = unset(newValue, bunsenId)
-      } else if (!_.isEqual(value, _.get(newValue, bunsenId))) {
-        valueChangeSet.set(bunsenId, {
-          value,
-          type: 'set'
-        })
-        newValue = set(newValue, bunsenId, value)
-      }
-    }
 
     const newState = {
-      value: newValue,
-      valueChangeSet,
       lastAction: CHANGE_VALUE
     }
 
-    let model = state.model || state.baseModel
-    if (valueChangeSet.size > 0) {
-      const newModel = evaluateConditions(state.baseModel, newValue)
-      model = _.isEqual(state.model, newModel) ? state.model : newModel
+    if (bunsenId === null) {
+      Object.assign(newState, changeEntireFormValue({
+        model: state.model,
+        nextValue: value,
+        prevValue: state.value
+      }))
+    } else {
+      Object.assign(newState, changeNestedFormValue({
+        bunsenId,
+        formValue: state.value,
+        model: state.model,
+        value
+      }))
+    }
+
+    newState.model = state.model || state.baseModel
+
+    // If the value actually changed then we need to re-compute the model and view
+    // so conditionals are correctly applied
+    if (newState.valueChangeSet.size > 0) {
+      const newModel = evaluateConditions(state.baseModel, newState.value)
+      newState.model = _.isEqual(state.model, newModel) ? state.model : newModel
+
       if (state.baseView) {
-        const newView = evaluateViewConditions(state.baseView, newValue)
-        const view = _.isEqual(state.view, newView) ? state.view : newView
-        newState.view = view
+        const newView = evaluateViewConditions(state.baseView, newState.value)
+        newState.view = _.isEqual(state.view, newView) ? state.view : newView
       }
     }
-    newState.model = model
 
     return _.defaults(newState, state)
   },
+  /* eslint-enable complexity */
 
   /**
    * Update validation results
@@ -234,7 +290,6 @@ export const actionReducers = {
     }, state)
   }
 }
-/* eslint-enable complexity */
 
 /**
  * Update the state
