@@ -7,7 +7,6 @@
 * **Fixed** a bug where File objects would be stripped from values
 
 # 0.28.1
-
  * **Fixed** [#85](https://github.com/ciena-blueplanet/bunsen-core/issues/85)
  * **Updated** `eslint-config-frost-standard` to `6.x` and fixed lint errors.
 
@@ -18,6 +17,10 @@
 - **Added** support for array models with conditional properties
 - **Changed** getSubModel function
 
+# 0.27.4
+
+* **Cleaned** up some code to be easier to comprehend by making functions smaller and using self-documenting method names.
+
 # 0.27.3
 
 * **Fixed** a bug where File objects would be stripped from values
@@ -27,9 +30,9 @@
 Please add a description of your change here, it will be automatically prepended to the `CHANGELOG.md` file.
 
 # 0.27.1
-
  * **Fixed** [#85](https://github.com/ciena-blueplanet/bunsen-core/issues/85)
  * **Updated** `eslint-config-frost-standard` to `6.x` and fixed lint errors.
+
 
 # 0.27.0
 
@@ -45,11 +48,11 @@ Please add a description of your change here, it will be automatically prepended
 
 # 0.25.0
 
-**Added** ability to specify custom conditions globally
+* **Added** ability to specify custom conditions globally
 
 # 0.24.1
 
-**Added** "unless" functionality to model conditionals
+* **Added** "unless" functionality to model conditionals
 
 # 0.24.0
 
@@ -57,15 +60,14 @@ Please add a description of your change here, it will be automatically prepended
 
 # 0.23.1
 
-**Fixed** minor issues related to the evaluation of view conditions.
+* **Fixed** minor issues related to the evaluation of view conditions.
 
 # 0.23.0
-
-* **Added** processing of conditional cells in views. Conditions follow the same format as the ones for model properties.
+Added processing of conditional cells in views. Conditions follow the same format as the ones for model properties.
 
 # 0.22.2
 
-**Fixed** issue where a check for required array properties was not following the recursive schema definition correctly
+* **Fixed** issue where a check for required array properties was not following the recursive schema definition correctly
 
 # 0.22.1
 
@@ -85,11 +87,11 @@ Please add a description of your change here, it will be automatically prepended
 
 # 0.21.2
 
-**Fixed** a recursive property check to determine if a property is required.
+* **Fixed** a recursive property check to determine if a property is required.
 
 # 0.21.1
 
-**Changed** empty object/array clearing to leave empty objects/arrays that are required properties of a parent object.
+* **Changed** empty object/array clearing to leave empty objects/arrays that are required properties of a parent object.
 
 # 0.21.0
 
@@ -154,9 +156,11 @@ Please add a description of your change here, it will be automatically prepended
 * **Fixed** validation bug where cell wasn't being validated against proper model.
 
 # 0.16.4
+
 * **Fixed** Selects can be used with values other than string. This adds supports for numbers and booleans.
 
 # 0.16.3
+
 * **Fixed** `hasValidQuery` to return false when `populateQuery` fails on lookup.
 
 # 0.16.2
@@ -215,9 +219,6 @@ Please add a description of your change here, it will be automatically prepended
 
 * **Replaced** instances of `to.be.true` and `to.be.false` with `to.be.equal(true)` and `to.be.equal(false)` because mocha/chai won't error if you have a typo in the property that's not a function (i.e. `expect(false).to.be.fooBarBaz` passes without issue, even though there's no such check as `fooBarBaz`.
 
-# 0.12.1
- * **Replaced** instances of `to.be.true` and `to.be.false` with `to.be.equal(true)` and `to.be.equal(false)` because mocha/chai won't error if you have a typo in the property that's not a function (i.e. `expect(false).to.be.fooBarBaz` passes without issue, even though there's no such check as `fooBarBaz`.
-
 # 0.12.0
 
 * object transforms now support string, boolean, number
@@ -268,8 +269,9 @@ Please add a description of your change here, it will be automatically prepended
 
 # 0.9.2
 
-* The `collapsible` property will now be preserved from a container definition in v1 to v2 conversion
-* Class names for containers will now be preserved in v1 to v2 conversion
+Please add a description of your change here, it will be automatically prepended to the `CHANGELOG.md` file.
+- The `collapsible` property will now be preserved from a container definition in v1 to v2 conversion
+- Class names for containers will now be preserved in v1 to v2 conversion
 
 # 0.9.1
 
@@ -318,6 +320,7 @@ Please add a description of your change here, it will be automatically prepended
 * Converted source code from CommonJS to ES6 modules. Published package still includes CommonJS code under `lib` directory but now also includes the ES6 modules under a new `src` directory.
 
 # 0.2.0
+
  * **Added** a new schema for v2 of bunsen views.
 
 ### What's new in bunsen views v2?
@@ -327,10 +330,6 @@ This schema isn't supported in any implementation of bunsen yet and while the sc
  * **Added** the `cellDefinitions` property to the top-level of the schema, allowing for re-use of `cells`
  * **Added** an `extends` property to `cell` to allow re-use of previously defined `cellDefinitions`
  * **Added** schemas for the `options` (formerly `properties`) that can be passed into different  `renderers`
-
-# 0.1.0
-
- * **Added** validator code from `ember-frost-bunsen`
 
 # 0.1.0
 
