@@ -1,3 +1,8 @@
+# 0.27.4
+
+* **Cleaned** up some code to be easier to comprehend by making functions smaller and using self-documenting method names.
+
+
 # 0.27.3
 
 * **Fixed** a bug where File objects would be stripped from values
