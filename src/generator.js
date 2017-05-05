@@ -1,8 +1,7 @@
-import './typedefs'
-
 import _ from 'lodash'
 
 import {dereference} from './dereference'
+import './typedefs'
 
 /**
  * Take the properties of an object and put primitive types above non-primitive types

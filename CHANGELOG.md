@@ -1,3 +1,36 @@
+# 0.28.3
+
+* **Merged** in changes from `0.27.x` branch.
+
+
+# 0.28.2
+
+* **Fixed** a bug where File objects would be stripped from values
+
+# 0.28.1
+ * **Fixed** [#85](https://github.com/ciena-blueplanet/bunsen-core/issues/85)
+ * **Updated** `eslint-config-frost-standard` to `6.x` and fixed lint errors.
+
+# 0.28.0
+
+- **Added** support for conditionally required properties
+- **Added** support for tuple style arrays
+- **Added** support for array models with conditional properties
+- **Changed** getSubModel function
+
+# 0.27.3
+
+* **Fixed** a bug where File objects would be stripped from values
+
+# 0.27.2
+Please add a description of your change here, it will be automatically prepended to the `CHANGELOG.md` file.
+
+
+# 0.27.1
+ * **Fixed** [#85](https://github.com/ciena-blueplanet/bunsen-core/issues/85)
+ * **Updated** `eslint-config-frost-standard` to `6.x` and fixed lint errors.
+
+
 # 0.27.0
 * UIS2 spec now includes `width` option for select
 
@@ -212,7 +245,7 @@ Added processing of conditional cells in views. Conditions follow the same forma
 
 
 # 0.12.1
- * **Replaced** instances of `to.be.true` and `to.be.false` with `to.be.equal(true)` and `to.be.equal(false)` because mocha/chai won't error if you have a typo in the property that's not a function (i.e. `expect(false).to.be.fooBarBaz` passes without issue, even though there's no such check as `fooBarBaz`. 
+ * **Replaced** instances of `to.be.true` and `to.be.false` with `to.be.equal(true)` and `to.be.equal(false)` because mocha/chai won't error if you have a typo in the property that's not a function (i.e. `expect(false).to.be.fooBarBaz` passes without issue, even though there's no such check as `fooBarBaz`.
 
 # 0.12.0
 object transforms now support string, boolean, number
@@ -340,11 +373,11 @@ Added utility function to convert version 1 views to version 2 views.
 
 
 # 0.2.0
- * **Added** a new schema for v2 of bunsen views. 
+ * **Added** a new schema for v2 of bunsen views.
 
 ### What's new in bunsen views v2?
-This schema isn't supported in any implementation of bunsen yet and while the schema itself is much longer, it provides the ability to write much more concise and simpler view definitions. 
- * **Removed** the concept of `containers` and replaced it with `cells` that can have a `children` property (an `array` of `cells`). 
+This schema isn't supported in any implementation of bunsen yet and while the schema itself is much longer, it provides the ability to write much more concise and simpler view definitions.
+ * **Removed** the concept of `containers` and replaced it with `cells` that can have a `children` property (an `array` of `cells`).
  * **Replaced** the concept of `rootContainers` with a simple top-level `array` of `cells` to serve as entry-points (tabs if there is more than one)
  * **Added** the `cellDefinitions` property to the top-level of the schema, allowing for re-use of `cells`
  * **Added** an `extends` property to `cell` to allow re-use of previously defined `cellDefinitions`
@@ -355,4 +388,3 @@ This schema isn't supported in any implementation of bunsen yet and while the sc
 
 # 0.1.0
  * **Added** validator code from `ember-frost-bunsen`
-
