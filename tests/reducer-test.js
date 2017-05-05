@@ -330,7 +330,7 @@ describe('reducer', function () {
             }
           }
         },
-        baseModel: {
+        basemodel: {
           type: 'object',
           properties: {
             foo: {
@@ -430,14 +430,42 @@ describe('reducer', function () {
       var initialState = {
         errors: {},
         validationResult: {warnings: [], errors: []},
-        foo: [[{
-          bar: ['some array element']
-        }]],
+        value: {
+          foo: [[{
+            bar: ['some array element']
+          }]]
+        },
         baseModel: model,
         model
       }
       var changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: [], bunsenId: 'foo.0.0.bar'})
       expect(changedState.value).to.eql({foo: [[{bar: []}]]})
+    })
+    it('can insert values into tuple arrays at specific indices', function () {
+      const model = {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'array',
+            items: [{
+              type: 'string'
+            }, {
+              type: 'number'
+            }, {
+              type: 'boolean'
+            }]
+          }
+        }
+      }
+      var initialState = {
+        errors: {},
+        validationResult: {warnings: [], errors: []},
+        value: {foo: ['test']},
+        baseModel: model,
+        model
+      }
+      var changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: true, bunsenId: 'foo.3'})
+      expect(changedState.value).to.eql({foo: ['test', undefined, undefined, true]})
     })
   })
 

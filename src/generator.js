@@ -23,6 +23,49 @@ function getPropertyOrder (properties) {
   return primitiveProps.concat(complexProps)
 }
 
+function objectCell (propertyName, model, cellDefinitions) {
+  return {
+    model: propertyName,
+    extends: addModelCell(propertyName, model, cellDefinitions)
+  }
+}
+function arrayCell (propertyName, model, cellDefinitions) {
+  const cellId = addModelCell(propertyName, model.items, cellDefinitions)
+  return {
+    model: propertyName,
+    arrayOptions: {
+      itemCell: {
+        extends: cellId
+      }
+    }
+  }
+}
+function tupleCell (propertyName, model, cellDefinitions) {
+  const tupleCells = model.items.map((item, index) => {
+    const cell = addModel(`${propertyName}/${index}`, item, cellDefinitions)
+    cell.model = index + ''
+    return cell
+  })
+  const cell = {
+    model: propertyName,
+    arrayOptions: {
+      tupleCells
+    }
+  }
+  if (model.additionalItems && typeof model.additionalItems === 'object') {
+    cell.arrayOptions.itemCell = {
+      extends: addModelCell(propertyName + 'Items', model.additionalItems, cellDefinitions)
+    }
+  }
+  return cell
+}
+
+function getModelType (model) {
+  if (model.type === 'array' && Array.isArray(model.items)) {
+    return 'tuple'
+  }
+  return model.type
+}
 /**
  * Add a model cell for the given model
  * @param {String} propertyName - the name of the property that holds the model
@@ -31,9 +74,7 @@ function getPropertyOrder (properties) {
  * @returns {String} the cell name
  */
 function addModelCell (propertyName, model, cellDefinitions) {
-  const cell = {
-    children: []
-  }
+  const cell = {}
 
   var defName = propertyName
   var counter = 1
@@ -46,25 +87,28 @@ function addModelCell (propertyName, model, cellDefinitions) {
   cellDefinitions[defName] = cell
 
   const props = getPropertyOrder(model.properties)
-  props.forEach((propName) => {
+  const children = props.map((propName) => {
     // we have a circular dependency
     /* eslint-disable no-use-before-define */
-    addModel(propName, model.properties[propName], cell.children, cellDefinitions)
+    return addModel(propName, model.properties[propName], cellDefinitions)
     /* eslint-enable no-use-before-define */
   })
 
   if (model.dependencies) {
     _.forIn(model.dependencies, (dep, depName) => {
       const depProps = getPropertyOrder(dep.properties)
-      depProps.forEach((propName) => {
+      const depChildren = depProps.map((propName) => {
         // we have a circular dependency
         /* eslint-disable no-use-before-define */
-        addDependentModel(propName, depName, dep.properties[propName], cell.children, cellDefinitions)
+        return addDependentModel(propName, depName, dep.properties[propName], cellDefinitions)
         /* eslint-enable no-use-before-define */
       })
+      children.push.apply(children, depChildren)
     })
   }
-
+  if (children.length > 0) {
+    cell.children = children
+  }
   return defName
 }
 
@@ -72,66 +116,42 @@ function addModelCell (propertyName, model, cellDefinitions) {
  * Add a property to default layout
  * @param {String} propertyName - the name of the property that holds this model
  * @param {BunsenModel} model - the actual model
- * @param {BunsenRow[]} children - the children we're adding the given model wrapper to
- * @param {BunsenCell[]} cellDefinitions - the set of all cells
+ * @param {BunsenCell[]} cellDefinitions - the set of all cell definitions
+ * @returns {BunsenCell} - the new cell
  */
-function addModel (propertyName, model, children, cellDefinitions) {
-  const cell = {
+function addModel (propertyName, model, cellDefinitions) {
+  let cell = {
     model: propertyName
   }
-
-  switch (model.type) {
+  const modelType = getModelType(model)
+  switch (modelType) {
     case 'array':
       if (model.items) {
-        const cellId = addModelCell(propertyName, model.items, cellDefinitions)
-        cell.arrayOptions = {
-          itemCell: {
-            extends: cellId
-          }
-        }
+        cell = arrayCell(propertyName, model, cellDefinitions)
       }
       break
 
     case 'object':
-      const cellId = addModelCell(propertyName, model, cellDefinitions)
-      cell.extends = cellId
+      cell = objectCell(propertyName, model, cellDefinitions)
       break
+    case 'tuple':
+      cell = tupleCell(propertyName, model, cellDefinitions)
   }
 
-  children.push(cell)
+  return cell
 }
-
 /**
  * Add a property to default layout
  * @param {String} propertyName - the name of the property that holds this model
  * @param {String} dependencyName - the name of the dependency of this model
  * @param {BunsenModel} model - the actual model
- * @param {BunsenRow[]} children - the children we're adding the given model wrapper to
- * @param {BunsenCell[]} cellDefinitions - the set of all cells
+ * @param {BunsenCell[]} cellDefinitions - the set of all cell definitions
+ * @returns {BunsenCell} - The new cell
  */
-function addDependentModel (propertyName, dependencyName, model, children, cellDefinitions) {
-  const cell = {
-    model: propertyName,
-    dependsOn: dependencyName
-  }
-
-  const isObject = (model.type === 'object')
-  const isArray = (model.type === 'array') && (model.items.type === 'object')
-
-  if (isObject || isArray) {
-    const subModel = isArray ? model.items : model
-    const cellId = addModelCell(propertyName, subModel, cellDefinitions)
-    if (isArray) {
-      cell.arrayOptions = {
-        itemCell: {
-          extends: cellId
-        }
-      }
-    } else {
-      cell.extends = cellId
-    }
-  }
-  children.push(cell)
+function addDependentModel (propertyName, dependencyName, model, cellDefinitions) {
+  const cell = addModel(propertyName, model, cellDefinitions)
+  cell.dependsOn = dependencyName
+  return cell
 }
 
 /**
@@ -141,22 +161,19 @@ function addDependentModel (propertyName, dependencyName, model, children, cellD
  */
 export function generateView (schema) {
   const model = dereference(schema || {}).schema
+  const props = getPropertyOrder(model.properties)
+  const cellDefinitions = {
+    main: {}
+  }
 
+  const children = props.map((propName) => addModel(propName, model.properties[propName], cellDefinitions))
+  cellDefinitions.main.children = children
   const view = {
     version: '2.0',
     type: 'form',
     cells: [{extends: 'main'}],
-    cellDefinitions: {
-      main: {
-        children: []
-      }
-    }
+    cellDefinitions
   }
-
-  const props = getPropertyOrder(model.properties)
-  props.forEach((propName) => {
-    addModel(propName, model.properties[propName], view.cellDefinitions['main'].children, view.cellDefinitions)
-  })
 
   return view
 }
