@@ -119,36 +119,71 @@ function changeEntireFormValue ({model, nextValue, prevValue}) {
  * @returns {Object} new state with value and value changeset
  */
 function changeNestedFormValue ({bunsenId, formValue, model, value}) {
-  const valueChangeSet = new Map()
-
-  let newValue = immutableOnce(formValue)
   const segments = bunsenId.split('.')
   const lastSegment = segments.pop()
 
+  // Make sure form value is immutable
+  formValue = immutableOnce(formValue)
+
   if (isArrayItem(lastSegment)) {
-    valueChangeSet.set(bunsenId, {
-      value,
-      type: 'set'
-    })
-    newValue = set(newValue, bunsenId, value)
-  } else if (_.includes([null, ''], value) ||
+    return setProperty({bunsenId, formValue, value})
+  }
+
+  if (
+    _.includes([null, ''], value) ||
     (Array.isArray(value) && value.length === 0 && !isRequired(model, bunsenId))
   ) {
-    valueChangeSet.set(bunsenId, {
-      value,
-      type: 'unset'
-    })
-    newValue = unset(newValue, bunsenId)
-  } else if (!_.isEqual(value, _.get(newValue, bunsenId))) {
-    valueChangeSet.set(bunsenId, {
-      value,
-      type: 'set'
-    })
-    newValue = set(newValue, bunsenId, value)
+    return unsetProperty({bunsenId, formValue, value})
+  }
+
+  if (!_.isEqual(value, _.get(formValue, bunsenId))) {
+    return setProperty({bunsenId, formValue, value})
   }
 
   return {
-    value: newValue,
+    value: formValue,
+    valueChangeSet: new Map()
+  }
+}
+
+/**
+ * Set a specific propertry in the form
+ * @param {String} bunsenId - path to property to set
+ * @param {Object} formValue - current form value
+ * @param {*} value - value to set property to
+ * @returns {Object} object containing new form value and changeset
+ */
+function setProperty ({bunsenId, formValue, value}) {
+  const valueChangeSet = new Map()
+
+  valueChangeSet.set(bunsenId, {
+    value,
+    type: 'set'
+  })
+
+  return {
+    value: set(formValue, bunsenId, value),
+    valueChangeSet
+  }
+}
+
+/**
+ * Unset a specific property in the form
+ * @param {String} bunsenId - path to property to unset
+ * @param {Object} formValue - current form value
+ * @param {*} value - property value that triggered unset
+ * @returns {Object} object containing new form value and changeset
+ */
+function unsetProperty ({bunsenId, formValue, value}) {
+  const valueChangeSet = new Map()
+
+  valueChangeSet.set(bunsenId, {
+    value,
+    type: 'unset'
+  })
+
+  return {
+    value: unset(formValue, bunsenId),
     valueChangeSet
   }
 }
