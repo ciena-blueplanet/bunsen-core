@@ -77,6 +77,29 @@ function checkCellConditions (view, value, cell) {
 }
 
 /**
+ * Expands the array options of a bunsen cell
+ *
+ * @param {BunsenView} view View the cell is a part of
+ * @param {BunsenCell} extendedCell Cell with options to expand
+ * @returns {Object} The expanded options
+ */
+function expandArrayOptions (view, extendedCell) {
+  const arrayOptions = {}
+  if (extendedCell.arrayOptions.itemCell && extendedCell.arrayOptions.itemCell.extends) {
+    arrayOptions.itemCell = expandExtendedCell(view, extendedCell.itemCell)
+  }
+  if (extendedCell.arrayOptions.tupleCells) {
+    arrayOptions.tupleCells = extendedCell.arrayOptions.tupleCells.map(child => {
+      if (child.extends) {
+        return expandExtendedCell(view, child)
+      }
+      return child
+    })
+  }
+  return arrayOptions
+}
+
+/**
  * Copy properties from an extended cell. Extends child cells recrusively.
  *
  * @param {BunsenView} view View the cell is a part of
@@ -91,19 +114,7 @@ function expandExtendedCell (view, cell) {
   }
 
   if (extendedCell.arrayOptions) {
-    if (extendedCell.arrayOptions.itemCell && extendedCell.arrayOptions.itemCell.extends) {
-      cellProps.arrayOptions = {
-        itemCell: expandExtendedCell(view, extendedCell.itemCell)
-      }
-    }
-    if (extendedCell.arrayOptions.tupleCells) {
-      cellProps.arrayOptions.tupleCells = extendedCell.arrayOptions.tupleCells.map(child => {
-        if (child.extends) {
-          return expandExtendedCell(view, child)
-        }
-        return child
-      })
-    }
+    cellProps.arrayOptions = expandArrayOptions(view, extendedCell)
   }
 
   if (extendedCell.children) {
@@ -116,6 +127,39 @@ function expandExtendedCell (view, cell) {
   }
 
   return Immutable.merge(cell, extendedCell, cellProps)
+}
+/**
+ * Check a cell's arrayOptions to make sure the value meets any conditions the cell provides
+ *
+ * @param {BunsenView} view View we are checking
+ * @param {ValueWrapper} value The wrapped value we want to check the conditions against
+ * @param {BunsenCell} cell Cell to check
+ * @returns {BunsenCell} Cell with properties from any extended cells
+ */
+function checkArrayOptions (view, value, cell) {
+  let itemCell = _.get(cell, 'arrayOptions.itemCell')
+  if (itemCell) {
+    const itemsCells = value.get().map((val, index) =>
+      Immutable.without(
+        checkCell(view, value.pushPath(index + ''), itemCell),
+        'conditions',
+        'extends'
+      )
+    )
+    cell = Immutable.merge(cell, {arrayOptions: {itemCell: itemsCells}})
+  }
+  let tupleCells = _.get(cell, 'arrayOptions.tupleCells')
+  if (tupleCells) {
+    const itemsCells = value.get().map((val, index) =>
+      Immutable.without(
+        checkCell(view, value.pushPath(index + ''), tupleCells[index]),
+        'conditions',
+        'extends'
+      )
+    )
+    cell = Immutable.merge(cell, {arrayOptions: {tupleCells: itemsCells}})
+  }
+  return cell
 }
 
 /**
@@ -143,28 +187,8 @@ function checkCell (view, value, cell) {
   if (cell.children) {
     cell = checkChildren(view, value, cell)
   }
-  let itemCell = _.get(cell, 'arrayOptions.itemCell')
-  if (itemCell) {
-    const itemsCells = value.get().map((val, index) =>
-      Immutable.without(
-        checkCell(view, value.pushPath(index + ''), itemCell),
-        'conditions',
-        'extends'
-      )
-    )
-    cell = Immutable.merge(cell, {arrayOptions: {itemCell: itemsCells}})
-  }
-  let tupleCells = _.get(cell, 'arrayOptions.tupleCells')
-  if (tupleCells) {
-    const itemsCells = value.get().map((val, index) =>
-      Immutable.without(
-        checkCell(view, value.pushPath(index + ''), tupleCells[index]),
-        'conditions',
-        'extends'
-      )
-    )
-    cell = Immutable.merge(cell, {arrayOptions: {tupleCells: itemsCells}})
-  }
+
+  cell = checkArrayOptions(view, value, cell)
 
   return Immutable.without(cell, 'conditions', 'extends')
 }
