@@ -1,6 +1,6 @@
 {
   "name": "bunsen-core",
-  "version": "0.28.3",
+  "version": "0.28.4",
   "dependencies": {
     "abbrev": {
       "version": "1.0.9",
@@ -808,9 +808,9 @@
       "dev": true
     },
     "espree": {
-      "version": "3.4.2",
+      "version": "3.4.3",
       "from": "espree@>=3.4.0 <4.0.0",
-      "resolved": "https://registry.npmjs.org/espree/-/espree-3.4.2.tgz",
+      "resolved": "https://registry.npmjs.org/espree/-/espree-3.4.3.tgz",
       "dev": true
     },
     "esprima": {
