@@ -1,3 +1,8 @@
+# 0.29.0
+Adjusted handling of conditionals in arrays.
+**Added** conditional support for arrays in views.
+
+
 # 0.28.4
 
 * **Added** changes from `0.27.x` branch.
