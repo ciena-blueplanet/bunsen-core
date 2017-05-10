@@ -4,7 +4,7 @@ const expect = require('chai').expect
 const validatorFactory = require('../../lib/validator/cell')
 
 describe('validator/cell', () => {
-  let validator, cell, result, cellDefinitions, model, renderers
+  var validator, cell, result, cellDefinitions, model, renderers
 
   beforeEach(() => {
     cellDefinitions = {
