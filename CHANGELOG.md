@@ -1,3 +1,7 @@
+# 0.29.1
+* **Updated** the secure auth tokens in `.travis.yml`
+
+
 # 0.29.0
 Adjusted handling of conditionals in arrays.
 **Added** conditional support for arrays in views.
