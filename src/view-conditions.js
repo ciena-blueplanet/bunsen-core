@@ -137,7 +137,11 @@ function expandExtendedCell (view, cell) {
  * @returns {BunsenCell} Cell with properties from any extended cells
  */
 function checkArrayOptions (view, value, cell) {
-  let itemCell = _.get(cell, 'arrayOptions.itemCell')
+  if (!cell.arrayOptions) {
+    return cell
+  }
+  const arrayOptions = _.clone(cell.arrayOptions)
+  let itemCell = _.get(arrayOptions, 'itemCell')
   if (itemCell) {
     const itemsCells = value.get().map((val, index) =>
       Immutable.without(
@@ -146,9 +150,9 @@ function checkArrayOptions (view, value, cell) {
         'extends'
       )
     )
-    cell = Immutable.merge(cell, {arrayOptions: {itemCell: itemsCells}})
+    arrayOptions.itemCell = itemsCells
   }
-  let tupleCells = _.get(cell, 'arrayOptions.tupleCells')
+  let tupleCells = _.get(arrayOptions, 'tupleCells')
   if (tupleCells) {
     const itemsCells = value.get().map((val, index) =>
       Immutable.without(
@@ -157,9 +161,9 @@ function checkArrayOptions (view, value, cell) {
         'extends'
       )
     )
-    cell = Immutable.merge(cell, {arrayOptions: {tupleCells: itemsCells}})
+    arrayOptions.tupleCells = itemsCells
   }
-  return cell
+  return Immutable.merge(cell, {arrayOptions})
 }
 
 /**

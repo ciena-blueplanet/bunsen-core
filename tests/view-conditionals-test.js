@@ -111,6 +111,8 @@ class ExpectedArrayValue extends ExpectedValue {
           label: 'Main',
           model: 'superheroes',
           arrayOptions: {
+            inline: false,
+            autoAdd: true,
             itemCell: [{
               children: [
                 {
