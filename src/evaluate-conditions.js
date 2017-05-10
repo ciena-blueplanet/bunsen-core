@@ -21,9 +21,24 @@ export default function evaluate (model, value, getPreviousValue) {
 
   let retModel = _.clone(model)
   if (retModel.type === 'array') {
-    if (Array.isArray(value)) {
+    if (Array.isArray(model.items)) {
+      retModel.items = _.map(model.items, function (itemModel, index) {
+        const val = value && value[index]
+        return evaluate(itemModel, val, getPreviousValue)
+      })
+      if (model.additionalItems) {
+        let i
+        if (value !== undefined) {
+          for (i = model.items.length; i < value.length; i += 1) {
+            retModel.items.push(evaluate(model.additionalItems, value[i], getPreviousValue))
+          }
+        }
+        retModel.additionalItems = evaluate(model.additionalItems, undefined, getPreviousValue)
+        retModel.tuple = true
+      }
+    } else if (Array.isArray(value)) {
       let itemSchemas = []
-      // Deep version of _.uniq
+        // Deep version of _.uniq
       const potentialSchemas = _.map(value, function (val) {
         return evaluate(model.items, val, getPreviousValue)
       })
@@ -34,10 +49,9 @@ export default function evaluate (model, value, getPreviousValue) {
       })
       if (itemSchemas.length > 1) {
         retModel.items = potentialSchemas
-      } else if (itemSchemas.length === 0) {
-        retModel.items = _.clone(model.items)
+        retModel.additionalItems = evaluate(model.items, undefined, getPreviousValue)
       } else {
-        retModel.items = itemSchemas[0]
+        retModel.items = potentialSchemas[0]
       }
     } else if (value === undefined) {
       retModel.items = evaluate(retModel.items, value, getPreviousValue)

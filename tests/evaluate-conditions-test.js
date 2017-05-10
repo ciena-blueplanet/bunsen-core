@@ -12,6 +12,7 @@ var simpleModel = require('./fixtures/conditions/simple-model')
 var modelWithDeepConditionals = require('./fixtures/conditions/deep-model')
 var modelWithRelativePaths = require('./fixtures/conditions/relative-paths-model')
 var modelWithArray = require('./fixtures/conditions/array-model')
+var modelWithTupleArray = require('./fixtures/conditions/tuple-model')
 var modelWithDefinitions = require('./fixtures/conditions/definitions-model')
 var modelWithUnless = require('./fixtures/conditions/unless-model')
 var modelWithRequiredConditionals = require('./fixtures/conditions/required-conditionals-model')
@@ -266,13 +267,10 @@ describe('evaluate-conditions', () => {
   })
 
   describe('arrays', () => {
-    beforeEach(() => {
-      model = deepFreeze(modelWithArray)
-      expected = deepFreeze(modelWithArray)
-    })
-
     describe('when items have different tagTypes', () => {
       beforeEach(() => {
+        model = _.cloneDeep(modelWithArray)
+        expected = _.cloneDeep(modelWithArray)
         value = {
           tags: [
             {tagType: 'single-tagged'},
@@ -282,12 +280,21 @@ describe('evaluate-conditions', () => {
         newModel = dereferenceAndEval(model, value)
       })
 
-      it('evaluates to anyOf the possible items', () => {
+      it('evaluates to an array the possible items', () => {
         expect(newModel).to.eql({
           type: 'object',
           properties: {
             tags: {
               type: 'array',
+              additionalItems: {
+                type: 'object',
+                properties: {
+                  tagType: {
+                    type: 'string',
+                    enum: ['untagged', 'single-tagged', 'double-tagged']
+                  }
+                }
+              },
               items: [{
                 type: 'object',
                 properties: {
@@ -330,6 +337,39 @@ describe('evaluate-conditions', () => {
           }
         })
       })
+    })
+    it('handles tuple style arrays', function () {
+      model = _.cloneDeep(modelWithTupleArray)
+      expected = {
+        type: 'object',
+        properties: {
+          kind: {
+            type: 'string',
+            enum: ['type1', 'type2']
+          },
+          foo: {
+            type: 'array',
+            tuple: true,
+            items: [{
+              type: 'string'
+            }, {
+              type: 'number'
+            }],
+            additionalItems: {
+              type: 'object',
+              properties: {
+                baz: {
+                  type: 'string',
+                  enum: ['foo', 'bar', 'baz']
+                }
+              }
+            }
+          }
+        }
+      }
+      value = {kind: 'type1'}
+      newModel = dereferenceAndEval(model, value)
+      expect(newModel).to.eql(expected)
     })
   })
 })

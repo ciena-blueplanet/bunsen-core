@@ -1,3 +1,16 @@
+# 0.29.1
+**Fixed** arrayOptions block copying incorrectly. 
+
+# 0.29.0
+Adjusted handling of conditionals in arrays.
+**Added** conditional support for arrays in views.
+
+
+# 0.28.4
+
+* **Added** changes from `0.27.x` branch.
+
+
 # 0.28.3
 
 * **Merged** in changes from `0.27.x` branch.
