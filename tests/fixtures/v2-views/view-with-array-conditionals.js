@@ -8,7 +8,9 @@ module.exports = {
       arrayOptions: {
         itemCell: {
           extends: 'superhero'
-        }
+        },
+        inline: false,
+        autoAdd: true
       }
     }, {
       label: 'Foo',
