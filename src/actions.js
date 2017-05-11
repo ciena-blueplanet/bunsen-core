@@ -1,6 +1,7 @@
 import _ from 'lodash'
 
 import {getPath} from './dereference'
+import normalizeModelAndView from './normalize-model-and-view'
 import {validateValue} from './validator'
 import {aggregateResults} from './validator/utils'
 
@@ -37,13 +38,30 @@ export function changeModel (model) {
 
 /**
  * Update view
- * @param {BunsenView} view - new bunsen view
+ * @param {BunsenView} nextView - new bunsen view
  * @returns {Object} redux action
  */
-export function changeView (view) {
-  return {
-    type: CHANGE_VIEW,
-    view
+export function changeView (nextView) {
+  return function (dispatch, getState) {
+    const baseModel = getState().baseModel
+
+    const {model, view} = normalizeModelAndView({
+      model: baseModel,
+      view: nextView
+    })
+
+    const action = {
+      type: CHANGE_VIEW,
+      unnormalizedView: nextView,
+      view
+    }
+
+    // If our view injected new properties into the model
+    if (model !== baseModel) {
+      action.baseModel = model
+    }
+
+    dispatch(action)
   }
 }
 

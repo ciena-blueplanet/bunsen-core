@@ -1,3 +1,11 @@
+# 0.30.0
+
+* **Added** support to extend model from within view.
+* **Replaced** a bunch of deep cloning with minimal shallow cloning to reduce new object creation.
+
+# 0.29.1
+**Fixed** arrayOptions block copying incorrectly. 
+
 # 0.29.0
 Adjusted handling of conditionals in arrays.
 **Added** conditional support for arrays in views.

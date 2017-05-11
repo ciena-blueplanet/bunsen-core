@@ -7,6 +7,7 @@ import {getChangeSet} from './change-utils'
 import {dereference} from './dereference'
 import evaluateConditions from './evaluate-conditions'
 import {set, unset} from './immutable-utils'
+import normalizeModelAndView from './normalize-model-and-view'
 import evaluateViewConditions from './view-conditions'
 
 const INITIAL_VALUE = {
@@ -194,7 +195,7 @@ export const actionReducers = {
       let initialValue = state.value || {}
       if (state.baseModel) {
         state.baseModel = getDereferencedModelSchema(state.baseModel)
-        state.model = evaluateConditions(_.cloneDeep(state.baseModel), recursiveClean(initialValue, state.baseModel))
+        state.model = evaluateConditions(state.baseModel, recursiveClean(initialValue, state.baseModel))
         // leave this undefined to force consumers to go through the proper CHANGE_VALUE channel
         // for value changes
         state.value = undefined
@@ -221,12 +222,26 @@ export const actionReducers = {
    * @returns {State} - updated state
    */
   [CHANGE_MODEL]: function (state, action) {
-    const model = getDereferencedModelSchema(action.model)
-    return _.defaults({
-      baseModel: model,
-      lastAction: CHANGE_MODEL,
-      model: evaluateConditions(_.cloneDeep(model), state.value)
-    }, state)
+    const newState = {
+      lastAction: CHANGE_MODEL
+    }
+
+    // Replace $ref's with definitions so consumers don't have to parse references
+    newState.baseModel = getDereferencedModelSchema(action.model)
+
+    // If we have an unnormalized view then we need to update our model to make
+    // sure any model extensions defined in the view get applied
+    if (state.unnormalizedView) {
+      newState.baseModel = normalizeModelAndView({
+        model: newState.baseModel,
+        view: state.unnormalizedView
+      }).model
+    }
+
+    // Evaluate and remove model conditions so consumers don't have to parse conditions
+    newState.model = evaluateConditions(newState.baseModel, state.value)
+
+    return _.defaults(newState, state)
   },
 
   /**
@@ -236,11 +251,24 @@ export const actionReducers = {
    * @returns {State} - updated state
    */
   [CHANGE_VIEW]: function (state, action) {
-    return _.defaults({
+    // Apply coniditions to view cells
+    const view = evaluateViewConditions(action.view, state.value)
+
+    const newState = {
       baseView: action.view,
       lastAction: CHANGE_VIEW,
-      view: evaluateViewConditions(action.view, state.value)
-    }, state)
+      unnormalizedView: action.unnormalizedView,
+      view
+    }
+
+    if (action.baseModel) {
+      Object.assign(newState, {
+        baseModel: action.baseModel,
+        model: evaluateConditions(action.baseModel, state.value)
+      })
+    }
+
+    return _.defaults(newState, state)
   },
 
   /* eslint-disable complexity */
