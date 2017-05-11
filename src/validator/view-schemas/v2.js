@@ -23,7 +23,14 @@ export default {
 
         // the cell config for individual items in the array
         itemCell: {
-          '$ref': '#/definitions/cell'
+          oneOf: [{
+            '$ref': '#/definitions/cell'
+          }, {
+            type: 'array',
+            items: {
+              '$ref': '#/definitions/cell'
+            }
+          }]
         },
 
         // When true, show label for each item in the array
