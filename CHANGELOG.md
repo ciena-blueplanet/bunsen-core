@@ -1,3 +1,6 @@
+# 0.30.1
+Arrays of cells will now pass validation for the `itemCell` property of views.
+
 # 0.30.0
 
 * **Added** support to extend model from within view.
