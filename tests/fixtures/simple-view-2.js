@@ -7,6 +7,9 @@ module.exports = {
     }
   ],
   cellDefinitions: {
+    foo: {
+      children: []
+    },
     main: {
       children: [
         {
@@ -17,6 +20,10 @@ module.exports = {
         },
         {
           model: 'alias'
+        },
+        {
+          extends: 'foo',
+          model: 'foo'
         }
       ]
     }
