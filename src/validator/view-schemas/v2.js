@@ -21,29 +21,6 @@ const definitions = {
 
       // the cell config for individual items in the array
       itemCell: {
-import modelSchema from '../model-schemas/v2'
-
-const definitions = {
-  // Specific options for array renderers
-  arrayOptions: {
-    additionalProperties: false,
-    type: 'object',
-    properties: {
-
-      // When true, an empty item will always be added to the end of the array
-      autoAdd: {
-        type: 'boolean',
-        default: false
-      },
-
-      // When true, render input(s) on same line as remove button
-      compact: {
-        type: 'boolean',
-        default: false
-      },
-
-      // the cell config for individual items in the array
-      itemCell: {
         oneOf: [
           {
             '$ref': '#/definitions/cell'
@@ -52,9 +29,6 @@ const definitions = {
             type: 'array',
             items: {
               '$ref': '#/definitions/cell'
-          }, {
-            type: 'array',
-            items: {
             }
           }
         ]
