@@ -1,3 +1,6 @@
+# 0.30.2
+**Fixed** view generation for object properties.
+
 # 0.30.1
 Arrays of cells will now pass validation for the `itemCell` property of views.
 

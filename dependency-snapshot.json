@@ -1,6 +1,6 @@
 {
   "name": "bunsen-core",
-  "version": "0.30.1",
+  "version": "0.30.2",
   "dependencies": {
     "abbrev": {
       "version": "1.0.9",
@@ -669,9 +669,9 @@
       "dev": true
     },
     "es5-ext": {
-      "version": "0.10.16",
+      "version": "0.10.18",
       "from": "es5-ext@>=0.10.14 <0.11.0",
-      "resolved": "https://registry.npmjs.org/es5-ext/-/es5-ext-0.10.16.tgz",
+      "resolved": "https://registry.npmjs.org/es5-ext/-/es5-ext-0.10.18.tgz",
       "dev": true
     },
     "es6-iterator": {
@@ -1444,9 +1444,9 @@
       "dev": true
     },
     "mocha": {
-      "version": "3.3.0",
+      "version": "3.4.1",
       "from": "mocha@>=3.0.0 <4.0.0",
-      "resolved": "https://registry.npmjs.org/mocha/-/mocha-3.3.0.tgz",
+      "resolved": "https://registry.npmjs.org/mocha/-/mocha-3.4.1.tgz",
       "dev": true,
       "dependencies": {
         "debug": {
@@ -1982,9 +1982,9 @@
       "dev": true
     },
     "uglify-js": {
-      "version": "2.8.23",
+      "version": "2.8.25",
       "from": "uglify-js@>=2.6.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.23.tgz",
+      "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.25.tgz",
       "dev": true,
       "optional": true
     },
