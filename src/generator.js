@@ -109,9 +109,7 @@ function addModelCell (propertyName, model, cellDefinitions) {
       children.push.apply(children, depChildren)
     })
   }
-  if (children.length > 0) {
-    cell.children = children
-  }
+  cell.children = children
   return defName
 }
 

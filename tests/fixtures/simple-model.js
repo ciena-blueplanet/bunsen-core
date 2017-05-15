@@ -1,6 +1,10 @@
 module.exports = {
   type: 'object',
   properties: {
+    foo: {
+      type: 'object',
+      properties: {}
+    },
     firstName: {
       type: 'string',
       title: 'First Name'
