@@ -166,6 +166,14 @@ function checkArrayOptions (view, value, cell) {
   return Immutable.merge(cell, {arrayOptions})
 }
 
+/**
+ * Adds a cells model to the path of a ValueWrapper, if it has a model. For cells with the 'id' property,
+ * the path will be reconstructed completely.
+ *
+ * @param {ValueWrapper} value ValueWrapper for the current path
+ * @param {BunsenCell} cell Cell we want to push to the path
+ * @returns {ValueWrapper} A ValueWrapper with the new path
+ */
 function pushModel (value, cell) {
   if (typeof cell.model === 'object') {
     const id = cell.internal ? '_internal.' + cell.id : cell.id
