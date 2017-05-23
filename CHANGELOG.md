@@ -1,3 +1,7 @@
+# 0.30.3
+**Fixed** conditional evaluation of models defined in view cells. 
+
+
 # 0.30.2
 **Fixed** view generation for object properties.
 
