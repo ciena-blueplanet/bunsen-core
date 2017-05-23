@@ -167,6 +167,22 @@ function checkArrayOptions (view, value, cell) {
 }
 
 /**
+ * Adds a cells model to the path of a ValueWrapper, if it has a model. For cells with the 'id' property,
+ * the path will be reconstructed completely.
+ *
+ * @param {ValueWrapper} value ValueWrapper for the current path
+ * @param {BunsenCell} cell Cell we want to push to the path
+ * @returns {ValueWrapper} A ValueWrapper with the new path
+ */
+function pushModel (value, cell) {
+  if (typeof cell.model === 'object') {
+    const id = cell.internal ? '_internal.' + cell.id : cell.id
+    return new ValueWrapper(value.value, id)
+  }
+  return value.pushPath(cell.model)
+}
+
+/**
  * Check a cell of a view to make sure the value meets any conditions the cell provides
  *
  * @param {BunsenView} view View we are checking
@@ -179,7 +195,7 @@ function checkCell (view, value, cell) {
     cell = expandExtendedCell(view, cell)
   }
 
-  value = value.pushPath(cell.model)
+  value = pushModel(value, cell)
 
   if (cell.conditions) { // This cell has conditions
     cell = checkCellConditions(view, value, cell)
@@ -193,7 +209,6 @@ function checkCell (view, value, cell) {
   }
 
   cell = checkArrayOptions(view, value, cell)
-
   return Immutable.without(cell, 'conditions', 'extends')
 }
 

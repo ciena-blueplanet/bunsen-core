@@ -6,10 +6,12 @@ var evaluate = require('../lib/view-conditions')
 var simpleView = require('./fixtures/v2-views/view-with-conditional')
 var extensionsView = require('./fixtures/v2-views/view-with-extended-conditionals')
 var complexConditional = require('./fixtures/v2-views/complex-conditionals-view')
+var internalModelView = require('./fixtures/v2-views/internal-model-conditional')
 var arrayConditional = require('./fixtures/v2-views/view-with-array-conditionals')
 var complexConditionalView = complexConditional.view
 var ExpectedComplexConditional = complexConditional.ExpectedComplexConditional
 var ExpectedValue = require('./fixtures/expected-value')
+
 const expectedBase = {
   version: '2.0',
   type: 'form',
@@ -346,6 +348,31 @@ describe('views with conditionals', function () {
         new ExpectedArrayValue()
         .value
       )
+    })
+
+    it('conditions referencing internal models', function () {
+      var result = evaluate(internalModelView, {
+        _internal: {
+          showTags: true
+        }
+      })
+      expect(result).to.be.eql({
+        cells: [{
+          children: [{
+            id: 'showTags',
+            model: {
+              type: 'boolean'
+            },
+            internal: true
+          }, {
+            model: 'tags',
+            arrayOptions: {
+            }
+          }]
+        }],
+        version: 2.0,
+        type: 'form'
+      })
     })
   })
 
