@@ -166,6 +166,14 @@ function checkArrayOptions (view, value, cell) {
   return Immutable.merge(cell, {arrayOptions})
 }
 
+function pushModel (value, cell) {
+  if (typeof cell.model === 'object') {
+    const id = cell.internal ? '_internal.' + cell.id : cell.id
+    return new ValueWrapper(value.value, id)
+  }
+  return value.pushPath(cell.model)
+}
+
 /**
  * Check a cell of a view to make sure the value meets any conditions the cell provides
  *
@@ -179,7 +187,7 @@ function checkCell (view, value, cell) {
     cell = expandExtendedCell(view, cell)
   }
 
-  value = value.pushPath(cell.model)
+  value = pushModel(value, cell)
 
   if (cell.conditions) { // This cell has conditions
     cell = checkCellConditions(view, value, cell)
@@ -193,7 +201,6 @@ function checkCell (view, value, cell) {
   }
 
   cell = checkArrayOptions(view, value, cell)
-
   return Immutable.without(cell, 'conditions', 'extends')
 }
 

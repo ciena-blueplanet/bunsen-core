@@ -8,9 +8,7 @@ module.exports = {
       internal: true
     }, {
       model: 'tags',
-      arrayOptions: {
-        itemCell: {}
-      },
+      arrayOptions: {},
       conditions: [{
         if: [{
           '_internal.showTags': {equals: true}

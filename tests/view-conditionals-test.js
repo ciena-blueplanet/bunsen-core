@@ -7,7 +7,6 @@ var simpleView = require('./fixtures/v2-views/view-with-conditional')
 var extensionsView = require('./fixtures/v2-views/view-with-extended-conditionals')
 var complexConditional = require('./fixtures/v2-views/complex-conditionals-view')
 var internalModelView = require('./fixtures/v2-views/internal-model-conditional')
-var internalModel = require('./fixtures/conditions/internal-model')
 var arrayConditional = require('./fixtures/v2-views/view-with-array-conditionals')
 var complexConditionalView = complexConditional.view
 var ExpectedComplexConditional = complexConditional.ExpectedComplexConditional
@@ -355,8 +354,7 @@ describe('views with conditionals', function () {
       var result = evaluate(internalModelView, {
         _internal: {
           showTags: true
-        },
-
+        }
       })
       expect(result).to.be.eql({
         cells: [{
@@ -369,7 +367,6 @@ describe('views with conditionals', function () {
           }, {
             model: 'tags',
             arrayOptions: {
-              itemCell: {}
             }
           }]
         }],
@@ -390,6 +387,4 @@ describe('views with conditionals', function () {
       version: '2.0'
     })
   })
-
-
 })
