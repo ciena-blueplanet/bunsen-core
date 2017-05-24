@@ -1,3 +1,6 @@
+# 0.30.4
+**Moved** ValueWrapper class to separate file and exported it so it can be used by other packages.
+
 # 0.30.3
 **Fixed** conditional evaluation of models defined in view cells. 
 

@@ -1,6 +1,6 @@
 {
   "name": "bunsen-core",
-  "version": "0.30.3",
+  "version": "0.30.4",
   "dependencies": {
     "abbrev": {
       "version": "1.0.9",
@@ -1444,9 +1444,9 @@
       "dev": true
     },
     "mocha": {
-      "version": "3.4.1",
+      "version": "3.4.2",
       "from": "mocha@>=3.0.0 <4.0.0",
-      "resolved": "https://registry.npmjs.org/mocha/-/mocha-3.4.1.tgz",
+      "resolved": "https://registry.npmjs.org/mocha/-/mocha-3.4.2.tgz",
       "dev": true,
       "dependencies": {
         "debug": {
