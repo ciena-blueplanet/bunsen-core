@@ -69,6 +69,8 @@ import {
   populateQuery
 } from './utils'
 
+import * as path from './utils/path'
+
 export const utils = {
   doesModelContainRequiredField,
   findValue,
@@ -78,7 +80,8 @@ export const utils = {
   getSubModel,
   hasValidQueryValues,
   parseVariables,
-  populateQuery
+  populateQuery,
+  path
 }
 
 export {default as validateView, validateModel} from './validator'
