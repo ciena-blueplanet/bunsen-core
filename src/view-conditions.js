@@ -129,6 +129,21 @@ function expandExtendedCell (view, cell) {
 
   return Immutable.merge(cell, extendedCell, cellProps)
 }
+
+/**
+ * Gets the item cell for an index of an item in an array.
+ *
+ * @param {BunsenCell | BunsenCell[]} itemCell the item cell object
+ * @param {number} index Index of the value in the array
+ * @returns {BunsenCell} Cell for the given array item
+ */
+function getItemCell (itemCell, index) {
+  if (Array.isArray(itemCell)) {
+    return itemCell[index]
+  }
+  return itemCell
+}
+
 /**
  * Check a cell's arrayOptions to make sure the value meets any conditions the cell provides
  *
@@ -148,7 +163,7 @@ function checkArrayOptions (view, value, cell) {
     if (val !== undefined) {
       const itemsCells = val.map((val, index) =>
         Immutable.without(
-          checkCell(view, value.pushPath(index + ''), itemCell),
+          checkCell(view, value.pushPath(index + ''), getItemCell(itemCell, index)),
           'conditions',
           'extends'
         )
