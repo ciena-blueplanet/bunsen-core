@@ -206,6 +206,20 @@ class ExpectedArrayValue extends ExpectedValue {
       }
     })
   }
+
+  empty () {
+    this._value.cells[0].arrayOptions.itemCell = {
+      children: [{
+        model: 'firstName'
+      }, {
+        model: 'lastName'
+      }]
+    }
+    this._value.cells[1].arrayOptions.tupleCells[0].children = [{
+      model: 'bar'
+    }]
+    return this
+  }
 }
 
 describe('views with conditionals', function () {
@@ -328,6 +342,7 @@ describe('views with conditionals', function () {
         .value
       )
     })
+
     it('an array items', function () {
       var result = evaluate(arrayConditional, {
         superheroes: [{
@@ -346,6 +361,15 @@ describe('views with conditionals', function () {
       })
       expect(result).to.be.eql(
         new ExpectedArrayValue()
+        .value
+      )
+    })
+
+    it('an array items with empty value', function () {
+      var result = evaluate(arrayConditional, {})
+      expect(result).to.be.eql(
+        new ExpectedArrayValue()
+        .empty()
         .value
       )
     })

@@ -144,20 +144,25 @@ function checkArrayOptions (view, value, cell) {
   const arrayOptions = _.clone(cell.arrayOptions)
   let itemCell = _.get(arrayOptions, 'itemCell')
   if (itemCell) {
-    const itemsCells = value.get().map((val, index) =>
-      Immutable.without(
-        checkCell(view, value.pushPath(index + ''), itemCell),
-        'conditions',
-        'extends'
+    const val = value.get()
+    if (val !== undefined) {
+      const itemsCells = val.map((val, index) =>
+        Immutable.without(
+          checkCell(view, value.pushPath(index + ''), itemCell),
+          'conditions',
+          'extends'
+        )
       )
-    )
-    arrayOptions.itemCell = itemsCells
+      arrayOptions.itemCell = itemsCells
+    } else {
+      arrayOptions.itemCell = checkCell(view, value, itemCell)
+    }
   }
   let tupleCells = _.get(arrayOptions, 'tupleCells')
   if (tupleCells) {
-    const itemsCells = value.get().map((val, index) =>
+    const itemsCells = tupleCells.map((cell, index) =>
       Immutable.without(
-        checkCell(view, value.pushPath(index + ''), tupleCells[index]),
+        checkCell(view, value.pushPath(index + ''), cell),
         'conditions',
         'extends'
       )
