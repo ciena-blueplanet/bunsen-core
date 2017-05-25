@@ -1,3 +1,7 @@
+# 0.30.5
+**Fixed** case where undefined array values were causing errors in view condition evaluation.
+
+
 # 0.30.4
 **Moved** ValueWrapper class to separate file and exported it so it can be used by other packages.
 
