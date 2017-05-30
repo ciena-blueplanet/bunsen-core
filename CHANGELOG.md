@@ -1,3 +1,6 @@
+# 0.30.6
+**Fixed** model evaluation for empty arrays
+
 # 0.30.5
 **Fixed** case where undefined array values were causing errors in view condition evaluation.
 

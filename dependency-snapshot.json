@@ -1,6 +1,6 @@
 {
   "name": "bunsen-core",
-  "version": "0.30.5",
+  "version": "0.30.6",
   "dependencies": {
     "abbrev": {
       "version": "1.0.9",
@@ -1102,9 +1102,9 @@
       "dev": true
     },
     "is-dotfile": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "from": "is-dotfile@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/is-dotfile/-/is-dotfile-1.0.2.tgz",
+      "resolved": "https://registry.npmjs.org/is-dotfile/-/is-dotfile-1.0.3.tgz",
       "dev": true,
       "optional": true
     },
