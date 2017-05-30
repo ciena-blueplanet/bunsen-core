@@ -47,7 +47,9 @@ export default function evaluate (model, value, getPreviousValue) {
           itemSchemas.push(schema)
         }
       })
-      if (itemSchemas.length > 1) {
+      if (itemSchemas.length < 1) {
+        retModel.items = evaluate(model.items, undefined, getPreviousValue)
+      } else if (itemSchemas.length > 1) {
         retModel.items = potentialSchemas
         retModel.additionalItems = evaluate(model.items, undefined, getPreviousValue)
       } else {
