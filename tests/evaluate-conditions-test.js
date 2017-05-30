@@ -371,5 +371,31 @@ describe('evaluate-conditions', () => {
       newModel = dereferenceAndEval(model, value)
       expect(newModel).to.eql(expected)
     })
+
+    it('handles empty arrays', function () {
+      model = _.cloneDeep(modelWithArray)
+      expected = {
+        type: 'object',
+        properties: {
+          tags: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                tagType: {
+                  type: 'string',
+                  enum: ['untagged', 'single-tagged', 'double-tagged']
+                }
+              }
+            }
+          }
+        }
+      }
+      value = {
+        tags: []
+      }
+      newModel = dereferenceAndEval(model, value)
+      expect(newModel).to.eql(expected)
+    })
   })
 })
