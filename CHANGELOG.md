@@ -1,3 +1,7 @@
+# 0.30.7
+**Fixed** internal models in nested cells.
+
+
 # 0.30.6
 **Fixed** model evaluation for empty arrays
 
