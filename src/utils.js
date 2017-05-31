@@ -80,7 +80,7 @@ export function _getModelPath (reference, dependencyReference) {
   return pathArr
 }
 
-export function getModelPath (model, reference, dependencyReference) {
+export function getModelPath (model, reference) {
   return new BunsenModelPath(model, reference)
 }
 

@@ -162,4 +162,33 @@ describe('validator/cell', () => {
       })
     })
   })
+
+  it('validates against internal models', function () {
+    model.properties._internal = {
+      type: 'object',
+      properties: {
+        left: {
+          type: 'string'
+        },
+        right: {
+          type: 'number'
+        }
+      }
+    }
+    cell = {
+      children: [{
+        model: 'firstName',
+        children: [{
+          model: '_internal.left'
+        }]
+      }, {
+        model: '_internal.right'
+      }]
+    }
+    result = validator.validate('#/cellDefinitions/0', cell)
+    expect(result).deep.equal({
+      errors: [],
+      warnings: []
+    })
+  })
 })
