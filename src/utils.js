@@ -80,6 +80,16 @@ export function _getModelPath (reference, dependencyReference) {
   return pathArr
 }
 
+/**
+ * Builds a dotted path to a submodel of a nested value based on its dotted path within
+ * the value object
+ *
+ * @export
+ * @param {BunsenModel} model The bunsen model of the value
+ * @param {String} reference Dotted path to the value within the value object
+ * @returns {BunsenModelPath} Model path object with the path to the model of the specified
+ * value
+ */
 export function getModelPath (model, reference) {
   return new BunsenModelPath(model, reference)
 }
