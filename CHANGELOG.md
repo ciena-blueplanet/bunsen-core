@@ -1,3 +1,7 @@
+# 0.30.8
+**Fixed and refactored** relative path finding.
+
+
 # 0.30.7
 **Fixed** internal models in nested cells.
 
