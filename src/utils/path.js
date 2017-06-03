@@ -10,29 +10,24 @@ import _ from 'lodash'
  */
 function findRelativePath (path, index = 0) {
   let nextInPath = _.last(path)
-
+  if (path.length <= 1) {
+    return index
+  }
   if (nextInPath === '') { // . for sibling
     if (index <= 0) {
       index += 1
     }
     path.pop()
-    if (_.last(path) === '') { // .. for sibling of parent
-      path.pop()
-      nextInPath = path.pop().replace('/', '')// get rid of leading slash
-      if (nextInPath === '') {
-        return findRelativePath(path, index + 1)
-      }
-      path.push(nextInPath)
-      return index + 1
-    } else {
-      nextInPath = path.pop().replace('/', '')// get rid of leading slash
-      if (nextInPath === '') {
-        return findRelativePath(path, index)
-      }
-      path.push(nextInPath)
-      return index
+    return findRelativePath(path, index)
+  } else if (nextInPath === '.') { // .. for sibling of parent
+    if (index <= 0) {
+      index += 1
     }
+    path.pop()
+    return findRelativePath(path, index + 1)
   }
+
+  return index
 }
 /* eslint-enable complexity */
 
@@ -43,10 +38,12 @@ function findRelativePath (path, index = 0) {
  */
 export class ValueWrapper {
   static pathAsArray (path) {
-    if (!Array.isArray(path)) {
-      return path.split('.')
+    if (Array.isArray(path)) {
+      return path
+    } else if (path === undefined) {
+      return []
     }
-    return path
+    return path.split('.')
   }
 
   constructor (value, curPath) {
@@ -73,18 +70,16 @@ export class ValueWrapper {
       }
       return _.get(this.value, this.path.join('.'))
     }
-    path = ValueWrapper.pathAsArray(path)
+    path = path.split('./')
 
-    let nextInPath = _.first(path)
-
-    if (nextInPath === '') {
-      let index = findRelativePath(path.reverse())
-      absolutePath = this.path.slice(0, this.path.length - index).concat(path)
+    if (path.length <= 1) {
+      absolutePath = path[0]
     } else {
-      absolutePath = path
+      let index = findRelativePath(path.reverse())
+      absolutePath = this.path.slice(0, this.path.length - index).concat(path.reverse()).join('.')
     }
 
-    return _.get(this.value, absolutePath.join('.'))
+    return _.get(this.value, absolutePath)
   }
 
   /**
