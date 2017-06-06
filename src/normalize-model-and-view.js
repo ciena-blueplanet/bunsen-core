@@ -1,3 +1,5 @@
+import _ from 'lodash'
+import {BunsenModelPath} from './utils'
 /**
  * Convert a model reference to a proper path in the model schema
  *
@@ -66,11 +68,8 @@ export function addBunsenModelProperty (bunsenModel, propertyModel, modelPath) {
 export function normalizeCellDefinitions (state) {
   if (!state.view || !state.view.cellDefinitions) return state
 
-  const newState = Object.keys(state.view.cellDefinitions)
-    .reduce(
-      (_state, key) => {
-        const cell = _state.view.cellDefinitions[key]
-
+  const newState = _.reduce(state.view.cellDefinitions,
+      (_state, cell) => {
         const parents = [
           _state.view,
           _state.view.cellDefinitions
@@ -230,6 +229,19 @@ export function normalizeChildren (state, cell, parents) {
   return newState
 }
 
+/*
+interface ViewModelDef {
+  model: Object
+  path: string
+
+}
+*/
+
+function expandModel (model, view) {
+
+  return
+}
+
 /**
  * Normalize bunsen model and view from model partials defined in view
  * @param {BunsenModel} model - bunsen model
@@ -237,6 +249,7 @@ export function normalizeChildren (state, cell, parents) {
  * @returns {Object} - normalized state (contains model and view)
  */
 export default function ({model, view}) {
+  const modelPath = new BunsenModelPath(model)
   return [
     normalizeCellDefinitions,
     normalizeCells

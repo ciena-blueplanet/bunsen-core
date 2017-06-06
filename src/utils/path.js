@@ -98,3 +98,18 @@ export class ValueWrapper {
     return new ValueWrapper(this.value, this.path.concat(path))
   }
 }
+
+export class BunsenModelWrapper {
+  constructor (model, path) {
+    this.model = model
+    this.path = path
+  }
+}
+
+export class BunsenViewWrapper {
+  constructor (model, view, path) {
+    this.model = model
+    this.view = view
+    this.path = path
+  }
+}
