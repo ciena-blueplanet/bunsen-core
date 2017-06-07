@@ -267,7 +267,7 @@ export class BunsenModelPath {
   }
 
   append (pathSeg) {
-    if (!this._valid) {
+    if (!this._valid || pathSeg === undefined) {
       return
     }
     if (Array.isArray(pathSeg)) {
@@ -316,7 +316,16 @@ export class BunsenModelPath {
       return this._path.join('.')
     }
   }
+
   get isValid () {
     return this._valid
+  }
+
+  concat (additionalPath) {
+    const newPath = new BunsenModelPath(this._model)
+    newPath._currentModel = this._currentModel
+    newPath._path = _.clone(this._path)
+    newPath.append(additionalPath)
+    return newPath
   }
 }

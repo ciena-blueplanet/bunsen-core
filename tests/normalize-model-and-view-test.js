@@ -1184,3 +1184,135 @@ describe('normalize model and view', function () {
     })
   })
 })
+
+describe('normalizes complex cases', function () {
+  let model
+  let view
+  beforeEach(function () {
+    model = {
+      type: 'object',
+      properties: {
+        foo: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              bar: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
+    }
+    view = {
+      type: 'form',
+      version: '2.0',
+      cells: [{
+        model: 'foo',
+        arrayOptions: {
+          itemCell: {
+            children: [{
+              extends: 'baz'
+            }, {
+              extends: 'quux'
+            }, {
+              model: 'bar'
+            }]
+          }
+        }
+      }],
+      cellDefinitions: {
+        baz: {
+          id: 'baz',
+          model: {
+            type: 'boolean'
+          },
+          internal: true
+        },
+        quux: {
+          id: 'quux',
+          model: {
+            type: 'number'
+          },
+          internal: false
+        }
+      }
+    }
+  })
+
+  it('by adding to model', function () {
+    const newState = stuff.default({model, view})
+    const newModel = newState.model
+    expect(newModel).to.be.eql({
+      type: 'object',
+      properties: {
+        foo: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              bar: {
+                type: 'string'
+              },
+              quux: {
+                type: 'number'
+              },
+              _internal: {
+                type: 'object',
+                properties: {
+                  baz: {
+                    type: 'boolean'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    })
+  })
+
+  it('by replacing model objects in views with strings', function () {
+    const newState = stuff.default({model, view})
+    const newView = newState.view
+    expect(newView).to.be.eql({
+      type: 'form',
+      version: '2.0',
+      cells: [{
+        model: 'foo',
+        arrayOptions: {
+          itemCell: {
+            children: [{
+              id: 'baz',
+              internal: true,
+              model: '_internal.baz'
+            }, {
+              id: 'quux',
+              internal: false,
+              model: 'quux'
+            }, {
+              model: 'bar'
+            }]
+          }
+        }
+      }],
+      cellDefinitions: {
+        baz: {
+          id: 'baz',
+          model: {
+            type: 'boolean'
+          },
+          internal: true
+        },
+        quux: {
+          id: 'quux',
+          model: {
+            type: 'number'
+          },
+          internal: false
+        }
+      }
+    })
+  })
+})
