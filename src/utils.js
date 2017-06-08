@@ -329,3 +329,17 @@ export class BunsenModelPath {
     return newPath
   }
 }
+
+export function clearInternals (value) {
+  if (Array.isArray(value)) {
+    value.forEach(function (subValue) {
+      clearInternals(subValue)
+    })
+  } else if (typeof value === 'object') {
+    delete value._internal
+    _.forEach(value, function (subValue) {
+      clearInternals(subValue)
+    })
+  }
+  return value
+}

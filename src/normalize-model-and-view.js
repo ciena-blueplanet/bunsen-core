@@ -1,6 +1,5 @@
 import _ from 'lodash'
 import {BunsenModelPath} from './utils'
-import {ValueWrapper} from './utils/path'
 /**
  * Convert a model reference to a proper path in the model schema
  *
@@ -33,13 +32,18 @@ function appendModelPath (modelPath, id, internal) {
   if (internal) {
     return `${modelPath}.properties._internal.${addedModelPath}`
   }
+  if (modelPath === '') {
+    return addedModelPath
+  }
   return `${modelPath}.${addedModelPath}`
 }
 
 function expandCell (cell, cellDefinitions) {
+  cell = _.clone(cell)
   while (cell.extends) {
     const extendedCell = cellDefinitions[cell.extends]
-    cell = Object.assign({}, extendedCell, _.without(cell, 'extends'))
+    delete cell.extends
+    cell = _.defaults(cell, extendedCell)
   }
   return cell
 }
@@ -77,10 +81,25 @@ export function addBunsenModelProperty (bunsenModel, propertyModel, modelPath) {
   return model
 }
 
+function normalizeArrayOptions (cell, cellDefinitions) {
+  const arrayOptions = _.clone(cell.arrayOptions)
+  if (arrayOptions.itemCell) {
+    if (Array.isArray(arrayOptions.itemCell)) {
+      arrayOptions.itemCell = arrayOptions.itemCell.map(cell => normalizeCell(cell, cellDefinitions))
+    } else {
+      arrayOptions.itemCell = normalizeCell(arrayOptions.itemCell, cellDefinitions)
+    }
+  }
+  if (arrayOptions.tupleCells) {
+    arrayOptions.tupleCells = arrayOptions.tupleCells.map(cell => normalizeCell(cell, cellDefinitions))
+  }
+  return arrayOptions
+}
+
 /**
  * Normalize view cell
  * @param {BunsenCell} cell - cell to normalize
- * @param {Object} modelDefinitions - parent nodes
+ * @param {Object} cellDefinitions - parent nodes
  * @returns {BunsenCell} - normalized state (contains model, view, and parents)
  */
 export function normalizeCell (cell, cellDefinitions) {
@@ -96,90 +115,10 @@ export function normalizeCell (cell, cellDefinitions) {
     newCell.children = children
   }
   if (cell.arrayOptions) {
-    const arrayOptions = _.clone(cell.arrayOptions)
-    if (arrayOptions.itemCell) {
-      if (Array.isArray(arrayOptions.itemCell)) {
-        arrayOptions.itemCell = arrayOptions.itemCell.map(cell => normalizeCell(cell, cellDefinitions))
-      } else {
-        arrayOptions.itemCell = normalizeCell(arrayOptions.itemCell, cellDefinitions)
-      }
-    }
-    if (arrayOptions.tupleCells) {
-      arrayOptions.tupleCells = arrayOptions.tupleCells.map(cell => normalizeCell(cell, cellDefinitions))
-    }
-    newCell.arrayOptions = arrayOptions
+    newCell.arrayOptions = normalizeArrayOptions(cell, cellDefinitions)
   }
 
   return newCell
-}
-
-/**
- * Normalize properties on a view cell
- * @param {Array<BunsenView | BunsenCell>} nodes - cell node and all parent nodes
- * @param {String} modelPath - model path
- * @returns {Object} - normalized state (contains model and view)
- */
-export function normalizeCellProperties (nodes, modelPath) {
-  const view = Object.assign({}, nodes.shift())
-  const next = nodes.shift()
-  const parents = [view]
-
-  let pointer = view
-
-  if (next === view.cells) {
-    const cell = nodes.shift()
-    const index = view.cells.indexOf(cell)
-
-    pointer = Object.assign({}, cell)
-
-    // return new array with same cells except a shallow clone for cell
-    view.cells = view.cells.slice(0, index) // get all cells before cell
-      .concat(pointer) // shallow clone cell
-      .concat(view.cells.slice(index + 1)) // get all cells after cell
-
-    parents.push(view.cells, pointer)
-  } else if (next === view.cellDefinitions) {
-    view.cellDefinitions = Object.assign({}, view.cellDefinitions)
-    const def = nodes.shift()
-
-    let defKey
-
-    Object.keys(view.cellDefinitions).find((key) => {
-      const result = view.cellDefinitions[key] === def
-      if (result) defKey = key
-      return result
-    })
-
-    pointer = view.cellDefinitions[defKey] = Object.assign({}, def)
-    parents.push(view.cellDefinitions, pointer)
-  }
-
-  while (nodes.length) {
-    if (pointer.children) {
-      nodes.shift() // children
-
-      const child = nodes.shift()
-      const index = pointer.children.indexOf(child)
-      const clone = Object.assign({}, child)
-
-      // return new array with same children except a shallow clone for parent
-      pointer.children = pointer.children.slice(0, index) // get all items before parent
-        .concat(clone) // shallow clone parent
-        .concat(pointer.children.slice(index + 1)) // get all items after parent
-
-      parents.push(pointer.children, clone)
-      pointer = clone
-    }
-  }
-
-  pointer.model = modelPath
-  delete pointer.id
-  delete pointer.internal
-
-  return {
-    parents,
-    view
-  }
 }
 
 /**
@@ -201,15 +140,32 @@ export function normalizeCells (view) {
 
 /**
  * Normalize view cell's children
- * @param {Object} state - unnormalized state (contains model and view)
  * @param {BunsenCell} cell - cell that contains children to normalize
- * @param {Array<BunsenView | BunsenCell>} parents - parent nodes
- * @returns {Object} - normalized state (contains model, view, and parents)
+ * @param {Object} cellDefinitions - hash of cell definitions
+ * @returns {BunsenCell[]} - normalized state (contains model, view, and parents)
  */
-export function normalizeChildren (cell, modelDefinitions) {
+export function normalizeChildren (cell, cellDefinitions) {
   if (!Array.isArray(cell.children)) return
 
-  return cell.children.map((cell) => normalizeCell(cell, modelDefinitions))
+  return cell.children.map((cell) => normalizeCell(cell, cellDefinitions))
+}
+
+function pluckFromArrayOptions (cell, modelPath, models, cellDefinitions) {
+  if (cell.arrayOptions.tupleCells) {
+    cell.arrayOptions.tupleCells.forEach(function (cell, index) {
+      pluckModels(cell, modelPath.concat(index), models, cellDefinitions)
+    })
+  }
+  if (cell.arrayOptions.itemCell) {
+    const itemCell = cell.arrayOptions.itemCell
+    if (Array.isArray(itemCell)) {
+      itemCell.forEach(function (cell, index) {
+        pluckModels(cell, modelPath.concat(index), models, cellDefinitions)
+      })
+    } else {
+      pluckModels(itemCell, modelPath.concat('0'), models, cellDefinitions)
+    }
+  }
 }
 
 function pluckModels (cell, modelPath, models, cellDefinitions) {
@@ -222,21 +178,7 @@ function pluckModels (cell, modelPath, models, cellDefinitions) {
       pluckModels(cell, modelPath.concat(cell.model), models, cellDefinitions)
     })
   } else if (cell.arrayOptions) { // recurse on arrays
-    if (cell.arrayOptions.tupleCells) {
-      cell.arrayOptions.tupleCells.forEach(function (cell, index) {
-        pluckModels(cell, modelPath.concat(index), models, cellDefinitions)
-      })
-    }
-    if (cell.arrayOptions.itemCell) {
-      const itemCell = cell.arrayOptions.itemCell
-      if (Array.isArray(itemCell)) {
-        itemCell.forEach(function (cell, index) {
-          pluckModels(cell, modelPath.concat(index), models, cellDefinitions)
-        })
-      } else {
-        pluckModels(itemCell, modelPath.concat('0'), models, cellDefinitions)
-      }
-    }
+    pluckFromArrayOptions(cell, modelPath, models, cellDefinitions)
   }
 }
 
