@@ -1,6 +1,6 @@
 {
   "name": "bunsen-core",
-  "version": "0.30.8",
+  "version": "0.30.9",
   "dependencies": {
     "abbrev": {
       "version": "1.0.9",
@@ -663,9 +663,9 @@
       "dev": true
     },
     "es5-ext": {
-      "version": "0.10.22",
+      "version": "0.10.23",
       "from": "es5-ext@>=0.10.14 <0.11.0",
-      "resolved": "https://registry.npmjs.org/es5-ext/-/es5-ext-0.10.22.tgz",
+      "resolved": "https://registry.npmjs.org/es5-ext/-/es5-ext-0.10.23.tgz",
       "dev": true
     },
     "es6-iterator": {
@@ -980,9 +980,9 @@
       "dev": true
     },
     "globals": {
-      "version": "9.17.0",
+      "version": "9.18.0",
       "from": "globals@>=9.0.0 <10.0.0",
-      "resolved": "https://registry.npmjs.org/globals/-/globals-9.17.0.tgz",
+      "resolved": "https://registry.npmjs.org/globals/-/globals-9.18.0.tgz",
       "dev": true
     },
     "globby": {
@@ -1668,9 +1668,9 @@
       "optional": true
     },
     "readable-stream": {
-      "version": "2.2.10",
+      "version": "2.2.11",
       "from": "readable-stream@>=2.0.2 <3.0.0",
-      "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.10.tgz",
+      "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.2.11.tgz",
       "dev": true
     },
     "readdirp": {
@@ -1744,9 +1744,9 @@
       }
     },
     "remove-trailing-separator": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "from": "remove-trailing-separator@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/remove-trailing-separator/-/remove-trailing-separator-1.0.1.tgz",
+      "resolved": "https://registry.npmjs.org/remove-trailing-separator/-/remove-trailing-separator-1.0.2.tgz",
       "dev": true,
       "optional": true
     },
@@ -1818,9 +1818,9 @@
       "dev": true
     },
     "safe-buffer": {
-      "version": "5.1.0",
-      "from": "safe-buffer@>=5.0.1 <6.0.0",
-      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.0.tgz",
+      "version": "5.0.1",
+      "from": "safe-buffer@>=5.0.1 <5.1.0",
+      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.0.1.tgz",
       "dev": true
     },
     "samsam": {
@@ -1842,9 +1842,9 @@
       "optional": true
     },
     "shelljs": {
-      "version": "0.7.7",
+      "version": "0.7.8",
       "from": "shelljs@>=0.7.5 <0.8.0",
-      "resolved": "https://registry.npmjs.org/shelljs/-/shelljs-0.7.7.tgz",
+      "resolved": "https://registry.npmjs.org/shelljs/-/shelljs-0.7.8.tgz",
       "dev": true
     },
     "sinon": {
@@ -1884,9 +1884,9 @@
       "dev": true
     },
     "string_decoder": {
-      "version": "1.0.1",
+      "version": "1.0.2",
       "from": "string_decoder@>=1.0.0 <1.1.0",
-      "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.1.tgz",
+      "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.2.tgz",
       "dev": true
     },
     "string-width": {

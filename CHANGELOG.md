@@ -1,3 +1,7 @@
+# 0.30.9
+**Refactored** handling of view specified models
+**Added** support for view specified models in arrays.
+
 # 0.30.8
 **Fixed and refactored** relative path finding.
 
