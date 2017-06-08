@@ -584,4 +584,43 @@ describe('utils', () => {
       )
     })
   })
+  describe('clearInternals', function () {
+    it('clears _internal properties from objects', function () {
+      const clearedVal = utils.clearInternals({
+        foo: {
+          bar: {
+            _internal: {
+              baz: 'test'
+            }
+          },
+          bix: [{
+            test: {_internal: {}},
+            _internal: {
+            }
+          }]
+        },
+        _internal: {},
+        quux: {
+          _internal: {},
+          test: 'test'
+        }
+      })
+      expect(clearedVal).to.be.eql({
+        foo: {
+          bar: {},
+          bix: [{
+            test: {}
+          }]
+        },
+        quux: {
+          test: 'test'
+        }
+      })
+    })
+
+    it('leaves other values alone', function () {
+      const clearedVal = utils.clearInternals({})
+      expect(clearedVal).to.be.eql({})
+    })
+  })
 })

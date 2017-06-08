@@ -1,3 +1,5 @@
+import _ from 'lodash'
+import {BunsenModelPath} from './utils'
 /**
  * Convert a model reference to a proper path in the model schema
  *
@@ -23,6 +25,46 @@ export function getModelPath (reference) {
   }
 
   return path
+}
+
+/**
+ * Create a path to add within a model
+ *
+ * @param {String} modelPath Path to current place within the model
+ * @param {String} id Id specified in the cell
+ * @param {Boolean} internal True if we want to add an internal model
+ * @returns {String} Path to add within the model
+ */
+function appendModelPath (modelPath, id, internal) {
+  const addedModelPath = getModelPath(id)
+  if (internal) {
+    return `${modelPath}.properties._internal.${addedModelPath}`
+  }
+  if (modelPath === '') {
+    return addedModelPath
+  }
+  return `${modelPath}.${addedModelPath}`
+}
+
+/**
+ * Copies a cell. If the cell extends cell definions, properties from teh extended cell
+ * are copied into the new cell.
+ *
+ * @param {BunsenCell} cell Cell to build up with cell definitions
+ * @param {Object} cellDefinitions Cell definitions available in the view
+ * @returns {BunsenCell} The expanded cell
+ */
+function extendCell (cell, cellDefinitions) {
+  cell = _.clone(cell)
+  while (cell.extends) {
+    const extendedCell = cellDefinitions[cell.extends]
+    if (extendedCell === undefined) {
+      throw new Error(`'${cell.extends}' is not a valid model definition`)
+    }
+    delete cell.extends
+    cell = _.defaults(cell, extendedCell)
+  }
+  return cell
 }
 
 /**
@@ -59,175 +101,162 @@ export function addBunsenModelProperty (bunsenModel, propertyModel, modelPath) {
 }
 
 /**
- * Normalize cell definitions
- * @param {Object} state – unnormalized state (contains model and view)
- * @returns {Object} - normalized state (contains model and view)
+ * Normalizes cells within arrayOptions
+ *
+ * @param {BunsenCell} cell Cell with arrayOptions to normalize
+ * @param {Object} cellDefinitions Hash of cell definitions
+ * @returns {Object} The normalized arrayOptions
  */
-export function normalizeCellDefinitions (state) {
-  if (!state.view || !state.view.cellDefinitions) return state
-
-  const newState = Object.keys(state.view.cellDefinitions)
-    .reduce(
-      (_state, key) => {
-        const cell = _state.view.cellDefinitions[key]
-
-        const parents = [
-          _state.view,
-          _state.view.cellDefinitions
-        ]
-
-        return normalizeCell(_state, cell, parents)
-      },
-      state
-    )
-
-  delete newState.parents
-
-  return newState
+function normalizeArrayOptions (cell, cellDefinitions) {
+  const arrayOptions = _.clone(cell.arrayOptions)
+  if (arrayOptions.itemCell) {
+    if (Array.isArray(arrayOptions.itemCell)) {
+      arrayOptions.itemCell = arrayOptions.itemCell.map(cell => normalizeCell(cell, cellDefinitions))
+    } else {
+      arrayOptions.itemCell = normalizeCell(arrayOptions.itemCell, cellDefinitions)
+    }
+  }
+  if (arrayOptions.tupleCells) {
+    arrayOptions.tupleCells = arrayOptions.tupleCells.map(cell => normalizeCell(cell, cellDefinitions))
+  }
+  return arrayOptions
 }
 
 /**
  * Normalize view cell
- * @param {Object} state - unnormalized state (contains model and view)
  * @param {BunsenCell} cell - cell to normalize
- * @param {Array<BunsenView | BunsenCell>} parents - parent nodes
- * @returns {Object} - normalized state (contains model, view, and parents)
+ * @param {Object} cellDefinitions - parent nodes
+ * @returns {BunsenCell} - normalized state (contains model, view, and parents)
  */
-export function normalizeCell (state, cell, parents) {
-  if (typeof cell.model === 'object') {
-    const isInternal = cell.internal === true
-    const id = isInternal ? `_internal.${cell.id}` : cell.id
-    const modelPath = getModelPath(id)
-    const viewState = normalizeCellProperties(parents.concat(cell), id)
-
-    // This makes it so parents are the shallow clones created within
-    // normalizeCellProperties() which are now in state.view
-    parents = viewState.parents.slice(0, parents.length)
-
-    state = {
-      model: addBunsenModelProperty(state.model, cell.model, modelPath),
-      parents,
-      view: viewState.view
-    }
+export function normalizeCell (cell, cellDefinitions) {
+  const newCell = extendCell(cell, cellDefinitions)
+  if (typeof newCell.model === 'object') {
+    const isInternal = newCell.internal === true
+    const model = isInternal ? `_internal.${newCell.id}` : newCell.id
+    newCell.model = model
   }
 
-  return normalizeChildren(state, cell, parents)
-}
-
-/**
- * Normalize properties on a view cell
- * @param {Array<BunsenView | BunsenCell>} nodes - cell node and all parent nodes
- * @param {String} modelPath - model path
- * @returns {Object} - normalized state (contains model and view)
- */
-export function normalizeCellProperties (nodes, modelPath) {
-  const view = Object.assign({}, nodes.shift())
-  const next = nodes.shift()
-  const parents = [view]
-
-  let pointer = view
-
-  if (next === view.cells) {
-    const cell = nodes.shift()
-    const index = view.cells.indexOf(cell)
-
-    pointer = Object.assign({}, cell)
-
-    // return new array with same cells except a shallow clone for cell
-    view.cells = view.cells.slice(0, index) // get all cells before cell
-      .concat(pointer) // shallow clone cell
-      .concat(view.cells.slice(index + 1)) // get all cells after cell
-
-    parents.push(view.cells, pointer)
-  } else if (next === view.cellDefinitions) {
-    view.cellDefinitions = Object.assign({}, view.cellDefinitions)
-    const def = nodes.shift()
-
-    let defKey
-
-    Object.keys(view.cellDefinitions).find((key) => {
-      const result = view.cellDefinitions[key] === def
-      if (result) defKey = key
-      return result
-    })
-
-    pointer = view.cellDefinitions[defKey] = Object.assign({}, def)
-    parents.push(view.cellDefinitions, pointer)
+  const children = normalizeChildren(cell, cellDefinitions)
+  if (children) {
+    newCell.children = children
+  }
+  if (cell.arrayOptions) {
+    newCell.arrayOptions = normalizeArrayOptions(cell, cellDefinitions)
   }
 
-  while (nodes.length) {
-    if (pointer.children) {
-      nodes.shift() // children
-
-      const child = nodes.shift()
-      const index = pointer.children.indexOf(child)
-      const clone = Object.assign({}, child)
-
-      // return new array with same children except a shallow clone for parent
-      pointer.children = pointer.children.slice(0, index) // get all items before parent
-        .concat(clone) // shallow clone parent
-        .concat(pointer.children.slice(index + 1)) // get all items after parent
-
-      parents.push(pointer.children, clone)
-      pointer = clone
-    }
-  }
-
-  pointer.model = modelPath
-  delete pointer.id
-  delete pointer.internal
-
-  return {
-    parents,
-    view
-  }
+  return newCell
 }
 
 /**
  * Normalize top level cells
- * @param {Object} state – unnormalized state (contains model and view)
- * @returns {Object} - normalized state (contains model and view)
+ * @param {BunsenView} view – unnormalized view
+ * @returns {Object} - normalized view
  */
-export function normalizeCells (state) {
-  if (!state.view || !Array.isArray(state.view.cells)) return state
+export function normalizeCells (view) {
+  if (!view || !Array.isArray(view.cells)) return view
+  const newCells = view.cells.map((cell) => {
+    const cellDefinitions = view.cellDefinitions || {}
+    return normalizeCell(cell, cellDefinitions)
+  })
 
-  const newState = state.view.cells.reduce(
-    (_state, cell) => {
-      const parents = [_state.view, _state.view.cells]
-      return normalizeCell(_state, cell, parents)
-    },
-    state
-  )
+  const newView = _.clone(view)
+  newView.cells = newCells
 
-  delete newState.parents
-
-  return newState
+  return newView
 }
 
 /**
  * Normalize view cell's children
- * @param {Object} state - unnormalized state (contains model and view)
  * @param {BunsenCell} cell - cell that contains children to normalize
- * @param {Array<BunsenView | BunsenCell>} parents - parent nodes
- * @returns {Object} - normalized state (contains model, view, and parents)
+ * @param {Object} cellDefinitions - hash of cell definitions
+ * @returns {BunsenCell[]} - normalized state (contains model, view, and parents)
  */
-export function normalizeChildren (state, cell, parents) {
-  if (!Array.isArray(cell.children)) return state
+export function normalizeChildren (cell, cellDefinitions) {
+  if (!Array.isArray(cell.children)) return
 
-  const newState = cell.children.reduce(
-    (_state, child, index) => {
-      const childParents = _state.parents.slice(0, parents.length + 2)
-      return normalizeCell(_state, child, childParents)
-    },
-    Object.assign({}, state, {
-      parents: parents.concat([cell, cell.children])
+  return cell.children.map((cell) => normalizeCell(cell, cellDefinitions))
+}
+
+/**
+ * Collects schemas from a cell's array options to add to the model in a hash.
+ *
+ * @param {BunsenCell} cell BunsenCell with array options
+ * @param {BunsenModelPath} modelPath Current path within the model
+ * @param {Object} models Hash containing schemas to add
+ * @param {Object} cellDefinitions Hash containing cell definitions
+ */
+function pluckFromArrayOptions (cell, modelPath, models, cellDefinitions) {
+  if (cell.arrayOptions.tupleCells) {
+    cell.arrayOptions.tupleCells.forEach(function (cell, index) {
+      pluckModels(cell, modelPath.concat(index), models, cellDefinitions)
     })
-  )
+  }
+  if (cell.arrayOptions.itemCell) {
+    const itemCell = cell.arrayOptions.itemCell
+    if (Array.isArray(itemCell)) {
+      itemCell.forEach(function (cell, index) {
+        pluckModels(cell, modelPath.concat(index), models, cellDefinitions)
+      })
+    } else {
+      pluckModels(itemCell, modelPath.concat('0'), models, cellDefinitions)
+    }
+  }
+}
 
-  // Make sure outbound parents are just clones of inbound parents
-  newState.parents = newState.parents.slice(0, parents.length)
+/**
+ * Collects schemas from a cell to add to the model in a hash. Keys in the hash are
+ * the schema's path withinthe bunsen model.
+ *
+ * @param {BunsenCell} cell BunsenCell with array options
+ * @param {BunsenModelPath} modelPath Current path within the model
+ * @param {Object} models Hash containing schemas to add
+ * @param {Object} cellDefinitions Hash containing cell definitions
+ */
+function pluckModels (cell, modelPath, models, cellDefinitions) {
+  cell = extendCell(cell, cellDefinitions)
+  if (_.isObject(cell.model)) {
+    const addedPath = appendModelPath(modelPath.modelPath(), cell.id, cell.internal)
+    models[addedPath] = cell.model
+  } else if (cell.children) { // recurse on objects
+    cell.children.forEach((cell) => {
+      pluckModels(cell, modelPath.concat(cell.model), models, cellDefinitions)
+    })
+  } else if (cell.arrayOptions) { // recurse on arrays
+    pluckFromArrayOptions(cell, modelPath, models, cellDefinitions)
+  }
+}
 
-  return newState
+/**
+ * Collects schemas from a cell to add to the model in a hash.
+ *
+ * @param {BunsenView} view View to check for additional schemas
+ * @param {BunsenModelPath} modelPath Path to start within the model
+ * @returns {Object} Hash of schemas. The keys are paths within the model
+ */
+function aggregateModels (view, modelPath) {
+  const models = {}
+  view.cells.forEach(function (cell) {
+    const newPath = typeof cell.model === 'string' ? modelPath.concat(cell.model) : modelPath
+    pluckModels(cell, newPath, models, view.cellDefinitions)
+  })
+  return models
+}
+
+/**
+ * Adds to an existing bunsen model with schemas defined in the view
+ *
+ * @param {BunsenModel} model Model to expand
+ * @param {BunsenView} view View containing additional schema
+ * @returns {BunsenModel} Expanded version of the model
+ */
+function expandModel (model, view) {
+  const modelPath = new BunsenModelPath(model)
+  const modelExpansions = aggregateModels(view, modelPath)
+  let newModel = model
+  _.forEach(modelExpansions, (propertyModel, path) => {
+    newModel = addBunsenModelProperty(newModel, propertyModel, path)
+  })
+  return newModel
 }
 
 /**
@@ -237,12 +266,7 @@ export function normalizeChildren (state, cell, parents) {
  * @returns {Object} - normalized state (contains model and view)
  */
 export default function ({model, view}) {
-  return [
-    normalizeCellDefinitions,
-    normalizeCells
-  ]
-    .reduce(
-      (state, method) => method(state),
-      {model, view}
-    )
+  const expandedModel = expandModel(model, view)
+  const normalizedView = normalizeCells(view)
+  return {model: expandedModel, view: normalizedView}
 }
