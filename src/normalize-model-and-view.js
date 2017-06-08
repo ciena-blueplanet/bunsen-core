@@ -27,6 +27,14 @@ export function getModelPath (reference) {
   return path
 }
 
+/**
+ * Create a path to add within a model
+ *
+ * @param {String} modelPath Path to current place within the model
+ * @param {String} id Id specified in the cell
+ * @param {Boolean} internal True if we want to add an internal model
+ * @returns {String} Path to add within the model
+ */
 function appendModelPath (modelPath, id, internal) {
   const addedModelPath = getModelPath(id)
   if (internal) {
@@ -38,7 +46,15 @@ function appendModelPath (modelPath, id, internal) {
   return `${modelPath}.${addedModelPath}`
 }
 
-function expandCell (cell, cellDefinitions) {
+/**
+ * Copies a cell. If the cell extends cell definions, properties from teh extended cell
+ * are copied into the new cell.
+ *
+ * @param {BunsenCell} cell Cell to build up with cell definitions
+ * @param {Object} cellDefinitions Cell definitions available in the view
+ * @returns {BunsenCell} The expanded cell
+ */
+function extendCell (cell, cellDefinitions) {
   cell = _.clone(cell)
   while (cell.extends) {
     const extendedCell = cellDefinitions[cell.extends]
@@ -81,6 +97,13 @@ export function addBunsenModelProperty (bunsenModel, propertyModel, modelPath) {
   return model
 }
 
+/**
+ * Normalizes cells within arrayOptions
+ *
+ * @param {BunsenCell} cell Cell with arrayOptions to normalize
+ * @param {Object} cellDefinitions Hash of cell definitions
+ * @returns {Object} The normalized arrayOptions
+ */
 function normalizeArrayOptions (cell, cellDefinitions) {
   const arrayOptions = _.clone(cell.arrayOptions)
   if (arrayOptions.itemCell) {
@@ -103,7 +126,7 @@ function normalizeArrayOptions (cell, cellDefinitions) {
  * @returns {BunsenCell} - normalized state (contains model, view, and parents)
  */
 export function normalizeCell (cell, cellDefinitions) {
-  const newCell = expandCell(cell, cellDefinitions)
+  const newCell = extendCell(cell, cellDefinitions)
   if (typeof newCell.model === 'object') {
     const isInternal = newCell.internal === true
     const model = isInternal ? `_internal.${newCell.id}` : newCell.id
@@ -150,6 +173,14 @@ export function normalizeChildren (cell, cellDefinitions) {
   return cell.children.map((cell) => normalizeCell(cell, cellDefinitions))
 }
 
+/**
+ * Collects schemas from a cell's array options to add to the model in a hash.
+ *
+ * @param {BunsenCell} cell BunsenCell with array options
+ * @param {BunsenModelPath} modelPath Current path within the model
+ * @param {Object} models Hash containing schemas to add
+ * @param {Object} cellDefinitions Hash containing cell definitions
+ */
 function pluckFromArrayOptions (cell, modelPath, models, cellDefinitions) {
   if (cell.arrayOptions.tupleCells) {
     cell.arrayOptions.tupleCells.forEach(function (cell, index) {
@@ -168,8 +199,17 @@ function pluckFromArrayOptions (cell, modelPath, models, cellDefinitions) {
   }
 }
 
+/**
+ * Collects schemas from a cell to add to the model in a hash. Keys in the hash are
+ * the schema's path withinthe bunsen model.
+ *
+ * @param {BunsenCell} cell BunsenCell with array options
+ * @param {BunsenModelPath} modelPath Current path within the model
+ * @param {Object} models Hash containing schemas to add
+ * @param {Object} cellDefinitions Hash containing cell definitions
+ */
 function pluckModels (cell, modelPath, models, cellDefinitions) {
-  cell = expandCell(cell, cellDefinitions)
+  cell = extendCell(cell, cellDefinitions)
   if (_.isObject(cell.model)) {
     const addedPath = appendModelPath(modelPath.modelPath(), cell.id, cell.internal)
     models[addedPath] = cell.model
@@ -182,7 +222,15 @@ function pluckModels (cell, modelPath, models, cellDefinitions) {
   }
 }
 
-function aggregateModels (view, modelPath, models = {}) {
+/**
+ * Collects schemas from a cell to add to the model in a hash.
+ *
+ * @param {BunsenView} view View to check for additional schemas
+ * @param {BunsenModelPath} modelPath Path to start within the model
+ * @returns {Object} Hash of schemas. The keys are paths within the model
+ */
+function aggregateModels (view, modelPath) {
+  const models = {}
   view.cells.forEach(function (cell) {
     const newPath = typeof cell.model === 'string' ? modelPath.concat(cell.model) : modelPath
     pluckModels(cell, newPath, models, view.cellDefinitions)
@@ -190,6 +238,13 @@ function aggregateModels (view, modelPath, models = {}) {
   return models
 }
 
+/**
+ * Adds to an existing bunsen model with schemas defined in the view
+ *
+ * @param {BunsenModel} model Model to expand
+ * @param {BunsenView} view View containing additional schema
+ * @returns {BunsenModel} Expanded version of the model
+ */
 function expandModel (model, view) {
   const modelPath = new BunsenModelPath(model)
   const modelExpansions = aggregateModels(view, modelPath)
@@ -197,7 +252,7 @@ function expandModel (model, view) {
   _.forEach(modelExpansions, (propertyModel, path) => {
     newModel = addBunsenModelProperty(newModel, propertyModel, path)
   })
-  return {model: newModel, modelExpansions}
+  return newModel
 }
 
 /**
@@ -209,5 +264,5 @@ function expandModel (model, view) {
 export default function ({model, view}) {
   const expandedModel = expandModel(model, view)
   const normalizedView = normalizeCells(view)
-  return {model: expandedModel.model, view: normalizedView}
+  return {model: expandedModel, view: normalizedView}
 }

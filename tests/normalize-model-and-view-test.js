@@ -532,8 +532,8 @@ describe('normalize model and view', function () {
 })
 
 describe('normalizes complex cases', function () {
-  let model
-  let view
+  var model
+  var view
   beforeEach(function () {
     model = {
       type: 'object',
