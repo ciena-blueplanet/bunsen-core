@@ -58,6 +58,9 @@ function extendCell (cell, cellDefinitions) {
   cell = _.clone(cell)
   while (cell.extends) {
     const extendedCell = cellDefinitions[cell.extends]
+    if (extendedCell === undefined) {
+      throw new Error(`'${cell.extends}' is not a valid model definition`)
+    }
     delete cell.extends
     cell = _.defaults(cell, extendedCell)
   }
@@ -152,7 +155,8 @@ export function normalizeCell (cell, cellDefinitions) {
 export function normalizeCells (view) {
   if (!view || !Array.isArray(view.cells)) return view
   const newCells = view.cells.map((cell) => {
-    return normalizeCell(cell, view.cellDefinitions)
+    const cellDefinitions = view.cellDefinitions || {}
+    return normalizeCell(cell, cellDefinitions)
   })
 
   const newView = _.clone(view)

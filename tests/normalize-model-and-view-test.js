@@ -529,6 +529,32 @@ describe('normalize model and view', function () {
       }
     })
   })
+  it('default export throws an error when a non-existing cell definition is extended', () => {
+    const model = {
+      type: 'object',
+      properties: {
+        foo: {
+          type: 'string'
+        }
+      }
+    }
+    const view = {
+      cellDefinitions: {
+      },
+      cells: [
+        {
+          model: 'foo',
+          extends: 'bar'
+        }
+      ],
+      type: 'form',
+      version: '2.0'
+    }
+    const referenceBadDef = function () {
+      stuff.default({view, model})
+    }
+    expect(referenceBadDef).to.throw()
+  })
 })
 
 describe('normalizes complex cases', function () {
