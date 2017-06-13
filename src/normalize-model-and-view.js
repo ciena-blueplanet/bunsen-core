@@ -58,7 +58,7 @@ function extendCell (cell, cellDefinitions) {
   cell = _.clone(cell)
   while (cell.extends) {
     const extendedCell = cellDefinitions[cell.extends]
-    if (extendedCell === undefined) {
+    if (!_.isObject(extendedCell)) {
       throw new Error(`'${cell.extends}' is not a valid model definition`)
     }
     delete cell.extends
@@ -266,7 +266,13 @@ function expandModel (model, view) {
  * @returns {Object} - normalized state (contains model and view)
  */
 export default function ({model, view}) {
-  const expandedModel = expandModel(model, view)
-  const normalizedView = normalizeCells(view)
-  return {model: expandedModel, view: normalizedView}
+  try {
+    const expandedModel = expandModel(model, view)
+    const normalizedView = normalizeCells(view)
+    return {model: expandedModel, view: normalizedView}
+  } catch (e) {
+    // Unfortunately this is necessary because view validation happens outside of the reducer,
+    // so we have no guarantee that the view is valid and it may cause run time errors. Returning
+    return {model, view}
+  }
 }

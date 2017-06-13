@@ -227,15 +227,28 @@ export const actionReducers = {
     }
 
     // Replace $ref's with definitions so consumers don't have to parse references
-    newState.baseModel = getDereferencedModelSchema(action.model)
+    newState.unnormalizedModel = getDereferencedModelSchema(action.model)
 
     // If we have an unnormalized view then we need to update our model to make
     // sure any model extensions defined in the view get applied
     if (state.unnormalizedView) {
-      newState.baseModel = normalizeModelAndView({
-        model: newState.baseModel,
-        view: state.unnormalizedView
-      }).model
+      let normalized
+      try {
+        normalized = normalizeModelAndView({
+          model: action.model,
+          view: state.unnormalizedView
+        })
+      } catch (e) {
+        normalized = {
+          model: action.model,
+          view: state.unnormalizedView
+        }
+      }
+      newState.baseModel = normalized.model
+      newState.baseView = normalized.view
+      newState.view = evaluateViewConditions(newState.baseView, state.value)
+    } else {
+      newState.baseModel = newState.unnormalizedModel
     }
 
     // Evaluate and remove model conditions so consumers don't have to parse conditions
@@ -252,18 +265,40 @@ export const actionReducers = {
    */
   [CHANGE_VIEW]: function (state, action) {
     // Apply coniditions to view cells
-    const view = evaluateViewConditions(action.view, state.value)
+    let normalized
+    let view
+    if (state.unnormalizedModel) {
+      try {
+        normalized = normalizeModelAndView({
+          model: state.unnormalizedModel,
+          view: action.view
+        })
+      } catch (e) {
+        normalized = {
+          model: state.unnormalizedModel,
+          view: action.view
+        }
+      }
+
+      view = evaluateViewConditions(normalized.view, state.value)
+    } else {
+      view = evaluateViewConditions(state.baseView, state.value)
+      normalized = {
+        view,
+        model: state.model
+      }
+    }
 
     const newState = {
-      baseView: action.view,
+      baseView: normalized.view,
       lastAction: CHANGE_VIEW,
-      unnormalizedView: action.unnormalizedView,
+      unnormalizedView: action.view,
       view
     }
 
-    if (action.baseModel) {
+    if (!_.isEqual(state.baseModel, normalized.model)) {
       Object.assign(newState, {
-        baseModel: action.baseModel,
+        baseModel: normalized.model,
         model: evaluateConditions(action.baseModel, state.value)
       })
     }
