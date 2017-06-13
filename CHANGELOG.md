@@ -1,3 +1,6 @@
+# 0.30.10
+Incorrect views no longer cause normalization to crash. Instead, model and view are returned unchanged.
+
 # 0.30.9
 **Refactored** handling of view specified models
 **Added** support for view specified models in arrays.
