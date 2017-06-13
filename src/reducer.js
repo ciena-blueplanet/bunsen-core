@@ -232,18 +232,10 @@ export const actionReducers = {
     // If we have an unnormalized view then we need to update our model to make
     // sure any model extensions defined in the view get applied
     if (state.unnormalizedView) {
-      let normalized
-      try {
-        normalized = normalizeModelAndView({
-          model: action.model,
-          view: state.unnormalizedView
-        })
-      } catch (e) {
-        normalized = {
-          model: action.model,
-          view: state.unnormalizedView
-        }
-      }
+      const normalized = normalizeModelAndView({
+        model: action.model,
+        view: state.unnormalizedView
+      })
       newState.baseModel = normalized.model
       newState.baseView = normalized.view
       newState.view = evaluateViewConditions(newState.baseView, state.value)
@@ -268,17 +260,10 @@ export const actionReducers = {
     let normalized
     let view
     if (state.unnormalizedModel) {
-      try {
-        normalized = normalizeModelAndView({
-          model: state.unnormalizedModel,
-          view: action.view
-        })
-      } catch (e) {
-        normalized = {
-          model: state.unnormalizedModel,
-          view: action.view
-        }
-      }
+      normalized = normalizeModelAndView({
+        model: state.unnormalizedModel,
+        view: action.view
+      })
 
       view = evaluateViewConditions(normalized.view, state.value)
     } else {
