@@ -529,7 +529,7 @@ describe('normalize model and view', function () {
       }
     })
   })
-  it('default export throws an error when a non-existing cell definition is extended', () => {
+  it('default export returns model and view unchanged when non-existing cell definition is extended', () => {
     const model = {
       type: 'object',
       properties: {
@@ -550,10 +550,39 @@ describe('normalize model and view', function () {
       type: 'form',
       version: '2.0'
     }
-    const referenceBadDef = function () {
-      stuff.default({view, model})
+
+    const normalized = stuff.default({view, model})
+
+    expect(normalized.model).to.be.equal(model)
+    expect(normalized.view).to.be.equal(view)
+  })
+
+  it('default export returns model and view unchanged when extended cell is bad', () => {
+    const model = {
+      type: 'object',
+      properties: {
+        foo: {
+          type: 'string'
+        }
+      }
     }
-    expect(referenceBadDef).to.throw()
+    const view = {
+      cellDefinitions: {
+        bar: 'baz'
+      },
+      cells: [
+        {
+          model: 'foo',
+          extends: 'bar'
+        }
+      ],
+      type: 'form',
+      version: '2.0'
+    }
+    const normalized = stuff.default({view, model})
+
+    expect(normalized.model).to.be.equal(model)
+    expect(normalized.view).to.be.equal(view)
   })
 })
 
