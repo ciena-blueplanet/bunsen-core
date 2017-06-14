@@ -139,12 +139,12 @@ export function normalizeCell (cell, cellDefinitions) {
     newCell.model = model
   }
 
-  const children = normalizeChildren(cell, cellDefinitions)
+  const children = normalizeChildren(newCell, cellDefinitions)
   if (children) {
     newCell.children = children
   }
-  if (cell.arrayOptions) {
-    newCell.arrayOptions = normalizeArrayOptions(cell, cellDefinitions)
+  if (newCell.arrayOptions) {
+    newCell.arrayOptions = normalizeArrayOptions(newCell, cellDefinitions)
   }
 
   return newCell
