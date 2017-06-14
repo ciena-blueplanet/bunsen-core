@@ -593,6 +593,10 @@ describe('normalizes complex cases', function () {
     model = {
       type: 'object',
       properties: {
+        blix: {
+          type: 'object',
+          properties: {}
+        },
         foo: {
           type: 'array',
           items: {
@@ -622,6 +626,23 @@ describe('normalizes complex cases', function () {
             }]
           }
         }
+      },
+      {
+        id: 'bawla',
+        model: {
+          type: 'string'
+        },
+        internal: true
+      },
+      {
+        model: 'blix',
+        children: [{
+          id: 'blap',
+          internal: true,
+          model: {
+            type: 'string'
+          }
+        }]
       }],
       cellDefinitions: {
         baz: {
@@ -648,6 +669,27 @@ describe('normalizes complex cases', function () {
     expect(newModel).to.be.eql({
       type: 'object',
       properties: {
+        _internal: {
+          type: 'object',
+          properties: {
+            bawla: {
+              type: 'string'
+            }
+          }
+        },
+        blix: {
+          type: 'object',
+          properties: {
+            _internal: {
+              type: 'object',
+              properties: {
+                blap: {
+                  type: 'string'
+                }
+              }
+            }
+          }
+        },
         foo: {
           type: 'array',
           items: {
@@ -697,6 +739,21 @@ describe('normalizes complex cases', function () {
             }]
           }
         }
+      },
+      {
+        id: 'bawla',
+        internal: true,
+        model: '_internal.bawla'
+      },
+      {
+        children: [
+          {
+            id: 'blap',
+            internal: true,
+            model: '_internal.blap'
+          }
+        ],
+        model: 'blix'
       }],
       cellDefinitions: {
         baz: {

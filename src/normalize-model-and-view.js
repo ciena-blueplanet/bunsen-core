@@ -38,6 +38,9 @@ export function getModelPath (reference) {
 function appendModelPath (modelPath, id, internal) {
   const addedModelPath = getModelPath(id)
   if (internal) {
+    if (modelPath === '') {
+      return `properties._internal.${addedModelPath}`
+    }
     return `${modelPath}.properties._internal.${addedModelPath}`
   }
   if (modelPath === '') {
@@ -136,12 +139,12 @@ export function normalizeCell (cell, cellDefinitions) {
     newCell.model = model
   }
 
-  const children = normalizeChildren(cell, cellDefinitions)
+  const children = normalizeChildren(newCell, cellDefinitions)
   if (children) {
     newCell.children = children
   }
-  if (cell.arrayOptions) {
-    newCell.arrayOptions = normalizeArrayOptions(cell, cellDefinitions)
+  if (newCell.arrayOptions) {
+    newCell.arrayOptions = normalizeArrayOptions(newCell, cellDefinitions)
   }
 
   return newCell
@@ -219,7 +222,8 @@ function pluckModels (cell, modelPath, models, cellDefinitions) {
     models[addedPath] = cell.model
   } else if (cell.children) { // recurse on objects
     cell.children.forEach((cell) => {
-      pluckModels(cell, modelPath.concat(cell.model), models, cellDefinitions)
+      const newPath = typeof cell.model === 'string' ? modelPath.concat(cell.model) : modelPath
+      pluckModels(cell, newPath, models, cellDefinitions)
     })
   } else if (cell.arrayOptions) { // recurse on arrays
     pluckFromArrayOptions(cell, modelPath, models, cellDefinitions)
