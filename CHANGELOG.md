@@ -1,3 +1,7 @@
+# 0.30.11
+Additional fixes for the internal models feature.
+
+
 # 0.30.10
 Incorrect views no longer cause normalization to crash. Instead, model and view are returned unchanged.
 
