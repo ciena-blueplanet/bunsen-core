@@ -25,6 +25,11 @@ describe('utils/path', () => {
               quux: 'test 2'
             }
           }
+        },
+        pathVariables: {
+          constructorPath: 'foo.bar2.baz.quux',
+          path1: './baz.quux',
+          path2: 'quux'
         }
       }, 'foo.bar1.baz')
     })
@@ -39,6 +44,12 @@ describe('utils/path', () => {
         }
       })
     })
+
+    it('constructs with an initial ', function () {
+      wrapper = new ValueWrapper(wrapper.value, '${pathVariables.constructorPath}')
+      expect(wrapper.get()).to.eql('test 2')
+    })
+
     describe('get method', function () {
       it('gets properties from a path in the base object', function () {
         expect(wrapper.get('foo.bar1.baz.quux')).to.eql('test 1')
@@ -50,17 +61,22 @@ describe('utils/path', () => {
 
         expect(newWrapper.get('../../quux')).to.eql('test 1')
       })
+      it('handles variable paths', function () {
+        expect(wrapper.get('${pathVariables.path1}')).to.eql('test 1')
+      })
     })
     describe('pushPath method', function () {
-      var newWrapper
-      beforeEach(function () {
-        newWrapper = wrapper.pushPath('must.go.deeper')
-      })
       it('appends to the contained path', function () {
+        var newWrapper = wrapper.pushPath('must.go.deeper')
         expect(newWrapper.get()).to.eql(true)
       })
       it('returns a new object', function () {
+        var newWrapper = wrapper.pushPath('must.go.deeper')
         expect(newWrapper).to.not.equal(wrapper)
+      })
+      it('handles variable paths', function () {
+        var newWrapper = wrapper.pushPath('${pathVariables.path2}')
+        expect(newWrapper.get()).to.eql('test 1')
       })
     })
   })
