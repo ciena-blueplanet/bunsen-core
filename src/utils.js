@@ -270,10 +270,16 @@ export class BunsenModelPath {
     if (!this._valid || pathSeg === undefined) {
       return
     }
+    let segments
     if (Array.isArray(pathSeg)) {
-      pathSeg.forEach(seg => this.append(seg))
-      return
+      segments = pathSeg
+    } else {
+      segments = pathSeg.split('.')
     }
+    segments.forEach(seg => this._append(seg))
+  }
+
+  _append (pathSeg) {
     const curModel = this._currentModel
     const prePath = BunsenModelPath.getPrePath(curModel, pathSeg)
     const nextSeg = BunsenModelPath.createPathSegment(curModel, prePath, pathSeg)
