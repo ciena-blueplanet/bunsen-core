@@ -476,6 +476,71 @@ describe('utils', () => {
         'items.properties.foo.properties.bar.items.1.properties.baz.additionalItems.properties.qux'
       )
     })
+    describe('.append()', function () {
+      let modelPath
+      beforeEach(function () {
+        const model = {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              foo: {
+                type: 'object',
+                properties: {
+                  bar: {
+                    type: 'array',
+                    items: [{
+                      type: 'string'
+                    }, {
+                      type: 'object',
+                      properties: {
+                        baz: {
+                          type: 'array',
+                          items: [{
+                            type: 'string'
+                          }],
+                          additionalItems: {
+                            type: 'object',
+                            properties: {
+                              qux: {type: 'string'}
+                            }
+                          }
+                        }
+                      }
+                    }]
+                  }
+                }
+              },
+              bar: {
+                type: 'string'
+              }
+            },
+            dependencies: {
+              foo: ['bar']
+            }
+          }
+        }
+        // const path = '0.foo.bar.1.baz.4.qux'
+        const path = '0.foo'
+        modelPath = new utils.BunsenModelPath(model, path)
+      })
+      it('adds a path segment to the path', function () {
+        modelPath.append('bar')
+        expect(modelPath.toString()).to.be.equal('items.properties.foo.properties.bar')
+      })
+      it('adds an array of path segments to the path', function () {
+        modelPath.append(['bar', '1', 'baz', '4', 'qux'])
+        expect(modelPath.toString()).to.be.equal(
+          'items.properties.foo.properties.bar.items.1.properties.baz.additionalItems.properties.qux'
+        )
+      })
+      it('adds multiple path segments when the path segment is dotted notation', function () {
+        modelPath.append('bar.1.baz.4.qux')
+        expect(modelPath.toString()).to.be.equal(
+          'items.properties.foo.properties.bar.items.1.properties.baz.additionalItems.properties.qux'
+        )
+      })
+    })
     describe('when a path on invalid path', function () {
       let modelPath
       beforeEach(function () {
