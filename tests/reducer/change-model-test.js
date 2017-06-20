@@ -3,7 +3,7 @@ var actions = require('../../lib/actions')
 var reducer = require('../../lib/reducer').reducer
 
 describe('reducer: CHANGE_MODEL', function () {
-  let initialState
+  var initialState
   beforeEach(function () {
     initialState = {
       baseModel: {
@@ -33,7 +33,7 @@ describe('reducer: CHANGE_MODEL', function () {
   })
 
   describe('when model does not include references', function () {
-    let newState
+    var newState
     beforeEach(function () {
       newState = reducer(initialState, {
         type: actions.CHANGE_MODEL,
@@ -47,7 +47,7 @@ describe('reducer: CHANGE_MODEL', function () {
   })
 
   describe('when model includes complex references', function () {
-    let newState
+    var newState
     beforeEach(function () {
       newState = reducer(initialState, {
         type: actions.CHANGE_MODEL,
