@@ -1,3 +1,8 @@
+# 0.30.13
+
+* **Fixed** a bug that cause the view normalization to error out when complex references were used.
+
+
 # 0.30.12
 **Fixed** how BunsenModelPath handles appending string paths using dot notation. This was causing internal models to be added to the wrong spot in the bunsen model if the cell defining the internal model used dot notation.
 
