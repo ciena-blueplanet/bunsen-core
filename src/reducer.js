@@ -233,7 +233,7 @@ export const actionReducers = {
     // sure any model extensions defined in the view get applied
     if (state.unnormalizedView) {
       const normalized = normalizeModelAndView({
-        model: action.model,
+        model: newState.unnormalizedModel,
         view: state.unnormalizedView
       })
       newState.baseModel = normalized.model
