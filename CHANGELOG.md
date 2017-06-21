@@ -1,3 +1,6 @@
+# 0.30.14
+**Removed** check for `_internal` that is no longer needed.
+
 # 0.30.13
 
 * **Fixed** a bug that cause the view normalization to error out when complex references were used.
