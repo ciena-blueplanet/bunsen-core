@@ -209,11 +209,7 @@ export default createFactory({
         this._validateDependentModelCell(path, cell, model)
       )
     } else if (cell.model) {
-      if (/^_internal./.test(cell.model)) {
-        subModel = getSubModel(this.model, cell.model)
-      } else {
-        subModel = getSubModel(model, cell.model)
-      }
+      subModel = getSubModel(model, cell.model)
       results.push(
         this._validateModelCell(path, cell, subModel)
       )

@@ -177,10 +177,9 @@ describe('validator/cell', () => {
     }
     cell = {
       children: [{
-        model: 'firstName',
-        children: [{
-          model: '_internal.left'
-        }]
+        model: 'firstName'
+      }, {
+        model: '_internal.left'
       }, {
         model: '_internal.right'
       }]
@@ -188,6 +187,76 @@ describe('validator/cell', () => {
     result = validator.validate('#/cellDefinitions/0', cell)
     expect(result).deep.equal({
       errors: [],
+      warnings: []
+    })
+  })
+
+  it('validates against deep internal models', function () {
+    model.properties.foo = {
+      type: 'object',
+      properties: {
+        _internal: {
+          type: 'object',
+          properties: {
+            left: {
+              type: 'string'
+            },
+            right: {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+    cell = {
+      children: [{
+        model: 'firstName'
+      }, {
+        model: 'foo._internal.left'
+      }, {
+        model: 'foo._internal.right'
+      }]
+    }
+    result = validator.validate('#/cellDefinitions/0', cell)
+    expect(result).deep.equal({
+      errors: [],
+      warnings: []
+    })
+  })
+
+  it('catches incorrect internal models', function () {
+    model.properties.foo = {
+      type: 'object',
+      properties: {
+        _internal: {
+          type: 'object',
+          properties: {
+            left: {
+              type: 'string'
+            },
+            right: {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+    cell = {
+      children: [{
+        model: 'firstName',
+        children: [{
+          model: 'foo._internal.left'
+        }]
+      }, {
+        model: 'foo._internal.right'
+      }]
+    }
+    result = validator.validate('#/cellDefinitions/0', cell)
+    expect(result).deep.equal({
+      errors: [{
+        message: 'Invalid model reference "foo._internal.left"',
+        path: '#/cellDefinitions/0/children/0/children/0/model'
+      }],
       warnings: []
     })
   })
