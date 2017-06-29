@@ -1,3 +1,17 @@
+# 0.31.0
+**Added** the following built-in conditons: 
+-  isDefined
+-  isUndefined
+-  isNull
+-  isNotNull
+-  isNil
+-  isNotNil
+-  isNaN
+-  hasLength
+-  isLongerThan
+-  isShorterThan
+-  matchesRegExp
+
 # 0.30.14
 **Removed** check for `_internal` that is no longer needed.
 
