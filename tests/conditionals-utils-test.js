@@ -97,7 +97,7 @@ describe('addConditions', function () {
 
 describe('meetsConditions', function () {
   describe('evaluates a value against a condition', function () {
-    let condition
+    var condition
     beforeEach(function () {
       condition = {equals: 1}
     })
@@ -151,7 +151,8 @@ describe('meetsConditions', function () {
 
     Object.keys(borrowedConditions).forEach(function (name) {
       it(name, function () {
-        const {expectedValue, matchingValue} = borrowedConditions[name]
+        const expectedValue = borrowedConditions[name].expectedValue
+        const matchingValue = borrowedConditions[name].matchingValue
         const condition = {}
         condition[name] = expectedValue
         expect(meetsCondition(matchingValue, condition), 'returns true for matching value').to.equal(true)
@@ -192,7 +193,9 @@ describe('meetsConditions', function () {
     }
     Object.keys(customConditions).forEach(function (name) {
       it(name, function () {
-        const {expectedValue, matchingValue, nonMatchingValue} = customConditions[name]
+        const expectedValue = customConditions[name].expectedValue
+        const matchingValue = customConditions[name].matchingValue
+        const nonMatchingValue = customConditions[name].nonMatchingValue
         const condition = {}
         condition[name] = expectedValue
         expect(meetsCondition(matchingValue, condition), 'returns true for matching value').to.equal(true)
