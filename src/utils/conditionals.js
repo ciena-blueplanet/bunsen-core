@@ -34,7 +34,21 @@ const BUILT_IN_CONDITIONS = {
   equals: _.isEqual,
   greaterThan: function (value, expected) { return value > expected },
   lessThan: function (value, expected) { return value < expected },
-  notEqual: _.negate(_.isEqual)
+  notEqual: _.negate(_.isEqual),
+  isDefined: _.negate(_.isUndefined),
+  isUndefined: _.isUndefined,
+  isNull: _.isNull,
+  isNotNull: _.negate(_.isNull),
+  isNil: _.isNil,
+  isNotNil: _.negate(_.isNil),
+  isNaN: Number.isNaN,
+  hasLength: function (value, expected) { return value.length === expected },
+  isLongerThan: function (value, expected) { return value.length > expected },
+  isShorterThan: function (value, expected) { return value.length < expected },
+  matchesRegExp: function (value, expected) {
+    const regExp = new RegExp(expected)
+    return regExp.test(value)
+  }
 }
 
 let possibleConditions = BUILT_IN_CONDITIONS
