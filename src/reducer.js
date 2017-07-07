@@ -25,28 +25,6 @@ function isArrayItem (segment) {
   return /^\d+$/.test(segment)
 }
 
-function subModel (model, modelPath) {
-  if (modelPath.length <= 0) {
-    return model
-  }
-  const pathSeg = modelPath.pop()
-  if (isArrayItem(pathSeg)) {
-    return subModel(model.items, modelPath)
-  }
-  return subModel(model.properties[pathSeg], modelPath)
-}
-
-function isRequired (model, id) {
-  if (id === null) {
-    return false
-  }
-  const modelPath = id.split('.')
-  const lastSegment = modelPath.pop()
-  modelPath.reverse()
-  const parentModel = subModel(model, modelPath)
-  return _.includes(parentModel.required, lastSegment)
-}
-
 export function initialState (state) {
   return _.defaults(state, INITIAL_VALUE)
 }
