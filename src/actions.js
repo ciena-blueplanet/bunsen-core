@@ -122,33 +122,36 @@ function findSchema (model, path, resolveRef) {
   return getSchema(pathStack, model, resolveRef)
 }
 
-function isObjectSchema (schema) {
-  return schema.type === 'object' || schema.properties
-}
-
-function findDefaults (value, path, model, resolveRef, required) {
+/**
+ * Returns the value with defaults provided by the schema
+ * @param {Object} value - a complex object/array (the bunsen form value)
+ * @param {String} path - path to retrieve the sub schema of the model given
+ * @param {Object} model - bunsen model schema
+ * @param {Function} resolveRef - function to resolve references
+ * @returns {Object} the value with defaults applied
+ */
+function getDefaults (value, path, model, resolveRef) {
   const schema = findSchema(model, path, resolveRef)
-
   const schemaDefault = _.clone(schema.default)
-  if (isObjectSchema(model)) { // Recursing only makes sense for objects
-    let subSchemaDefaults = {}
-    let hasDefaults = required || false
-    _.forEach(schema.properties, function (subSchema, propName) {
-      const defaults = findDefaults(
+
+  if (model.type === 'object') {
+    const subSchemaDefaults = {}
+    _.forIn(schema.properties, function (subSchema, propName) {
+      const defaults = getDefaults(
         value && value[propName],
         null,
         subSchema,
-        resolveRef,
-        _.includes(schema.required, propName)
+        resolveRef
       )
       if (defaults !== undefined) {
         subSchemaDefaults[propName] = defaults
-        hasDefaults = true
       }
     })
-    if (hasDefaults) { // If we didn't find any defaults, we don't want to try to modify the return
+
+    if (Object.keys(subSchemaDefaults).length > 0) {
       return _.defaults({}, schemaDefault, subSchemaDefaults)
     }
+    return schemaDefault
   } else if (value !== undefined) {
     return value
   }
@@ -191,7 +194,7 @@ export function validate (
     // make sure to apply defaults from the model
     if (isInputValueEmpty && previousValue === undefined) {
       const resolveRef = schemaFromRef(renderModel.definitions)
-      const defaultValue = findDefaults(inputValue, bunsenId, renderModel, resolveRef, false)
+      const defaultValue = getDefaults(inputValue, bunsenId, renderModel, resolveRef)
       if (bunsenId === null && defaultValue === undefined) {
         inputValue = {}
       } else if (defaultValue !== undefined) {
