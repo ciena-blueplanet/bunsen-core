@@ -1,3 +1,9 @@
+# 1.0.0
+
+* Making this a major to move this past experimental
+* **Reverted** a change made in https://github.com/ciena-blueplanet/bunsen-core/pull/60 around *required* objects/arrays.
+
+
 # 0.31.0
 **Added** the following built-in conditons: 
 -  isDefined
