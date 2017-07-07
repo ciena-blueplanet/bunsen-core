@@ -43,6 +43,7 @@ describe('validate action', function () {
     },
     required: ['lastName']
   }
+
   var SCHEMA_WITH_OBJECT_DEFAULTS = {
     type: 'object',
     properties: {
@@ -103,6 +104,37 @@ describe('validate action', function () {
       }
     },
     required: ['alias']
+  }
+
+  var SCHEMA_WITH_PARENT_DEFAULTS = {
+    type: 'object',
+    properties: {
+      firstName: {
+        type: 'string'
+      },
+      lastName: {
+        type: 'string',
+        default: 'Wayne'
+      },
+      alias: {
+        type: 'string',
+        title: 'Nickname'
+      },
+      onlyChild: {
+        type: 'boolean'
+      },
+      age: {
+        type: 'number',
+        title: 'Age'
+      }
+    },
+    required: ['lastName'],
+    default: {
+      firstName: 'Clark',
+      lastName: 'Kent',
+      alias: 'Superman',
+      onlyChild: true
+    }
   }
 
   var SCHEMA_WITH_REFS = {
@@ -241,6 +273,16 @@ describe('validate action', function () {
     })
   })
 
+  it('handles defaults for deep objects with parent defaults', function () {
+    var defaultValue = getDefaultValue(null, {}, SCHEMA_WITH_PARENT_DEFAULTS)
+    expect(defaultValue).to.eql({
+      firstName: 'Clark',
+      lastName: 'Kent',
+      alias: 'Superman',
+      onlyChild: true
+    })
+  })
+
   it('handles defaults in refs', function () {
     var defaultValue = getDefaultValue(null, {}, SCHEMA_WITH_REFS)
     expect(defaultValue).to.eql({
@@ -257,7 +299,7 @@ describe('validate action', function () {
     expect(defaultValue).to.eql({})
   })
 
-  it('initializes required objects', function () {
+  it('should not initialize required object without defaults', function () {
     var model = {
       type: 'object',
       properties: {
@@ -269,7 +311,7 @@ describe('validate action', function () {
     }
 
     var defaultValue = getDefaultValue(null, {}, model)
-    expect(defaultValue).to.eql({foo: {}})
+    expect(defaultValue).to.eql({})
   })
 
   function getState () {

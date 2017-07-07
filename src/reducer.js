@@ -76,10 +76,9 @@ function recursiveClean (value, model) {
   let iteratorFn = isValueArray ? _.forEach : _.forIn
   iteratorFn(value, (subValue, key) => {
     const notEmpty = !_.isEmpty(subValue) || subValue instanceof File
-    if (Array.isArray(subValue) && (notEmpty || _.includes(_.get(model, 'required'), key))) {
+    if (Array.isArray(subValue) && notEmpty) {
       output[key] = recursiveClean(subValue, _.get(model, 'items'))
-    } else if (!(subValue instanceof File) && _.isObject(subValue) &&
-      (notEmpty || _.includes(_.get(model, 'required'), key))) {
+    } else if (!(subValue instanceof File) && _.isObject(subValue) && notEmpty) {
       output[key] = recursiveClean(subValue, _.get(model, 'properties.' + key))
     } else if (notEmpty || _.isNumber(subValue) || typeof subValue === 'boolean' || subValue instanceof Boolean) {
       output[key] = subValue
@@ -118,9 +117,11 @@ function changeEntireFormValue ({model, nextValue, prevValue}) {
  * @param {Object} value - new value for path
  * @returns {Object} new state with value and value changeset
  */
+/* eslint-disable complexity */
 function changeNestedFormValue ({bunsenId, formValue, model, value}) {
   const segments = bunsenId.split('.')
   const lastSegment = segments.pop()
+  const isEmpty = _.isEmpty(value) && (Array.isArray(value) || _.isObject(value))
 
   // Make sure form value is immutable
   formValue = immutableOnce(formValue)
@@ -129,10 +130,7 @@ function changeNestedFormValue ({bunsenId, formValue, model, value}) {
     return setProperty({bunsenId, formValue, value})
   }
 
-  if (
-    _.includes([null, ''], value) ||
-    (Array.isArray(value) && value.length === 0 && !isRequired(model, bunsenId))
-  ) {
+  if (_.includes([null, undefined, ''], value) || isEmpty) {
     return unsetProperty({bunsenId, formValue, value})
   }
 
@@ -145,6 +143,7 @@ function changeNestedFormValue ({bunsenId, formValue, model, value}) {
     valueChangeSet: new Map()
   }
 }
+/* eslint-enable complexity */
 
 /**
  * Set a specific propertry in the form

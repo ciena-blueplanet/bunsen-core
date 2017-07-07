@@ -289,7 +289,7 @@ describe('reducer', function () {
       expect(changedState.value).to.eql({a: {b1: [{c1: {}}, {c2: 12}, {c3: [1, 2, 3]}]}})
     })
 
-    it('does not remove required properties from an object', function () {
+    it('should remove empty objects that are required', function () {
       var model = {
         type: 'object',
         properties: {
@@ -313,10 +313,10 @@ describe('reducer', function () {
       }
 
       var storedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: {foo: {}}, bunsenId: null})
-      expect(storedState.value).to.eql({foo: {}})
+      expect(storedState.value).to.eql({})
     })
 
-    it('preserves empty objects that are required', function () {
+    it('should not preserve empty objects that are required', function () {
       var initialState = {
         errors: {},
         validationResult: {warnings: [], errors: []},
@@ -356,12 +356,12 @@ describe('reducer', function () {
       }
 
       var changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: {}, bunsenId: 'foo'})
-      expect(changedState.value).to.eql({foo: {}, bar: {baz: {bazProp: 'test'}}})
+      expect(changedState.value).to.eql({bar: {baz: {bazProp: 'test'}}})
       changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: {}, bunsenId: 'bar.baz'})
-      expect(changedState.value).to.eql({foo: {fooProp: 'test'}, bar: {baz: {}}})
+      expect(changedState.value).to.eql({foo: {fooProp: 'test'}, bar: {}})
     })
 
-    it('preserves empty arrays that are required', function () {
+    it('should not preserve empty arrays that are required', function () {
       var model = {
         type: 'object',
         properties: {
@@ -398,11 +398,12 @@ describe('reducer', function () {
       }
 
       var changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: [], bunsenId: 'foo'})
-      expect(changedState.value).to.eql({foo: [], bar: {baz: ['baz item']}})
+      expect(changedState.value).to.eql({bar: {baz: ['baz item']}})
       changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: [], bunsenId: 'bar.baz'})
-      expect(changedState.value).to.eql({foo: ['foo item'], bar: {baz: []}})
+      expect(changedState.value).to.eql({foo: ['foo item'], bar: {}})
     })
-    it('handles arrays within arrays', function () {
+
+    it('should clear deadwood for arrays within arrays', function () {
       var model = {
         type: 'object',
         properties: {
@@ -439,8 +440,9 @@ describe('reducer', function () {
         model
       }
       var changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: [], bunsenId: 'foo.0.0.bar'})
-      expect(changedState.value).to.eql({foo: [[{bar: []}]]})
+      expect(changedState.value).to.eql({foo: [[{}]]})
     })
+
     it('can insert values into tuple arrays at specific indices', function () {
       const model = {
         type: 'object',
