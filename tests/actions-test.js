@@ -223,7 +223,7 @@ describe('validate action', function () {
 
   function getDefaultValue (path, initialValue, schema, mergeDefaults) {
     if (mergeDefaults === undefined) {
-      mergeDefaults = true
+      mergeDefaults = false
     }
 
     var thunk = actions.validate(
