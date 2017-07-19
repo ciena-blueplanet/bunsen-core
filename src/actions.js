@@ -185,8 +185,6 @@ function getDefaultedValue ({inputValue, previousValue, bunsenId, renderModel, m
     !isInputValueEmpty && hasDefaults && isUpdatingAll && mergeDefaults
   const shouldClear = isInputValueEmpty && isUpdatingAll && !hasDefaults
 
-  console.log('shouldClear: ', shouldClear)
-  console.log('shouldApplyDefaults', shouldApplyDefaults)
   if (shouldApplyDefaults) {
     return _.defaults({}, inputValue, defaultValue)
   } else if (shouldClear) {
