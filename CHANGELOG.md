@@ -1,3 +1,9 @@
+# 1.1.0
+
+* **Adds** an extra parameter `mergeDefaults` to `actions.js:validate` that will merge the initial value with the defaults obtained from the model
+* **Refactored** the default logic so it reads better and reduces complexity
+
+
 # 1.0.0
 
 * Making this a major to move this past experimental
