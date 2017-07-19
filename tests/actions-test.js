@@ -221,8 +221,15 @@ describe('validate action', function () {
     }
   }
 
-  function getDefaultValue (path, initialValue, schema) {
-    var thunk = actions.validate(path, initialValue, schema, [])
+  function getDefaultValue (path, initialValue, schema, mergeDefaults = false) {
+    var thunk = actions.validate(
+      path,
+      initialValue,
+      schema,
+      [],
+      undefined,
+      false,
+      mergeDefaults)
     var defaultValue = {}
 
     thunk(function (action) {
@@ -231,8 +238,19 @@ describe('validate action', function () {
 
     return defaultValue
   }
+
   it('fills in defaults', function () {
     var defaultValue = getDefaultValue(null, {}, SCHEMA_WITH_DEFAULTS)
+    expect(defaultValue).to.eql({
+      firstName: 'Bruce',
+      lastName: 'Wayne',
+      alias: 'Batman',
+      onlyChild: true
+    })
+  })
+
+  it('should merge defaults when mergeDefaults is true', function () {
+    var defaultValue = getDefaultValue(null, {firstName: 'Bruce'}, SCHEMA_WITH_DEFAULTS, true)
     expect(defaultValue).to.eql({
       firstName: 'Bruce',
       lastName: 'Wayne',
