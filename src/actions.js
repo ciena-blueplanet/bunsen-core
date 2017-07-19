@@ -169,7 +169,31 @@ function dispatchUpdatedResults (dispatch, results) {
   dispatch(updateValidationResults(aggregatedResult))
 }
 
-/*eslint-disable complexity */
+function getDefaultedValue ({inputValue, previousValue, bunsenId, renderModel, mergeDefaults}) {
+  const isInputValueEmpty = isEmptyValue(inputValue)
+
+  if (previousValue !== undefined) {
+    return inputValue
+  }
+
+  const resolveRef = schemaFromRef(renderModel.definitions)
+  const defaultValue = getDefaults(inputValue, bunsenId, renderModel, resolveRef)
+  const hasDefaults = defaultValue !== undefined
+  const isUpdatingAll = bunsenId === null
+
+  const shouldApplyDefaults = isInputValueEmpty && hasDefaults ||
+    !isInputValueEmpty && hasDefaults && isUpdatingAll && mergeDefaults
+  const shouldClear = isInputValueEmpty && isUpdatingAll && !hasDefaults
+
+  if (shouldApplyDefaults) {
+    return _.defaults({}, inputValue, defaultValue)
+  } else if (shouldClear) {
+    return {}
+  }
+
+  return inputValue
+}
+
 /**
  * Validate action
  * @param {String} bunsenId - bunsen ID of what changed
@@ -178,29 +202,17 @@ function dispatchUpdatedResults (dispatch, results) {
  * @param {Array<Function>} validators - custom validators
  * @param {Function} [all=Promise.all] - framework specific Promise.all method
  * @param {Boolean} [forceValidation=false] - whether or not to force validation
+ * @param {Boolean} [mergeDefaults=false] - whether to merge defaults with initial values
  * @returns {Function} Function to asynchronously validate
  */
 export function validate (
-  bunsenId, inputValue, renderModel, validators, all = Promise.all, forceValidation = false
+  bunsenId, inputValue, renderModel, validators, all = Promise.all, forceValidation = false, mergeDefaults = false
 ) {
   return function (dispatch, getState) {
     let formValue = getState().value
-
-    const isInputValueEmpty = isEmptyValue(inputValue)
-
     const previousValue = _.get(formValue, bunsenId)
 
-    // If an empty value has been provided and there is no previous value then
-    // make sure to apply defaults from the model
-    if (isInputValueEmpty && previousValue === undefined) {
-      const resolveRef = schemaFromRef(renderModel.definitions)
-      const defaultValue = getDefaults(inputValue, bunsenId, renderModel, resolveRef)
-      if (bunsenId === null && defaultValue === undefined) {
-        inputValue = {}
-      } else if (defaultValue !== undefined) {
-        inputValue = defaultValue
-      }
-    }
+    inputValue = getDefaultedValue({inputValue, previousValue, bunsenId, renderModel, mergeDefaults})
 
     // if the value never changed, no need to update and validate (unless consumer
     // is forcing validation again)
