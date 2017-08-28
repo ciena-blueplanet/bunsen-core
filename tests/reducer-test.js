@@ -175,23 +175,47 @@ describe('reducer', function () {
       expect(changedState.value).to.eql(value)
     })
 
-    it('will not strip Files', function () {
-      var exampleFile = new File()
-      var initialState = {
-        errors: {},
-        validationResult: {warnings: [], errors: []},
-        value: {},
-        baseModel: {}
-      }
+    describe('When handling a File value', function () {
+      'use strict'
+      let exampleFile
 
-      var value = {
-        foo: {
-          bar: exampleFile
+      beforeEach(function () {
+        exampleFile = new File()
+      })
+
+      it('will not strip Files when changing the whole form value', function () {
+        let initialState = {
+          errors: {},
+          validationResult: {warnings: [], errors: []},
+          value: {},
+          baseModel: {}
         }
-      }
 
-      var changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: value, bunsenId: null})
-      expect(changedState.value).to.eql(value)
+        let value = {
+          foo: {
+            bar: exampleFile
+          }
+        }
+
+        let changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: value, bunsenId: null})
+        expect(changedState.value).to.eql(value)
+      })
+
+      it('will not strip Files when changing nested values', function () {
+        let initialState = {
+          errors: {},
+          validationResult: {warnings: [], errors: []},
+          value: {},
+          baseModel: {}
+        }
+
+        let expectedValue = {
+          file: exampleFile
+        }
+
+        let changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: exampleFile, bunsenId: 'file'})
+        expect(changedState.value).to.eql(expectedValue)
+      })
     })
 
     it('will prune all the dead wood when setting root object', function () {
