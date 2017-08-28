@@ -1,3 +1,7 @@
+# 1.1.1
+- **Fixed** a bug where File values were being removed from nested form values
+
+
 # 1.1.0
 
 * **Adds** an extra parameter `mergeDefaults` to `actions.js:validate` that will merge the initial value with the defaults obtained from the model
