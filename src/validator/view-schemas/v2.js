@@ -250,6 +250,7 @@ const definitions = {
           {'$ref': '#/definitions/buttonGroupRenderer'},
           {'$ref': '#/definitions/checkboxArrayRenderer'},
           {'$ref': '#/definitions/customRenderer'},
+          {'$ref': '#/definitions/formRenderer'},
           {'$ref': '#/definitions/linkRenderer'},
           {'$ref': '#/definitions/numberRenderer'},
           {'$ref': '#/definitions/passwordRenderer'},
@@ -343,11 +344,31 @@ const definitions = {
       name: {
         type: 'string',
         /* eslint-disable max-len */
-        pattern: '^(?!boolean$|button-group$|checkbox-array$|link$|multi-select$|number$|password$|select$|string$|table$|textarea$|url$).*'
+        pattern: '^(?!boolean$|button-group$|checkbox-array$|form$|link$|multi-select$|number$|password$|select$|string$|table$|textarea$|url$).*'
         /* eslint-enable max-len */
       }
     },
     type: 'object'
+  },
+
+  formRenderer: {
+    additionalProperties: false,
+    properties: {
+      name: {
+        type: 'string',
+        enum: ['form']
+      },
+
+      plugin: {
+        name: {
+          type: 'string'
+        },
+        args: {
+          type: 'object',
+          additionalProperties: true
+        }
+      }
+    }
   },
 
   // link renderer options

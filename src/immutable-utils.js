@@ -22,8 +22,12 @@ function unsetObject (obj, path, segments) {
     return obj.without(key)
   }
 
-  const newValue = unset(obj[key], segments.join('.'))
-  return obj.set(key, newValue)
+  if (key in obj) {
+    const newValue = unset(obj[key], segments.join('.'))
+    return obj.set(key, newValue)
+  }
+
+  return obj
 }
 
 function padArray (array, desiredLength) {

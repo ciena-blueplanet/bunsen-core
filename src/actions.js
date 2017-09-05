@@ -4,6 +4,7 @@ import {getPath} from './dereference'
 import {validateValue} from './validator'
 import {aggregateResults} from './validator/utils'
 
+export const CHANGE = 'CHANGE'
 export const CHANGE_VALUE = 'CHANGE_VALUE'
 export const VALIDATION_RESOLVED = 'VALIDATION_RESOLVED'
 export const CHANGE_MODEL = 'SET_MODEL'
@@ -43,6 +44,14 @@ export function changeModel (model) {
 export function changeView (view) {
   return {
     type: CHANGE_VIEW,
+    view
+  }
+}
+
+export function change ({model, view, value}) {
+  return {
+    type: CHANGE,
+    model,
     view
   }
 }
