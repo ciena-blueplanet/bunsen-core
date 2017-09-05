@@ -99,7 +99,7 @@ function changeEntireFormValue ({model, nextValue, prevValue}) {
 function changeNestedFormValue ({bunsenId, formValue, model, value}) {
   const segments = bunsenId.split('.')
   const lastSegment = segments.pop()
-  const isEmpty = _.isEmpty(value) && (Array.isArray(value) || _.isObject(value))
+  const isEmpty = _.isEmpty(value) && (Array.isArray(value) || _.isObject(value)) && !(value instanceof File)
 
   // Make sure form value is immutable
   formValue = immutableOnce(formValue)
