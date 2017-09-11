@@ -1,3 +1,11 @@
+# 1.2.0
+
+* **Added** schema validation for an upcoming built-in renderer
+* **Added** a new reducer action type for handling global changes for optimization
+* **Fixed** a bug in `immutable-utils` attempting to call `unset` on `undefined`
+
+
+
 # 1.1.1
 - **Fixed** a bug where File values were being removed from nested form values
 

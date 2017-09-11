@@ -1,6 +1,6 @@
 {
   "name": "bunsen-core",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "dependencies": {
     "abbrev": {
       "version": "1.0.9",
@@ -9,9 +9,9 @@
       "dev": true
     },
     "acorn": {
-      "version": "5.1.1",
+      "version": "5.1.2",
       "from": "acorn@>=5.1.1 <6.0.0",
-      "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.1.1.tgz",
+      "resolved": "https://registry.npmjs.org/acorn/-/acorn-5.1.2.tgz",
       "dev": true
     },
     "acorn-jsx": {
@@ -508,9 +508,9 @@
       "dev": true
     },
     "chai-subset": {
-      "version": "1.5.0",
+      "version": "1.6.0",
       "from": "chai-subset@>=1.3.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/chai-subset/-/chai-subset-1.5.0.tgz",
+      "resolved": "https://registry.npmjs.org/chai-subset/-/chai-subset-1.6.0.tgz",
       "dev": true
     },
     "chalk": {
@@ -596,9 +596,9 @@
       "dev": true
     },
     "core-js": {
-      "version": "2.5.0",
+      "version": "2.5.1",
       "from": "core-js@>=2.4.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.5.0.tgz",
+      "resolved": "https://registry.npmjs.org/core-js/-/core-js-2.5.1.tgz",
       "dev": true
     },
     "core-util-is": {
@@ -1035,6 +1035,12 @@
       "resolved": "https://registry.npmjs.org/has-flag/-/has-flag-1.0.0.tgz",
       "dev": true
     },
+    "he": {
+      "version": "1.1.1",
+      "from": "he@1.1.1",
+      "resolved": "https://registry.npmjs.org/he/-/he-1.1.1.tgz",
+      "dev": true
+    },
     "home-or-tmp": {
       "version": "2.0.0",
       "from": "home-or-tmp@>=2.0.0 <3.0.0",
@@ -1042,9 +1048,9 @@
       "dev": true
     },
     "ignore": {
-      "version": "3.3.4",
+      "version": "3.3.5",
       "from": "ignore@>=3.2.0 <4.0.0",
-      "resolved": "https://registry.npmjs.org/ignore/-/ignore-3.3.4.tgz",
+      "resolved": "https://registry.npmjs.org/ignore/-/ignore-3.3.5.tgz",
       "dev": true
     },
     "imurmurhash": {
@@ -1183,7 +1189,8 @@
       "version": "2.0.0",
       "from": "is-primitive@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/is-primitive/-/is-primitive-2.0.0.tgz",
-      "dev": true
+      "dev": true,
+      "optional": true
     },
     "is-property": {
       "version": "1.0.2",
@@ -1255,9 +1262,9 @@
       "dev": true
     },
     "js-yaml": {
-      "version": "3.9.1",
+      "version": "3.10.0",
       "from": "js-yaml@>=3.5.1 <4.0.0",
-      "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-3.9.1.tgz",
+      "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-3.10.0.tgz",
       "dev": true
     },
     "jsesc": {
@@ -1440,9 +1447,9 @@
       "dev": true
     },
     "mocha": {
-      "version": "3.5.0",
+      "version": "3.5.3",
       "from": "mocha@>=3.0.0 <4.0.0",
-      "resolved": "https://registry.npmjs.org/mocha/-/mocha-3.5.0.tgz",
+      "resolved": "https://registry.npmjs.org/mocha/-/mocha-3.5.3.tgz",
       "dev": true,
       "dependencies": {
         "commander": {
@@ -1731,9 +1738,9 @@
       "dev": true
     },
     "regex-cache": {
-      "version": "0.4.3",
+      "version": "0.4.4",
       "from": "regex-cache@>=0.4.2 <0.5.0",
-      "resolved": "https://registry.npmjs.org/regex-cache/-/regex-cache-0.4.3.tgz",
+      "resolved": "https://registry.npmjs.org/regex-cache/-/regex-cache-0.4.4.tgz",
       "dev": true,
       "optional": true
     },
@@ -1819,9 +1826,9 @@
       "optional": true
     },
     "rimraf": {
-      "version": "2.6.1",
+      "version": "2.6.2",
       "from": "rimraf@>=2.2.8 <3.0.0",
-      "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.6.1.tgz",
+      "resolved": "https://registry.npmjs.org/rimraf/-/rimraf-2.6.2.tgz",
       "dev": true
     },
     "run-async": {
@@ -1891,9 +1898,9 @@
       "dev": true
     },
     "source-map-support": {
-      "version": "0.4.16",
+      "version": "0.4.18",
       "from": "source-map-support@>=0.4.15 <0.5.0",
-      "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.4.16.tgz",
+      "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.4.18.tgz",
       "dev": true
     },
     "sprintf-js": {
@@ -2119,9 +2126,9 @@
       "resolved": "https://registry.npmjs.org/z-schema/-/z-schema-3.18.3.tgz",
       "dependencies": {
         "validator": {
-          "version": "8.1.0",
+          "version": "8.2.0",
           "from": "validator@>=8.0.0 <9.0.0",
-          "resolved": "https://registry.npmjs.org/validator/-/validator-8.1.0.tgz"
+          "resolved": "https://registry.npmjs.org/validator/-/validator-8.2.0.tgz"
         }
       }
     }
