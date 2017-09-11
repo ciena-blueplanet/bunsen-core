@@ -2,7 +2,7 @@
 import _ from 'lodash'
 import immutable from 'seamless-immutable'
 
-import {CHANGE_MODEL, CHANGE_VALUE, CHANGE_VIEW, VALIDATION_RESOLVED} from './actions'
+import {CHANGE, CHANGE_MODEL, CHANGE_VALUE, CHANGE_VIEW, VALIDATION_RESOLVED} from './actions'
 import {getChangeSet} from './change-utils'
 import {dereference} from './dereference'
 import evaluateConditions from './evaluate-conditions'
@@ -266,6 +266,25 @@ export const actionReducers = {
     }
 
     return _.defaults(newState, state)
+  },
+
+  [CHANGE]: function (state, action) {
+    let newState = state
+
+    if (action.value) {
+      newState = actionReducers[CHANGE_VALUE](newState, action)
+    }
+
+    if (action.model) {
+      newState = actionReducers[CHANGE_MODEL](newState, action)
+    }
+
+    if (action.view) {
+      newState = actionReducers[CHANGE_VIEW](newState, action)
+    }
+
+    newState.lastAction = CHANGE
+    return newState
   },
 
   /* eslint-disable complexity */

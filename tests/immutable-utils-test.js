@@ -3,6 +3,7 @@ var immutable = require('seamless-immutable')
 var immutableHelpers = require('../lib/immutable-utils')
 var set = immutableHelpers.set
 var unset = immutableHelpers.unset
+var unsetObject = immutableHelpers.unsetObject
 
 /**
  * Check if two immutable objects are the same
@@ -1004,5 +1005,15 @@ describe('unset', function () {
         foo: {}
       })
     })
+  })
+})
+
+describe('unsetObject', function () {
+  it('should not error when path is unvailable in object', function () {
+    expect(function () {
+      unsetObject(immutable({
+        foo: 'bar'
+      }), undefined, ['baz'])
+    }).to.not.throw()
   })
 })

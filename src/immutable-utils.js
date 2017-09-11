@@ -15,15 +15,19 @@ function unsetArray (obj, path, segments) {
   return obj.slice(0, index).concat([newValue]).concat(obj.slice(index + 1))
 }
 
-function unsetObject (obj, path, segments) {
+export function unsetObject (obj, path, segments) {
   const key = segments.splice(0, 1)
 
   if (segments.length === 0) {
     return obj.without(key)
   }
 
-  const newValue = unset(obj[key], segments.join('.'))
-  return obj.set(key, newValue)
+  if (key in obj) {
+    const newValue = unset(obj[key], segments.join('.'))
+    return obj.set(key, newValue)
+  }
+
+  return obj
 }
 
 function padArray (array, desiredLength) {

@@ -1,8 +1,10 @@
 import {
+  CHANGE,
   CHANGE_MODEL,
   CHANGE_VALUE,
   CHANGE_VIEW,
   VALIDATION_RESOLVED,
+  change,
   changeModel,
   changeValue,
   changeView,
@@ -11,6 +13,8 @@ import {
 } from './actions'
 
 export const actions = {
+  CHANGE,
+  change,
   CHANGE_MODEL,
   changeModel,
   CHANGE_VIEW,
