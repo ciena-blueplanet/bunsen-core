@@ -6,7 +6,6 @@ import {
   VALIDATION_RESOLVED,
   change,
   changeModel,
-  changeModelAndView,
   changeValue,
   changeView,
   updateValidationResults,
