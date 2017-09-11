@@ -15,7 +15,7 @@ function unsetArray (obj, path, segments) {
   return obj.slice(0, index).concat([newValue]).concat(obj.slice(index + 1))
 }
 
-function unsetObject (obj, path, segments) {
+export function unsetObject (obj, path, segments) {
   const key = segments.splice(0, 1)
 
   if (segments.length === 0) {

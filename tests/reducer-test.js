@@ -22,6 +22,7 @@ describe('reducer', function () {
 
   ;[
     REDUX_INIT,
+    actions.CHANGE,
     actions.CHANGE_MODEL,
     actions.CHANGE_VALUE,
     actions.VALIDATION_RESOLVED
@@ -62,6 +63,100 @@ describe('reducer', function () {
         })
       })
     })
+
+  describe('when action type is CHANGE', function () {
+    beforeEach(function () {
+      sandbox.stub(actionReducers, actions.CHANGE_VALUE).returns({})
+      sandbox.stub(actionReducers, actions.CHANGE_VIEW).returns({})
+      sandbox.stub(actionReducers, actions.CHANGE_MODEL).returns({})
+    })
+
+    describe('when action.value is set', function () {
+      beforeEach(function () {
+        reducer({}, {
+          type: actions.CHANGE,
+          value: {}
+        })
+      })
+
+      it('should call the CHANGE_VALUE reducer', function () {
+        expect(actionReducers[actions.CHANGE_VALUE].callCount).to.equal(1)
+      })
+
+      it('should not call the CHANGE_MODEL reducer', function () {
+        expect(actionReducers[actions.CHANGE_MODEL].callCount).to.equal(0)
+      })
+
+      it('should not call the CHANGE_VIEW reducer', function () {
+        expect(actionReducers[actions.CHANGE_VIEW].callCount).to.equal(0)
+      })
+    })
+
+    describe('when action.model is set', function () {
+      beforeEach(function () {
+        reducer({}, {
+          type: actions.CHANGE,
+          model: {}
+        })
+      })
+
+      it('should not call the CHANGE_VALUE reducer', function () {
+        expect(actionReducers[actions.CHANGE_VALUE].callCount).to.equal(0)
+      })
+
+      it('should call the CHANGE_MODEL reducer', function () {
+        expect(actionReducers[actions.CHANGE_MODEL].callCount).to.equal(1)
+      })
+
+      it('should not call the CHANGE_VIEW reducer', function () {
+        expect(actionReducers[actions.CHANGE_VIEW].callCount).to.equal(0)
+      })
+    })
+
+    describe('when action.model/view/value is set', function () {
+      beforeEach(function () {
+        reducer({}, {
+          type: actions.CHANGE,
+          model: {},
+          value: {},
+          view: {}
+        })
+      })
+
+      it('should call the CHANGE_VALUE reducer', function () {
+        expect(actionReducers[actions.CHANGE_VALUE].callCount).to.equal(1)
+      })
+
+      it('should call the CHANGE_MODEL reducer', function () {
+        expect(actionReducers[actions.CHANGE_MODEL].callCount).to.equal(1)
+      })
+
+      it('should call the CHANGE_VIEW reducer', function () {
+        expect(actionReducers[actions.CHANGE_VIEW].callCount).to.equal(1)
+      })
+    })
+
+    describe('when action.view is set', function () {
+      beforeEach(function () {
+        reducer({}, {
+          type: actions.CHANGE,
+          view: {}
+        })
+      })
+
+      it('should not call the CHANGE_VALUE reducer', function () {
+        expect(actionReducers[actions.CHANGE_VALUE].callCount).to.equal(0)
+      })
+
+      it('should not call the CHANGE_MODEL reducer', function () {
+        expect(actionReducers[actions.CHANGE_MODEL].callCount).to.equal(0)
+      })
+
+      it('should call the CHANGE_VIEW reducer', function () {
+        expect(actionReducers[actions.CHANGE_VIEW].callCount).to.equal(1)
+      })
+    })
+  })
 
   describe('unknown state', function () {
     var reducedState, state
