@@ -145,6 +145,39 @@ function getItemCell (itemCell, index) {
 }
 
 /**
+ * Returns the evaluated view schema for a particular cell and will expand the schema into an array
+ * if multiple schemas are required after conditions are evaluated
+ * @param {Object} view - main view
+ * @param {ValueWrapper} value - the form value wrapper
+ * @param {Object} cell - the cell being evaluated
+ * @returns {Object|Object[]} the evaluated cell or cells
+ */
+function cellFromArrayValues (view, value, cell) {
+  const val = value.get()
+  if (val && val.length > 0) {
+    const possibleCellSchema = val.map((val, index) => {
+      const indexedCell = getItemCell(cell, index)
+      const evaluatedCell = checkCell(view, value.pushPath(String(index)), indexedCell)
+      return Immutable.without(evaluatedCell || cell, 'conditions', 'extends')
+    })
+    const first = possibleCellSchema[0]
+    const isHeterogenous = possibleCellSchema.some((cell) => !_.isEqual(cell, first))
+
+    if (isHeterogenous) {
+      return possibleCellSchema
+    } else {
+      return possibleCellSchema[0]
+    }
+  } else {
+    return Immutable.without(
+      checkCell(view, value.pushPath('0'), getItemCell(cell, 0)) || cell,
+      'conditions',
+      'extends'
+    )
+  }
+}
+
+/**
  * Check a cell's arrayOptions to make sure the value meets any conditions the cell provides
  *
  * @param {BunsenView} view View we are checking
@@ -159,25 +192,14 @@ function checkArrayOptions (view, value, cell) {
   const arrayOptions = _.clone(cell.arrayOptions)
   let itemCell = _.get(arrayOptions, 'itemCell')
   if (itemCell) {
-    const val = value.get()
-    if (val !== undefined) {
-      const itemsCells = val.map((val, index) =>
-        Immutable.without(
-          checkCell(view, value.pushPath(index + ''), getItemCell(itemCell, index)),
-          'conditions',
-          'extends'
-        )
-      )
-      arrayOptions.itemCell = itemsCells
-    } else {
-      arrayOptions.itemCell = checkCell(view, value, itemCell)
-    }
+    arrayOptions.itemCell = cellFromArrayValues(view, value, itemCell)
   }
+
   let tupleCells = _.get(arrayOptions, 'tupleCells')
   if (tupleCells) {
     const itemsCells = tupleCells.map((cell, index) =>
       Immutable.without(
-        checkCell(view, value.pushPath(index + ''), cell),
+        checkCell(view, value.pushPath(index + ''), cell) || cell,
         'conditions',
         'extends'
       )

@@ -27,14 +27,7 @@ export default function evaluate (model, value, getPreviousValue) {
         return evaluate(itemModel, val, getPreviousValue)
       })
       if (model.additionalItems) {
-        let i
-        if (value !== undefined) {
-          for (i = model.items.length; i < value.length; i += 1) {
-            retModel.items.push(evaluate(model.additionalItems, value[i], getPreviousValue))
-          }
-        }
         retModel.additionalItems = evaluate(model.additionalItems, undefined, getPreviousValue)
-        retModel.tuple = true
       }
     } else if (Array.isArray(value)) {
       let itemSchemas = []

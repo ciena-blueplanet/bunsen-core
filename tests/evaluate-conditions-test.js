@@ -338,6 +338,7 @@ describe('evaluate-conditions', () => {
         })
       })
     })
+
     it('handles tuple style arrays', function () {
       model = _.cloneDeep(modelWithTupleArray)
       expected = {
@@ -349,7 +350,6 @@ describe('evaluate-conditions', () => {
           },
           foo: {
             type: 'array',
-            tuple: true,
             items: [{
               type: 'string'
             }, {
