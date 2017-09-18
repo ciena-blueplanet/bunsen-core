@@ -1,3 +1,11 @@
+# 2.0.0
+
+## Breaking Change
+
+* Altered how tuples are processed. It now aligns more closely to JSON Schema spec for tuples. Instead of using both `itemCell` and `tupleCells`, `tupleCells` is the only way to override the view while `itemCell` is remains as the view for homogenous array items. `itemCell` can be used as the `additionalItems` schema as well. `itemCell` can be an array but is independent of tuples.
+* Fixed a performance issue where evaluating a condition on the view or model would override the schemas to introduce additional item schemas to match the current value.
+
+
 # 1.2.0
 
 * **Added** schema validation for an upcoming built-in renderer
