@@ -10,11 +10,21 @@ module.exports = {
         model: 'bar'
       }]
     },
+    'fooItems': {
+      children: [
+        {
+          model: 'baz'
+        }
+      ]
+    },
     main: {
       children: [{
         model: 'foo',
         arrayOptions: {
-          itemCell: [{
+          itemCell: {
+            extends: 'fooItems'
+          },
+          tupleCells: [{
             model: '0',
             extends: 'foo/0'
           }, {

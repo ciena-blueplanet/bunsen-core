@@ -40,6 +40,7 @@ function arrayCell (propertyName, model, cellDefinitions) {
     }
   }
 }
+
 function tupleCell (propertyName, model, cellDefinitions) {
   const tupleCells = model.items.map((item, index) => {
     const cell = addModel(`${propertyName}/${index}`, item, cellDefinitions)
@@ -50,16 +51,14 @@ function tupleCell (propertyName, model, cellDefinitions) {
     model: propertyName,
     arrayOptions: {}
   }
-  if (model.tuple) {
-    cell.arrayOptions.tupleCells = tupleCells
-    if (model.additionalItems && typeof model.additionalItems === 'object') {
-      cell.arrayOptions.itemCell = {
-        extends: addModelCell(propertyName + 'Items', model.additionalItems, cellDefinitions)
-      }
+
+  cell.arrayOptions.tupleCells = tupleCells
+  if (model.additionalItems && typeof model.additionalItems === 'object') {
+    cell.arrayOptions.itemCell = {
+      extends: addModelCell(propertyName + 'Items', model.additionalItems, cellDefinitions)
     }
-  } else {
-    cell.arrayOptions.itemCell = tupleCells
   }
+
   return cell
 }
 

@@ -411,4 +411,76 @@ describe('views with conditionals', function () {
       version: '2.0'
     })
   })
+
+  describe('array conditions', function () {
+    let view
+    beforeEach(function () {
+      view = {
+        type: 'form',
+        version: '2.0',
+        cells: [{
+          model: 'name',
+          arrayOptions: {
+            itemCell: {
+              label: 'Name',
+              model: 'personType',
+              conditions: [{
+                if: [{
+                  './personType': {
+                    equals: 'Superhero'
+                  }
+                }],
+                then: {
+                  label: 'Superhero Name'
+                }
+              }]
+            }
+          }
+        }]
+      }
+    })
+
+    describe('when array conditionals evaluate to different schemas', function () {
+      let newView
+      beforeEach(function () {
+        newView = evaluate(view, {
+          name: [{
+            personType: 'Superhero'
+          }, {
+            personType: 'Normal hero'
+          }]
+        })
+      })
+
+      it('should create separate itemCells for each array item', function () {
+        expect(newView.cells[0].arrayOptions.itemCell).to.eql([{
+          label: 'Superhero Name',
+          model: 'personType'
+        }, {
+          label: 'Name',
+          model: 'personType'
+        }])
+      })
+    })
+
+    describe('when array conditionals evaluate to the same schemas', function () {
+      let newView
+      beforeEach(function () {
+        newView = evaluate(view, {
+          name: [{
+            personType: 'Superhero'
+          }, {
+            personType: 'Superhero'
+          }]
+        })
+      })
+
+      it('should not create separate itemCells for each array item', function () {
+        expect(newView.cells[0].arrayOptions.itemCell).to.eql({
+          label: 'Superhero Name',
+          model: 'personType'
+        })
+      })
+    })
+  })
 })
