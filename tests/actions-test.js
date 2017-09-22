@@ -235,7 +235,7 @@ describe('validate action', function () {
       false,
       mergeDefaults)
 
-    let defaultValue
+    var defaultValue
     thunk(function (action) {
       if (action.value) {
         defaultValue = action.value
