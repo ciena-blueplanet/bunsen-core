@@ -234,10 +234,12 @@ describe('validate action', function () {
       undefined,
       false,
       mergeDefaults)
-    var defaultValue = {}
 
+    let defaultValue
     thunk(function (action) {
-      _.assign(defaultValue, action.value)
+      if (action.value) {
+        defaultValue = action.value
+      }
     }, function () { return {} })
 
     return defaultValue
@@ -261,6 +263,12 @@ describe('validate action', function () {
       alias: 'Batman',
       onlyChild: true
     })
+  })
+
+  it('fills in defaults for non-object values', function () {
+    var defaultValue = getDefaultValue('someotherProp.name.firstName', {}, SCHEMA_WITH_DEEP_DEFAULTS)
+
+    expect(defaultValue).to.eql('Bruce')
   })
 
   it('fills in defaults for specific values', function () {
