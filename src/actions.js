@@ -178,6 +178,16 @@ function dispatchUpdatedResults (dispatch, results) {
   dispatch(updateValidationResults(aggregatedResult))
 }
 
+/**
+ * Returns the default value for the given model
+ *
+ * @param {Object} inputValue - form value at the given bunsen path
+ * @param {Object} previousValue - the previous form value at the given bunsen path
+ * @param {String} bunsenId - the bunsen path id
+ * @param {Object} renderModel - the bunsen model without conditions
+ * @param {Boolean} mergeDefaults - whether to force a default value on a non-empty value
+ */
+/* eslint-disable complexity */
 function getDefaultedValue ({inputValue, previousValue, bunsenId, renderModel, mergeDefaults}) {
   const isInputValueEmpty = isEmptyValue(inputValue)
 
@@ -195,7 +205,8 @@ function getDefaultedValue ({inputValue, previousValue, bunsenId, renderModel, m
   const shouldClear = isInputValueEmpty && isUpdatingAll && !hasDefaults
 
   if (shouldApplyDefaults) {
-    return _.defaults({}, inputValue, defaultValue)
+    const schema = findSchema(renderModel, bunsenId, resolveRef)
+    return schema.type === 'object' ? _.defaults({}, inputValue, defaultValue) : defaultValue
   } else if (shouldClear) {
     return {}
   }
