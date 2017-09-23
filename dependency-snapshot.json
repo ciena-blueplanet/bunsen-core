@@ -1,6 +1,6 @@
 {
   "name": "bunsen-core",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "dependencies": {
     "abbrev": {
       "version": "1.0.9",
@@ -614,9 +614,9 @@
       "dev": true
     },
     "debug": {
-      "version": "2.6.8",
+      "version": "2.6.9",
       "from": "debug@>=2.6.8 <3.0.0",
-      "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.8.tgz",
+      "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz",
       "dev": true
     },
     "decamelize": {
@@ -1456,6 +1456,12 @@
           "version": "2.9.0",
           "from": "commander@2.9.0",
           "resolved": "https://registry.npmjs.org/commander/-/commander-2.9.0.tgz",
+          "dev": true
+        },
+        "debug": {
+          "version": "2.6.8",
+          "from": "debug@2.6.8",
+          "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.8.tgz",
           "dev": true
         },
         "glob": {
