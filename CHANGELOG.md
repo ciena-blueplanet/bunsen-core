@@ -1,3 +1,8 @@
+# 2.0.2
+
+* **Fixed** duplicate required validation errors for nested forms that send the same `isRequired` error for the same or similar object path. It now favors object paths that are descendants, which mean, the more accurate path.
+
+
 # 2.0.1
 
 * **Fixed** a bug where clearing a field that was previously undefined had applied defaults with `_.defaults({}, defaultValue)` which would automatically turn it into an object, even if the value wasn't.
