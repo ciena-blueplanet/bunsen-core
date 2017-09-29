@@ -83,5 +83,71 @@ describe('validator/utils', () => {
         warnings: ['warning-1', 'warning-2', 'warning-3']
       })
     })
+
+    it('should return only unique required errors', function () {
+      results[0].errors = [{
+        isRequiredError: true,
+        path: '#/'
+      }, {
+        isRequiredError: true,
+        path: '#/'
+      }]
+
+      expect(utils.aggregateResults(results)).to.eql({
+        errors: [
+          'error-1',
+          'error-2',
+          {
+            isRequiredError: true,
+            path: '#/'
+          }
+        ],
+        warnings: ['warning-1', 'warning-2', 'warning-3']
+      })
+    })
+
+    it('should not return required errors that is the common ancestor', function () {
+      results[0].errors = [{
+        isRequiredError: true,
+        path: '#/a/'
+      }, {
+        isRequiredError: true,
+        path: '#/a/b/'
+      }]
+
+      expect(utils.aggregateResults(results)).to.eql({
+        errors: [
+          'error-1',
+          'error-2',
+          {
+            isRequiredError: true,
+            path: '#/a/b/'
+          }
+        ],
+        warnings: ['warning-1', 'warning-2', 'warning-3']
+      })
+    })
+
+    it('should not return required errors that is the common ancestor (2)', function () {
+      results[0].errors = [{
+        isRequiredError: true,
+        path: '#/a/b/'
+      }, {
+        isRequiredError: true,
+        path: '#/a'
+      }]
+
+      expect(utils.aggregateResults(results)).to.eql({
+        errors: [
+          'error-1',
+          'error-2',
+          {
+            isRequiredError: true,
+            path: '#/a/b/'
+          }
+        ],
+        warnings: ['warning-1', 'warning-2', 'warning-3']
+      })
+    })
   })
 })
