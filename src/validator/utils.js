@@ -33,15 +33,53 @@ export function validateRequiredAttribute (object, path, attribute, possibleValu
   }
 }
 
+export function addRequiredToErrors (error, errorList) {
+  // should only return 0 or 1 similar errors as errorList is kept unique
+  const similar = errorList.filter((uniqueError) => {
+    return error.path.startsWith(uniqueError.path) || uniqueError.path.startsWith(error.path)
+  })
+
+  if (similar.length > 0) {
+    // replace ancestor with descendants
+    if (error.path.startsWith(similar[0].path)) {
+      similar[0].path = error.path
+    }
+  } else {
+    // this must be unique
+    errorList.push(error)
+  }
+}
+
 /**
  * Aggregate an array of ValidationResults into a single one
  * @param {BunsenValidationResult[]} results - the array of individual results
  * @returns {BunsenValidationResult} the aggregated result
  */
 export function aggregateResults (results) {
+  const nonRequiredErrors = []
+  const requiredErrors = []
+  const warnings = []
+  results.forEach((result) => {
+    if (result.warnings) {
+      result.warnings.forEach((warning) => {
+        warnings.push(warning)
+      })
+    }
+
+    if (result.errors) {
+      result.errors.forEach((error) => {
+        if (error.isRequiredError) {
+          addRequiredToErrors(error, requiredErrors)
+        } else {
+          nonRequiredErrors.push(error)
+        }
+      })
+    }
+  })
+
   return {
-    errors: _(results).map((result) => result.errors).flatten().compact().value(),
-    warnings: _(results).map((result) => result.warnings).flatten().compact().value()
+    errors: nonRequiredErrors.concat(requiredErrors),
+    warnings
   }
 }
 
