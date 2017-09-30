@@ -1,3 +1,8 @@
+# 2.0.3
+
+* **Fixed** issue with `triggerValidation` nullifying the form values which was due to it triggering an `onChange` with no value changes present. Removed the extra `onChange` as `triggerValidation` was meant only to force a validation on existing values.
+
+
 # 2.0.2
 
 * **Fixed** duplicate required validation errors for nested forms that send the same `isRequired` error for the same or similar object path. It now favors object paths that are descendants, which mean, the more accurate path.
