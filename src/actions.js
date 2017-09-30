@@ -234,17 +234,16 @@ export function validate (
 
     inputValue = getDefaultedValue({inputValue, previousValue, bunsenId, renderModel, mergeDefaults})
 
-    // if the value never changed, no need to update and validate (unless consumer
-    // is forcing validation again)
     if (!forceValidation && _.isEqual(inputValue, previousValue)) {
       return
     }
 
-    dispatch(changeValue(bunsenId, inputValue))
-
-    // We must lookup the formValue again in order for the validation results to
-    // be run on the post-change value rather than the pre-change value
-    formValue = getState().value
+    if (!forceValidation) {
+      dispatch(changeValue(bunsenId, inputValue))
+      // We must lookup the formValue again in order for the validation results to
+      // be run on the post-change value rather than the pre-change value
+      formValue = getState().value
+    }
 
     const result = validateValue(formValue, renderModel)
 
