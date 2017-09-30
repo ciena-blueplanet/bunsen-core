@@ -415,14 +415,13 @@ describe('validate action', function () {
           }
         )
 
-        expect(spy.callCount).to.equal(2)
+        expect(spy.callCount).to.equal(1)
       })
     })
 
     describe('check property for changes', function () {
       it('does not dispatch action', function () {
         var thunk = actions.validate('alias', _.cloneDeep(state.value.alias), schema, [])
-
         thunk(
           spy,
           function () {
@@ -456,7 +455,7 @@ describe('validate action', function () {
           }
         )
 
-        expect(spy.callCount).to.equal(2)
+        expect(spy.callCount).to.equal(1)
       })
     })
   })
