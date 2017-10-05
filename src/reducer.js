@@ -261,7 +261,7 @@ export const actionReducers = {
     if (!_.isEqual(state.baseModel, normalized.model)) {
       Object.assign(newState, {
         baseModel: normalized.model,
-        model: evaluateConditions(action.baseModel, state.value)
+        model: evaluateConditions(normalized.model, state.value)
       })
     }
 
