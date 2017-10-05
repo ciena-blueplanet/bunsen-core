@@ -1,3 +1,8 @@
+# 2.0.4
+
+* **Fixed** an issue in the `CHANGE_VIEW` reducer where it didn't update the model properly when the view contained internal models.
+
+
 # 2.0.3
 
 * **Fixed** issue with `triggerValidation` nullifying the form values which was due to it triggering an `onChange` with no value changes present. Removed the extra `onChange` as `triggerValidation` was meant only to force a validation on existing values.
