@@ -590,6 +590,7 @@ describe('reducer', function () {
     })
 
     describe('using autoClean', function () {
+      'use strict'
       it('will not prune values when nested model prop has autoClean set to false', function () {
         const model = {
           type: 'object',
