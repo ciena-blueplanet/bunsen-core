@@ -708,7 +708,6 @@ describe('reducer', function () {
         })
       })
     })
-
   })
 
   describe('can set the validation', function () {
