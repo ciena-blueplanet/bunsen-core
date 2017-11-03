@@ -588,6 +588,126 @@ describe('reducer', function () {
       var changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: true, bunsenId: 'foo.3'})
       expect(changedState.value).to.eql({foo: ['test', undefined, undefined, true]})
     })
+
+    describe('using autoClean', function () {
+      it('will not prune values when nested model prop has autoClean set to false', function () {
+        const model = {
+          type: 'object',
+          properties: {
+            things: {
+              type: 'array',
+              items: {
+                autoClean: false,
+                type: 'object',
+                properties: {
+                  name: {type: 'string'}
+                }
+              }
+            }
+          }
+        }
+
+        const initialState = {
+          errors: {},
+          validationResult: {warnings: [], errors: []},
+          value: {},
+          model: model
+        }
+
+        const value = {
+          things: [
+            {name: ''},
+            {name: ''}
+          ]
+        }
+
+        const changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: value, bunsenId: null})
+
+        expect(changedState.value).to.eql(value)
+      })
+
+      it('will not prune values when nested model prop has autoClean set to true', function () {
+        const model = {
+          type: 'object',
+          properties: {
+            things: {
+              type: 'array',
+              items: {
+                autoClean: true,
+                type: 'object',
+                properties: {
+                  name: {type: 'string'}
+                }
+              }
+            }
+          }
+        }
+
+        const initialState = {
+          errors: {},
+          validationResult: {warnings: [], errors: []},
+          value: {},
+          model: model
+        }
+
+        const value = {
+          things: [
+            {name: ''},
+            {name: ''}
+          ]
+        }
+
+        const changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: value, bunsenId: null})
+
+        expect(changedState.value).to.eql({
+          things: [
+            {},
+            {}
+          ]
+        })
+      })
+
+      it('will not prune values when nested model prop doess not have autoClean set', function () {
+        const model = {
+          type: 'object',
+          properties: {
+            things: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  name: {type: 'string'}
+                }
+              }
+            }
+          }
+        }
+
+        const initialState = {
+          errors: {},
+          validationResult: {warnings: [], errors: []},
+          value: {},
+          model: model
+        }
+
+        const value = {
+          things: [
+            {name: ''},
+            {name: ''}
+          ]
+        }
+
+        const changedState = reducer(initialState, {type: actions.CHANGE_VALUE, value: value, bunsenId: null})
+
+        expect(changedState.value).to.eql({
+          things: [
+            {},
+            {}
+          ]
+        })
+      })
+    })
+
   })
 
   describe('can set the validation', function () {

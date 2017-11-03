@@ -76,16 +76,12 @@ function recursiveClean (value, model) {
 
     let autoClean = _.get(subModel, 'autoClean')
 
-    // don't clean if the model has autoClean strictly set to false
-    // or if it is not empty
-    if (autoClean === false || notEmpty) {
-      // recur on objects and arrays that are not files
-      if ((typeof subValue === 'object') && !(subValue instanceof File)) {
-        output[key] = recursiveClean(subValue, subModel)
-      // set normal values
-      } else {
-        output[key] = subValue
-      }
+    // recur on objects and arrays that are not files or not empty if autoClean is not strictly false
+    if ((typeof subValue === 'object') && !(subValue instanceof File) && autoClean !== false && notEmpty) {
+      output[key] = recursiveClean(subValue, subModel)
+    // set normal values
+    } else if (notEmpty || autoClean === false) {
+      output[key] = subValue
     }
   })
 
