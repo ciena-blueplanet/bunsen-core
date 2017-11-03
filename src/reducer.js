@@ -52,16 +52,43 @@ function recursiveClean (value, model) {
   let isValueArray = Array.isArray(value)
   let output = isValueArray ? [] : {}
   let iteratorFn = isValueArray ? _.forEach : _.forIn
+
   iteratorFn(value, (subValue, key) => {
-    const notEmpty = !_.isEmpty(subValue) || subValue instanceof File
-    if (Array.isArray(subValue) && notEmpty) {
-      output[key] = recursiveClean(subValue, _.get(model, 'items'))
-    } else if (!(subValue instanceof File) && _.isObject(subValue) && notEmpty) {
-      output[key] = recursiveClean(subValue, _.get(model, 'properties.' + key))
-    } else if (notEmpty || _.isNumber(subValue) || typeof subValue === 'boolean' || subValue instanceof Boolean) {
-      output[key] = subValue
+    const notEmpty = !_.isEmpty(subValue) ||
+      _.isNumber(subValue) ||
+      typeof subValue === 'boolean' ||
+      subValue instanceof Boolean ||
+      subValue instanceof File
+
+    let subModel
+
+    // arrays have their model props nested further than objects
+    if (Array.isArray(subValue)) {
+      subModel = _.get(model, `properties.${key}.items`)
+    // if we are iterating through an array
+    // all of the items will need the current model
+    } else if (isValueArray) {
+      subModel = model
+    // normal object props are nested in properties under the key name
+    } else {
+      subModel = _.get(model, `properties.${key}`)
+    }
+
+    let autoClean = _.get(subModel, 'autoClean')
+
+    // don't clean if the model has autoClean strictly set to false
+    // or if it is not empty
+    if (autoClean === false || notEmpty) {
+      // recur on objects and arrays that are not files
+      if ((typeof subValue === 'object') && !(subValue instanceof File)) {
+        output[key] = recursiveClean(subValue, subModel)
+      // set normal values
+      } else {
+        output[key] = subValue
+      }
     }
   })
+
   return output
 }
 /* eslint-enable complexity */
