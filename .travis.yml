@@ -3,7 +3,6 @@ language: node_js
 sudo: false
 
 node_js:
-- '5.11.1'
 - '6.9.1'
 - stable
 
@@ -22,7 +21,7 @@ env:
     secure: kEfZJkTOETXjYHmuDsANh4eNe5HUaSdVXh6VeeVc23D++zjWx8cjZkjv7LOfyggNS8fcOkrn+XzHmMrPrwMqHYlh3g2mEItR0sKO7WivTVxX9+fQSxgS3agYSwTJaU0gnJindQdrnz0fpjMoX4gJuAgqr726k1Z7hAExUtP+sCQkVWF2JPvwACIsC9jdU19qpdg8ioRki/zkSdGaZuiQqnAnFCvs9G7fuTEUMvkkvUZNZ1daEYll5MBZJkf7QdpXHqAgWSjhSwxFN0C6J36iN8w22W0OmJr96IJa2pehdJhTySBWBQEgFmKSQIh1xCw32t2RQlVi0iYv6wcX83K15ZOVSaq/fklzsy5UEan2NYM6/4dsyrPOY90y2L/vyJ9DHefwORmDMb7cpdHl1eHRe0UUxXKlvE1xyBue+7d2QRI6EV9bmdrfM4NvI1Ao0UqdIdXKgHsRjANoJIYUPdf09lI0YY5GRDGRg9NxglK551JmWgKisi0hrs8PozszOg2AqP4X+9S1jTDCrsIgRSV73R14wnJHhuR2A2jiRP55zXGM0OKk7vAJNcw7QUpify4RfcrX5tjdvc+CsTGuFfLR0IFdpcFpIu80uzLsNb5aGZ86R3+mo/CbKZS/Lca29wzdV9FuoBdzRIiXqz6DohCKaAJ9L0cwYGnXAcoDfFYn8Yc=
 
 before_install:
-- npm install -g coveralls sandersky/pr-bumper
+- npm install -g coveralls pr-bumper
 
 install:
 - $(npm root -g)/pr-bumper/.travis/maybe-install.sh
