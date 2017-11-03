@@ -1,3 +1,7 @@
+# 2.0.5 (2017-11-03)
+
+Fixing travis builds
+
 # 2.0.4
 
 * **Fixed** an issue in the `CHANGE_VIEW` reducer where it didn't update the model properly when the view contained internal models.
