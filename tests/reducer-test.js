@@ -627,7 +627,7 @@ describe('reducer', function () {
         expect(changedState.value).to.eql(value)
       })
 
-      it('will not prune values when nested model prop has autoClean set to true', function () {
+      it('will prune values when nested model prop has autoClean set to true', function () {
         const model = {
           type: 'object',
           properties: {
@@ -668,7 +668,7 @@ describe('reducer', function () {
         })
       })
 
-      it('will not prune values when nested model prop doess not have autoClean set', function () {
+      it('will prune values when nested model prop doess not have autoClean set', function () {
         const model = {
           type: 'object',
           properties: {
