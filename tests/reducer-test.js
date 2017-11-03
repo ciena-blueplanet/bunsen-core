@@ -612,7 +612,7 @@ describe('reducer', function () {
           errors: {},
           validationResult: {warnings: [], errors: []},
           value: {},
-          model: model
+          model
         }
 
         const value = {
@@ -648,7 +648,7 @@ describe('reducer', function () {
           errors: {},
           validationResult: {warnings: [], errors: []},
           value: {},
-          model: model
+          model
         }
 
         const value = {
@@ -688,7 +688,7 @@ describe('reducer', function () {
           errors: {},
           validationResult: {warnings: [], errors: []},
           value: {},
-          model: model
+          model
         }
 
         const value = {
