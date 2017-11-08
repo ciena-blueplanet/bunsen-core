@@ -4,10 +4,10 @@ function deepFreeze (object) {
       object.map((item) => deepFreeze(item))
     )
   } else if (typeof object === 'object' && object !== null) {
-    Object.freeze(
+    return Object.freeze(
       Object.keys(object).reduce(
         (obj, key) => {
-          return Object.assign({}, {
+          return Object.assign(obj, {
             [key]: deepFreeze(object[key])
           })
         },
