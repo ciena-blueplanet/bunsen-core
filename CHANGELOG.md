@@ -1,3 +1,8 @@
+# 2.0.7 (2017-11-29)
+
+* **Fixed** tagged branches to install before trying to build so they don't fail to publish.
+
+
 # 2.0.6 (2017-11-29)
 
 * **Fixed** Travis config to run build script.
