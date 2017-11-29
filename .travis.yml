@@ -24,7 +24,7 @@ before_install:
 - npm install -g coveralls pr-bumper@^1.0.0
 
 install:
-- $(npm root -g)/pr-bumper/.travis/maybe-install.sh
+- npm install
 
 before_script:
 - npm run build
