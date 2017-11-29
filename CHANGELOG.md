@@ -1,3 +1,8 @@
+# 2.0.6 (2017-11-29)
+
+* **Fixed** Travis config to run build script.
+
+
 # 2.0.5 (2017-11-03)
 
 Fixing travis builds
