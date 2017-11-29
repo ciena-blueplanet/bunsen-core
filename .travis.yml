@@ -27,6 +27,7 @@ install:
 - $(npm root -g)/pr-bumper/.travis/maybe-install.sh
 
 before_script:
+- npm run build
 - $(npm root -g)/pr-bumper/.travis/maybe-check-scope.sh
 
 script:
