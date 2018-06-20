@@ -1,3 +1,8 @@
+# 2.0.8 (2018-06-20)
+
+* Improve performance on conditional view processing
+
+
 # 2.0.7 (2017-11-29)
 
 * **Fixed** tagged branches to install before trying to build so they don't fail to publish.
