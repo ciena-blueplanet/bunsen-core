@@ -222,6 +222,53 @@ class ExpectedArrayValue extends ExpectedValue {
   }
 }
 
+// need to test that any mutations like conditions or expansions is done with no side effects
+describe('expanding shared definitions', function () {
+  let newView
+
+  describe('basic view', function () {
+    let basicView
+    beforeEach(function () {
+      basicView = {
+        cells: [{
+          model: 'isSuperHero'
+        }]
+      }
+      newView = evaluate(basicView, {})
+    })
+
+    it('should provide copy of cells', function () {
+      expect(newView.cells[0]).not.to.equal(basicView)
+    })
+  })
+
+  describe('complex view', function () {
+    beforeEach(function () {
+      newView = evaluate(complexConditionalView, {
+        isSuperHero: true,
+        name: {
+          firstName: 'Peter',
+          lastName: 'Parker'
+        }
+      })
+    })
+
+    it('should not copy cellDefinitions', function () {
+      expect(newView.cellDefinitions).to.equal(complexConditionalView.cellDefinitions)
+    })
+
+    it('should provide copy with extends', function () {
+      expect(newView.cells[0]).not.to.equal(complexConditionalView.cellDefinitions.main)
+    })
+
+    // this makes sure conditionals don't mutate the original schema
+    it('should provide copy with conditionals', function () {
+      expect(newView.cells[0].children[0].children[2])
+        .not.to.equal(complexConditionalView.cellDefinitions.alias)
+    })
+  })
+})
+
 describe('views with conditionals', function () {
   describe('hide cells when', function () {
     it('"unless" conditions are met', function () {
