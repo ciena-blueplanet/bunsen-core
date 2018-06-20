@@ -2,7 +2,6 @@ import './typedefs'
 import {meetsCondition} from './utils/conditionals'
 import {ValueWrapper} from './utils/path'
 import _ from 'lodash'
-import Immutable from 'seamless-immutable'
 
 /**
  * Function used for filtering out undefined values from arrays.
@@ -50,7 +49,7 @@ function checkConditions (value) {
  */
 function checkRootCells (view, value) {
   return function (cell) {
-    return checkCell(view, value, Immutable.from(cell)).asMutable()
+    return checkCell(view, value, cell)
   }
 }
 
@@ -72,7 +71,7 @@ function checkCellConditions (view, value, cell) {
   }
 
   if (condition.then) { // Cell has conditional properties, so add them
-    cell = Immutable.merge(cell, condition.then)
+    cell = Object.assign({}, cell, condition.then)
   }
   return cell
 }
@@ -111,7 +110,7 @@ function expandExtendedCell (view, cell) {
   const cellProps = {}
   let extendedCell = _.get(view.cellDefinitions, cell.extends)
   if (extendedCell.extends) {
-    extendedCell = Immutable.without(expandExtendedCell(view, extendedCell), 'extends')
+    extendedCell = _.omit(expandExtendedCell(view, extendedCell), ['extends'])
   }
 
   if (extendedCell.arrayOptions) {
@@ -127,7 +126,7 @@ function expandExtendedCell (view, cell) {
     })
   }
 
-  return Immutable.merge(cell, extendedCell, cellProps)
+  return Object.assign({}, cell, extendedCell, cellProps)
 }
 
 /**
@@ -158,7 +157,7 @@ function cellFromArrayValues (view, value, cell) {
     const possibleCellSchema = val.map((val, index) => {
       const indexedCell = getItemCell(cell, index)
       const evaluatedCell = checkCell(view, value.pushPath(String(index)), indexedCell)
-      return Immutable.without(evaluatedCell || cell, 'conditions', 'extends')
+      return _.omit(evaluatedCell || cell, ['conditions', 'extends'])
     })
     const first = possibleCellSchema[0]
     const isHeterogenous = possibleCellSchema.some((cell) => !_.isEqual(cell, first))
@@ -169,10 +168,9 @@ function cellFromArrayValues (view, value, cell) {
       return possibleCellSchema[0]
     }
   } else {
-    return Immutable.without(
+    return _.omit(
       checkCell(view, value.pushPath('0'), getItemCell(cell, 0)) || cell,
-      'conditions',
-      'extends'
+      ['conditions', 'extends']
     )
   }
 }
@@ -198,15 +196,14 @@ function checkArrayOptions (view, value, cell) {
   let tupleCells = _.get(arrayOptions, 'tupleCells')
   if (tupleCells) {
     const itemsCells = tupleCells.map((cell, index) =>
-      Immutable.without(
+      _.omit(
         checkCell(view, value.pushPath(index + ''), cell) || cell,
-        'conditions',
-        'extends'
+        ['conditions', 'extends']
       )
     )
     arrayOptions.tupleCells = itemsCells
   }
-  return Immutable.merge(cell, {arrayOptions})
+  return Object.assign({}, cell, {arrayOptions})
 }
 
 /**
@@ -252,7 +249,7 @@ function checkCell (view, value, cell) {
   }
 
   cell = checkArrayOptions(view, value, cell)
-  return Immutable.without(cell, 'conditions', 'extends')
+  return _.omit(cell, ['conditions', 'extends'])
 }
 
 /**
@@ -264,12 +261,12 @@ function checkCell (view, value, cell) {
  * @returns {BunsenCell} Cell with the children checked
  */
 function checkChildren (view, value, cell) {
-  const children = _.map(cell.children, (child) => {
+  const children = cell.children.map((child) => {
     return checkCell(view, value, child)
   })
   .filter(isNotUndefined)
 
-  return Immutable.set(cell, 'children', children)
+  return Object.assign({}, cell, {children})
 }
 
 /**
@@ -282,20 +279,15 @@ function checkChildren (view, value, cell) {
  */
 export default function evaluateView (view, value) {
   const wrappedValue = new ValueWrapper(value, [])
-  const immutableView = Immutable.from(view)
   if (view.cells === undefined) {
     return view
   }
   try {
-    // Make sure we preserve non-array value so we get useful validation errors
-    const cells = !Array.isArray(view.cells) ? view.cells : _.chain(view.cells)
-      .map(checkRootCells(immutableView, wrappedValue))
+    const cells = view.cells
+      .map(checkRootCells(view, wrappedValue))
       .filter(isNotUndefined)
-      .value()
 
-    return Object.assign(_.clone(view), {
-      cells
-    })
+    return Object.assign({}, view, {cells})
   } catch (e) {
     // Unfortunately this is necessary because view validation happens outside of the reducer,
     // so we have no guarantee that the view is valid and it may cause run time errors. Returning
