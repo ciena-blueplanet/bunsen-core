@@ -1,3 +1,8 @@
+# 2.0.9 (2018-07-20)
+
+* **Fixed** Travis API key.
+
+
 # 2.0.8 (2018-06-20)
 
 * Improve performance on conditional view processing
