@@ -1,14 +1,8 @@
-/**
- * @module evaluate-conditions
- * Export a single function to accept a model schema which includes conditions and return one where the conditions are
- * evaluated/removed.
- */
-
 import _ from 'lodash'
 import {meetsCondition, pathFinder} from './utils/conditionals'
 
 /* eslint-disable complexity */
-export default function evaluate (model, value, getPreviousValue) {
+export default function evaluate (model, value, getPreviousValue, formValue) {
   // In some error conditions, model might be empty, and not crashing helps in debugging
   // because the validation error can actually be seen then -- ARM
   if (!model) {
@@ -24,7 +18,7 @@ export default function evaluate (model, value, getPreviousValue) {
     if (Array.isArray(model.items)) {
       retModel.items = _.map(model.items, function (itemModel, index) {
         const val = value && value[index]
-        return evaluate(itemModel, val, getPreviousValue)
+        return evaluate(itemModel, val, getPreviousValue, formValue)
       })
       if (model.additionalItems) {
         retModel.additionalItems = evaluate(model.additionalItems, undefined, getPreviousValue)
@@ -33,7 +27,7 @@ export default function evaluate (model, value, getPreviousValue) {
       let itemSchemas = []
         // Deep version of _.uniq
       const potentialSchemas = _.map(value, function (val) {
-        return evaluate(model.items, val, getPreviousValue)
+        return evaluate(model.items, val, getPreviousValue, formValue)
       })
       _.forEach(potentialSchemas, function (schema) {
         if (!_.some(itemSchemas, _.partial(_.isEqual, schema))) {
@@ -41,7 +35,7 @@ export default function evaluate (model, value, getPreviousValue) {
         }
       })
       if (itemSchemas.length < 1) {
-        retModel.items = evaluate(model.items, undefined, getPreviousValue)
+        retModel.items = evaluate(model.items, undefined, getPreviousValue, formValue)
       } else if (itemSchemas.length > 1) {
         retModel.items = potentialSchemas
         retModel.additionalItems = evaluate(model.items, undefined, getPreviousValue)
@@ -49,17 +43,17 @@ export default function evaluate (model, value, getPreviousValue) {
         retModel.items = potentialSchemas[0]
       }
     } else if (value === undefined) {
-      retModel.items = evaluate(retModel.items, value, getPreviousValue)
+      retModel.items = evaluate(retModel.items, value, getPreviousValue, formValue)
     }
     return retModel
   } else {
     const aggregateType = _.find(['anyOf', 'oneOf'], _.partial(_.includes, Object.keys(model)))
     if (aggregateType !== undefined) {
       retModel[aggregateType] = _.map(retModel[aggregateType], (subSchema) => {
-        return evaluate(subSchema, value, getPreviousValue)
+        return evaluate(subSchema, value, getPreviousValue, formValue)
       })
     } else if (model.not) {
-      retModel.not = evaluate(retModel.not, value, getPreviousValue)
+      retModel.not = evaluate(retModel.not, value, getPreviousValue, formValue)
     }
   }
 
@@ -73,7 +67,7 @@ export default function evaluate (model, value, getPreviousValue) {
 
   retModel.properties = _.clone(model.properties)
   _.forEach(retModel.properties, function (subSchema, propName) {
-    retModel.properties[propName] = evaluate(subSchema, _.get(value, propName), pathFinder(value, getValue))
+    retModel.properties[propName] = evaluate(subSchema, _.get(value, propName), pathFinder(value, getValue), formValue)
   })
   let conditionalProperties = _.transform(model.properties, function (result, schema, key) {
     if (schema.conditions) {
@@ -86,7 +80,7 @@ export default function evaluate (model, value, getPreviousValue) {
       const metCondition = conditionItem =>
         _.every(conditionItem, (condition, propName) => {
           const value = getValue(propName)
-          return meetsCondition(value, condition)
+          return meetsCondition(value, condition, formValue)
         })
 
       if (enableConditions.unless) {

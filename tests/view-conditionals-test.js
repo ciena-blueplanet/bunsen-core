@@ -530,4 +530,76 @@ describe('views with conditionals', function () {
       })
     })
   })
+
+  describe('condition referencing form values', function () {
+    let condition, view
+    beforeEach(function () {
+      condition = {}
+
+      view = {
+        type: 'form',
+        version: '2.0',
+        cells: [{
+          model: 'foo',
+          conditions: [{
+            if: [{
+              'foo': condition
+            }]
+          }]
+        }]
+      }
+    })
+
+    describe('simple expectation', function () {
+      beforeEach(function () {
+        condition['equals'] = '#/bar'
+      })
+
+      it('should evaluate true when condition is met', function () {
+        const value = {foo: 'foo', bar: 'foo'}
+        expect(evaluate(view, value)).to.eql({
+          type: 'form',
+          version: '2.0',
+          cells: [{
+            model: 'foo'
+          }]
+        })
+      })
+
+      it('should evaluate false when condition is not met', function () {
+        const value = {foo: 'bar', bar: 'foo'}
+        expect(evaluate(view, value)).to.eql({
+          type: 'form',
+          version: '2.0',
+          cells: []
+        })
+      })
+    })
+
+    describe('array expectation', function () {
+      beforeEach(function () {
+        condition['isEither'] = ['#/bar', 'bar']
+      })
+
+      it('should evaluate true when condition is met', function () {
+        const value = {foo: 'bar', bar: 'baz'}
+        expect(evaluate(view, value)).to.eql({
+          type: 'form',
+          version: '2.0',
+          cells: [{
+            model: 'foo'
+          }]
+        })
+      })
+
+      it('should evaluate false when condition is not met', function () {
+        const value = {foo: 'boo', bar: 'foo'}
+        expect(evaluate(view, value)).to.eql({
+          type: 'form',
+          version: '2.0',
+          cells: []
+        })
+      })
+    })
+  })
 })

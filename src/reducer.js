@@ -194,8 +194,9 @@ export const actionReducers = {
     if (state) {
       let initialValue = state.value || {}
       if (state.baseModel) {
+        initialValue = recursiveClean(initialValue, state.baseModel)
         state.baseModel = getDereferencedModelSchema(state.baseModel)
-        state.model = evaluateConditions(state.baseModel, recursiveClean(initialValue, state.baseModel))
+        state.model = evaluateConditions(state.baseModel, initialValue, undefined, initialValue)
         // leave this undefined to force consumers to go through the proper CHANGE_VALUE channel
         // for value changes
         state.value = undefined
@@ -244,7 +245,7 @@ export const actionReducers = {
     }
 
     // Evaluate and remove model conditions so consumers don't have to parse conditions
-    newState.model = evaluateConditions(newState.baseModel, state.value)
+    newState.model = evaluateConditions(newState.baseModel, state.value, undefined, state.value)
 
     return _.defaults(newState, state)
   },
@@ -284,7 +285,7 @@ export const actionReducers = {
     if (!_.isEqual(state.baseModel, normalized.model)) {
       Object.assign(newState, {
         baseModel: normalized.model,
-        model: evaluateConditions(normalized.model, state.value)
+        model: evaluateConditions(normalized.model, state.value, undefined, state.value)
       })
     }
 
@@ -344,7 +345,7 @@ export const actionReducers = {
     // If the value actually changed then we need to re-compute the model and view
     // so conditionals are correctly applied
     if (newState.valueChangeSet.size > 0) {
-      const newModel = evaluateConditions(state.baseModel, newState.value)
+      const newModel = evaluateConditions(state.baseModel, newState.value, undefined, newState.value)
       newState.model = _.isEqual(state.model, newModel) ? state.model : newModel
 
       if (state.baseView) {

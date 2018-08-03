@@ -27,7 +27,7 @@ function dereferenceAndEval (model, value) {
   var schema = dereference.dereference(model).schema
   delete schema.definitions
 
-  return evaluate(schema, value)
+  return evaluate(schema, value, undefined, value)
 }
 
 describe('evaluate-conditions', () => {
@@ -396,6 +396,147 @@ describe('evaluate-conditions', () => {
       }
       newModel = dereferenceAndEval(model, value)
       expect(newModel).to.eql(expected)
+    })
+  })
+
+  describe('condition referencing form values', function () {
+    let condition, model
+    beforeEach(function () {
+      condition = {}
+
+      model = {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'string',
+            conditions: [{
+              if: [{
+                './bar': condition
+              }]
+            }]
+          },
+          bar: {
+            type: 'string'
+          },
+          baz: {
+            type: 'string'
+          }
+        }
+      }
+    })
+
+    describe('simple expectation with valid reference', function () {
+      beforeEach(function () {
+        condition['equals'] = '#/baz'
+      })
+
+      it('should evaluate true when condition is met', function () {
+        const value = {bar: 'foo', baz: 'foo'}
+        expect(dereferenceAndEval(model, value)).to.eql({
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string'
+            },
+            bar: {
+              type: 'string'
+            },
+            baz: {
+              type: 'string'
+            }
+          }
+        })
+      })
+
+      it('should evaluate false when condition is not met', function () {
+        const value = {bar: 'bar', baz: 'foo'}
+        expect(dereferenceAndEval(model, value)).to.eql({
+          type: 'object',
+          properties: {
+            bar: {
+              type: 'string'
+            },
+            baz: {
+              type: 'string'
+            }
+          }
+        })
+      })
+    })
+
+    describe('simple expectation with invalid reference', function () {
+      it('should evaluate false', function () {
+        condition['equals'] = '#/barrrrr'
+        const value = {bar: 'foo', baz: 'foo'}
+        expect(dereferenceAndEval(model, value)).to.eql({
+          type: 'object',
+          properties: {
+            bar: {
+              type: 'string'
+            },
+            baz: {
+              type: 'string'
+            }
+          }
+        })
+      })
+    })
+
+    describe('array expectation with valid reference', function () {
+      beforeEach(function () {
+        condition['isEither'] = ['#/baz', 'bar']
+      })
+
+      it('should evaluate true when condition is met', function () {
+        const value = {bar: 'bar'}
+        expect(dereferenceAndEval(model, value)).to.eql({
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string'
+            },
+            bar: {
+              type: 'string'
+            },
+            baz: {
+              type: 'string'
+            }
+          }
+        })
+      })
+
+      it('should evaluate false when condition is not met', function () {
+        const value = {bar: 'foo'}
+        expect(dereferenceAndEval(model, value)).to.eql({
+          type: 'object',
+          properties: {
+            bar: {
+              type: 'string'
+            },
+            baz: {
+              type: 'string'
+            }
+          }
+        })
+      })
+    })
+
+    describe('array expectation with invalid reference', function () {
+      it('should evaluate false', function () {
+        condition['isEither'] = ['#/bazzzz', '#/bazzzzzzzz']
+        const value = {bar: 'foo', baz: 'foo'}
+        expect(dereferenceAndEval(model, value)).to.eql({
+          type: 'object',
+          properties: {
+            bar: {
+              type: 'string'
+            },
+            baz: {
+              type: 'string'
+            }
+          }
+        })
+      })
     })
   })
 })

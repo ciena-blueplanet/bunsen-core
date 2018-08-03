@@ -1,14 +1,5 @@
 import _ from 'lodash'
 
-/**
- * Creates a getter closure for values in a complex object relative to a given path. Uses "prevPath"
- * to search for properties at a parent's level.
- *
- * @export
- * @param {object} valueObj Object we want to search
- * @param {Function} prevPath Getter function for the previous path element
- * @returns {Function} Function that returns a value at the path from the root of the valueObj
- */
 export function pathFinder (valueObj, prevPath) {
   return function (path) {
     if (!Array.isArray(path)) {
@@ -30,7 +21,28 @@ export function pathFinder (valueObj, prevPath) {
   }
 }
 
-const BUILT_IN_CONDITIONS = {
+const getExpectedValue = function (formValue, expected) {
+  if (typeof expected === 'string' && expected.startsWith('#/')) {
+    return _.get(formValue, expected.replace('#/', ''))
+  }
+  return expected
+}
+
+const predicateWrapper = function (predicate) {
+  return function (value, expected, formValue) {
+    if (expected === undefined) {
+      throw new Error('expected value is undefined')
+    }
+
+    if (Array.isArray(expected)) {
+      return predicate(value, expected.map((item) => getExpectedValue(formValue, item)))
+    }
+
+    return predicate(value, getExpectedValue(formValue, expected))
+  }
+}
+
+export const BUILT_IN_CONDITIONS = {
   equals: _.isEqual,
   greaterThan: function (value, expected) { return value > expected },
   lessThan: function (value, expected) { return value < expected },
@@ -48,31 +60,41 @@ const BUILT_IN_CONDITIONS = {
   matchesRegExp: function (value, expected) {
     const regExp = new RegExp(expected)
     return regExp.test(value)
+  },
+  includes: function (value, expected) {
+    if (value === undefined) {
+      return false
+    }
+
+    if (typeof value !== 'string' && !Array.isArray(value)) {
+      throw new Error('Using `includes` condition for non-support type')
+    }
+    return value.includes(expected)
+  },
+  isEither: function (value, expected) {
+    if (!Array.isArray(expected)) {
+      throw new Error('Using `isEither` on non-array type is not supported')
+    }
+
+    return expected.some((val) => val === value)
   }
 }
 
+Object.keys(BUILT_IN_CONDITIONS).forEach((condition) => {
+  BUILT_IN_CONDITIONS[condition] = predicateWrapper(BUILT_IN_CONDITIONS[condition])
+})
+
 let possibleConditions = BUILT_IN_CONDITIONS
 
-/**
- * Adds custom conditions globally to bunsen
- *
- * @export
- * @param {Object} conditions Hash of condition functions
- */
 export function addConditions (conditions) {
   possibleConditions = _.merge({}, possibleConditions, conditions)
 }
 
-/**
- * Determines if some condition of a cell/model property has been met
- *
- * @export
- * @param {any} value Value to check against
- * @param {object[]} condition List of defined conditions to check
- * @returns  {boolean} True if at least one condition is met
- */
-export function meetsCondition (value, condition) {
+export function meetsCondition (value, condition, formValue) {
   return _.some(condition, function (expected, conditionName) {
-    return possibleConditions[conditionName](value, expected)
+    if (!(conditionName in possibleConditions)) {
+      throw new Error(`condition <${conditionName}> is not supported`)
+    }
+    return possibleConditions[conditionName](value, expected, formValue)
   })
 }

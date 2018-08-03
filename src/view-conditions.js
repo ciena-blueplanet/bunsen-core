@@ -3,27 +3,15 @@ import {meetsCondition} from './utils/conditionals'
 import {ValueWrapper} from './utils/path'
 import _ from 'lodash'
 
-/**
- * Function used for filtering out undefined values from arrays.
- *
- * @param {any} item Item we want to check the value of
- * @returns {boolean} True if the provided value is not undefined
- */
 function isNotUndefined (item) {
   return item !== undefined
 }
 
-/**
- * Check a list conditions for a cell against a provided value
- *
- * @param {ValueWrapper} value The wrapped value we want to check the conditions against
- * @returns {Function} Function that returns true if a condition has been met
- */
-function checkConditions (value) {
+function checkConditions (value, formValue) {
   return function (condition) {
     const metCondition = conditionItem =>
         _.every(conditionItem, (condition, propName) =>
-          meetsCondition(value.get(propName), condition)
+          meetsCondition(value.get(propName), condition, formValue)
         )
 
     if (condition.unless) {
@@ -40,30 +28,15 @@ function checkConditions (value) {
   }
 }
 
-/**
- * Check the root cells of a view
- *
- * @param {BunsenView} view View we are checking
- * @param {ValueWrapper} value The wrapped value we want to check the conditions against
- * @returns {Function} Iterator function to check cells
- */
-function checkRootCells (view, value) {
+function checkRootCells (view, value, formValue) {
   return function (cell) {
-    return checkCell(view, value, cell)
+    return checkCell(view, value, cell, formValue)
   }
 }
 
-/**
- * Check a cell for conditions and apply any conditional properties if a condition is met.
- *
- * @param {BunsenView} view View the cell is a part of
- * @param {ValueWrapper} value The wrapped value we want to check the conditions against
- * @param {BunsenCell} cell Cell to check
- * @returns {BunsenCell} The cell after conditions have been processed. If a condition is not met undefined is returned
- */
-function checkCellConditions (view, value, cell) {
+function checkCellConditions (view, value, cell, formValue) {
   // Find a condition that has been met
-  const meetsCondition = checkConditions(value)
+  const meetsCondition = checkConditions(value, formValue)
   const condition = cell.conditions.find(meetsCondition)
   if (condition === undefined) {
     // Returns undefined if conditions aren't met so we can filter
@@ -76,13 +49,6 @@ function checkCellConditions (view, value, cell) {
   return cell
 }
 
-/**
- * Expands the array options of a bunsen cell
- *
- * @param {BunsenView} view View the cell is a part of
- * @param {BunsenCell} extendedCell Cell with options to expand
- * @returns {Object} The expanded options
- */
 function expandArrayOptions (view, extendedCell) {
   const arrayOptions = {}
   if (extendedCell.arrayOptions.itemCell && extendedCell.arrayOptions.itemCell.extends) {
@@ -99,13 +65,6 @@ function expandArrayOptions (view, extendedCell) {
   return arrayOptions
 }
 
-/**
- * Copy properties from an extended cell. Extends child cells recrusively.
- *
- * @param {BunsenView} view View the cell is a part of
- * @param {BunsenCell} cell Cell to copy properties onto
- * @returns {BunsenCell} Resulting cell after applying properties from extended cells
- */
 function expandExtendedCell (view, cell) {
   const cellProps = {}
   let extendedCell = _.get(view.cellDefinitions, cell.extends)
@@ -129,13 +88,6 @@ function expandExtendedCell (view, cell) {
   return Object.assign({}, cell, extendedCell, cellProps)
 }
 
-/**
- * Gets the item cell for an index of an item in an array.
- *
- * @param {BunsenCell | BunsenCell[]} itemCell the item cell object
- * @param {number} index Index of the value in the array
- * @returns {BunsenCell} Cell for the given array item
- */
 function getItemCell (itemCell, index) {
   if (Array.isArray(itemCell)) {
     return itemCell[index]
@@ -143,20 +95,12 @@ function getItemCell (itemCell, index) {
   return itemCell
 }
 
-/**
- * Returns the evaluated view schema for a particular cell and will expand the schema into an array
- * if multiple schemas are required after conditions are evaluated
- * @param {Object} view - main view
- * @param {ValueWrapper} value - the form value wrapper
- * @param {Object} cell - the cell being evaluated
- * @returns {Object|Object[]} the evaluated cell or cells
- */
-function cellFromArrayValues (view, value, cell) {
+function cellFromArrayValues (view, value, cell, formValue) {
   const val = value.get()
   if (val && val.length > 0) {
     const possibleCellSchema = val.map((val, index) => {
       const indexedCell = getItemCell(cell, index)
-      const evaluatedCell = checkCell(view, value.pushPath(String(index)), indexedCell)
+      const evaluatedCell = checkCell(view, value.pushPath(String(index)), indexedCell, formValue)
       return _.omit(evaluatedCell || cell, ['conditions', 'extends'])
     })
     const first = possibleCellSchema[0]
@@ -169,35 +113,27 @@ function cellFromArrayValues (view, value, cell) {
     }
   } else {
     return _.omit(
-      checkCell(view, value.pushPath('0'), getItemCell(cell, 0)) || cell,
+      checkCell(view, value.pushPath('0'), getItemCell(cell, 0), formValue) || cell,
       ['conditions', 'extends']
     )
   }
 }
 
-/**
- * Check a cell's arrayOptions to make sure the value meets any conditions the cell provides
- *
- * @param {BunsenView} view View we are checking
- * @param {ValueWrapper} value The wrapped value we want to check the conditions against
- * @param {BunsenCell} cell Cell to check
- * @returns {BunsenCell} Cell with properties from any extended cells
- */
-function checkArrayOptions (view, value, cell) {
+function checkArrayOptions (view, value, cell, formValue) {
   if (!cell.arrayOptions) {
     return cell
   }
   const arrayOptions = _.clone(cell.arrayOptions)
   let itemCell = _.get(arrayOptions, 'itemCell')
   if (itemCell) {
-    arrayOptions.itemCell = cellFromArrayValues(view, value, itemCell)
+    arrayOptions.itemCell = cellFromArrayValues(view, value, itemCell, formValue)
   }
 
   let tupleCells = _.get(arrayOptions, 'tupleCells')
   if (tupleCells) {
     const itemsCells = tupleCells.map((cell, index) =>
       _.omit(
-        checkCell(view, value.pushPath(index + ''), cell) || cell,
+        checkCell(view, value.pushPath(index + ''), cell, formValue) || cell,
         ['conditions', 'extends']
       )
     )
@@ -206,14 +142,6 @@ function checkArrayOptions (view, value, cell) {
   return Object.assign({}, cell, {arrayOptions})
 }
 
-/**
- * Adds a cells model to the path of a ValueWrapper, if it has a model. For cells with the 'id' property,
- * the path will be reconstructed completely.
- *
- * @param {ValueWrapper} value ValueWrapper for the current path
- * @param {BunsenCell} cell Cell we want to push to the path
- * @returns {ValueWrapper} A ValueWrapper with the new path
- */
 function pushModel (value, cell) {
   if (typeof cell.model === 'object') {
     const id = cell.internal ? '_internal.' + cell.id : cell.id
@@ -222,15 +150,7 @@ function pushModel (value, cell) {
   return value.pushPath(cell.model)
 }
 
-/**
- * Check a cell of a view to make sure the value meets any conditions the cell provides
- *
- * @param {BunsenView} view View we are checking
- * @param {ValueWrapper} value The wrapped value we want to check the conditions against
- * @param {BunsenCell} cell Cell to check
- * @returns {BunsenCell} Cell with properties from any extended cells
- */
-function checkCell (view, value, cell) {
+function checkCell (view, value, cell, formValue) {
   if (cell.extends) {
     cell = expandExtendedCell(view, cell)
   }
@@ -238,45 +158,29 @@ function checkCell (view, value, cell) {
   value = pushModel(value, cell)
 
   if (cell.conditions) { // This cell has conditions
-    cell = checkCellConditions(view, value, cell)
+    cell = checkCellConditions(view, value, cell, formValue)
     if (cell === undefined) {
       return
     }
   }
 
   if (cell.children) {
-    cell = checkChildren(view, value, cell)
+    cell = checkChildren(view, value, cell, formValue)
   }
 
-  cell = checkArrayOptions(view, value, cell)
+  cell = checkArrayOptions(view, value, cell, formValue)
   return _.omit(cell, ['conditions', 'extends'])
 }
 
-/**
- * Check conditions of a cell's children
- *
- * @param {BunsenView} view View we are checking
- * @param {ValueWrapper} value The wrapped value we want to check the conditions against
- * @param {BunsenCell} cell Cell to check
- * @returns {BunsenCell} Cell with the children checked
- */
-function checkChildren (view, value, cell) {
+function checkChildren (view, value, cell, formValue) {
   const children = cell.children.map((child) => {
-    return checkCell(view, value, child)
+    return checkCell(view, value, child, formValue)
   })
   .filter(isNotUndefined)
 
   return Object.assign({}, cell, {children})
 }
 
-/**
- * Apply conditions (and extensions) to the cells of a view
- *
- * @export
- * @param {BunsenView} view View to process
- * @param {any} value The value we want to check conditions against
- * @returns {BunsenView} View after conditions have been applied
- */
 export default function evaluateView (view, value) {
   const wrappedValue = new ValueWrapper(value, [])
   if (view.cells === undefined) {
@@ -284,7 +188,7 @@ export default function evaluateView (view, value) {
   }
   try {
     const cells = view.cells
-      .map(checkRootCells(view, wrappedValue))
+      .map(checkRootCells(view, wrappedValue, value))
       .filter(isNotUndefined)
 
     return Object.assign({}, view, {cells})
