@@ -30,10 +30,6 @@ const getExpectedValue = function (formValue, expected) {
 
 const predicateWrapper = function (predicate) {
   return function (value, expected, formValue) {
-    if (expected === undefined) {
-      throw new Error('expected value is undefined')
-    }
-
     if (Array.isArray(expected)) {
       return predicate(value, expected.map((item) => getExpectedValue(formValue, item)))
     }
