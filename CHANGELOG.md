@@ -1,3 +1,8 @@
+# 2.1.0 (2018-08-07)
+
+* Support arbitrary form values in conditions. All condition predicates now have a 3rd positional parameter which is the form value.
+
+
 # 2.0.9 (2018-07-20)
 
 * **Fixed** Travis API key.
