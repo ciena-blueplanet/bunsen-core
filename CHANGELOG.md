@@ -1,3 +1,9 @@
+# 2.1.1 (2018-08-15)
+
+* Fixed an issue where validation was using the earlier model post value change
+* Fixed an issue with `required` only being added to nearest parent object
+
+
 # 2.1.0 (2018-08-07)
 
 * Support arbitrary form values in conditions. All condition predicates now have a 3rd positional parameter which is the form value.
