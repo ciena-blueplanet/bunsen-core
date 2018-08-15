@@ -67,7 +67,12 @@ export default function evaluate (model, value, getPreviousValue, formValue) {
 
   retModel.properties = _.clone(model.properties)
   _.forEach(retModel.properties, function (subSchema, propName) {
-    retModel.properties[propName] = evaluate(subSchema, _.get(value, propName), pathFinder(value, getValue), formValue)
+    const evalModel = evaluate(subSchema, _.get(value, propName), pathFinder(value, getValue), formValue)
+    retModel.properties[propName] = evalModel
+
+    if (evalModel.required && !subSchema.required) {
+      retModel.required = addNewRequired([propName], retModel.required)
+    }
   })
   let conditionalProperties = _.transform(model.properties, function (result, schema, key) {
     if (schema.conditions) {
