@@ -240,10 +240,45 @@ describe('validate action', function () {
       if (action.value) {
         defaultValue = action.value
       }
-    }, function () { return {} })
+    }, function () {
+      return {
+        value: defaultValue,
+        model: schema
+      }
+    })
 
     return defaultValue
   }
+
+  it('should use the latest model to validate against', function () {
+    const beforeSchema = {
+      type: 'object'
+    }
+    const afterSchema = {
+      type: 'object',
+      required: ['foo'],
+      properties: {
+        foo: {type: 'string'}
+      }
+    }
+
+    var thunk = actions.validate(null, {}, beforeSchema, [])
+
+    thunk(function (action) {
+      if (action.type === actions.VALIDATION_RESOLVED) {
+        expect(action.errors).to.eql({
+          'foo': [
+            'Field is required.'
+          ]
+        })
+      }
+    }, function () {
+      return {
+        value: {},
+        model: afterSchema
+      }
+    })
+  })
 
   it('fills in defaults', function () {
     var defaultValue = getDefaultValue(null, {}, SCHEMA_WITH_DEFAULTS)
@@ -348,6 +383,9 @@ describe('validate action', function () {
     return {
       get value () {
         return {}
+      },
+      get model () {
+        return {type: 'object'}
       }
     }
   }
@@ -372,7 +410,8 @@ describe('validate action', function () {
       state = {
         value: {
           alias: 'Bob'
-        }
+        },
+        model: schema
       }
     })
 

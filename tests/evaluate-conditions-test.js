@@ -54,6 +54,37 @@ describe('evaluate-conditions', () => {
     })
   })
 
+  it('should propagate required', function () {
+    const model = {
+      type: 'object',
+      properties: {
+        conditionValue: {type: 'string'},
+        foo: {
+          type: 'object',
+          properties: {
+            bar: {
+              type: 'string',
+              conditions: [{
+                if: [{
+                  '../conditionValue': {
+                    equals: 'bar'
+                  }
+                }],
+                required: true
+              }]
+            }
+          }
+        }
+      }
+    }
+
+    var newModel = dereferenceAndEval(model, {
+      conditionValue: 'bar'
+    })
+
+    expect(newModel.required).to.eql(['foo'])
+  })
+
   describe('conditional properties with "unless"', function () {
     it('are hidden if an "unless" condition is met', function () {
       var data = {
