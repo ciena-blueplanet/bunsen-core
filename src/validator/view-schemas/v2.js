@@ -117,6 +117,11 @@ const definitions = {
             type: 'string'
           },
 
+          // the class name for the field (the wrapper for the input)
+          field: {
+            type: 'string'
+          },
+
           // the class name for the label of the cell
           label: {
             type: 'string'

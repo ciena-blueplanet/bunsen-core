@@ -35,11 +35,15 @@ export default function evaluate (model, value, getPreviousValue, formValue) {
         }
       })
       if (itemSchemas.length < 1) {
+        // no potential schemas due to empty value
         retModel.items = evaluate(model.items, undefined, getPreviousValue, formValue)
       } else if (itemSchemas.length > 1) {
+        // at least one schema is different, items becomes an array
+        retModel.arrayType = 'list' // custom property arrayType being used to differentiate between tuple and list
         retModel.items = potentialSchemas
         retModel.additionalItems = evaluate(model.items, undefined, getPreviousValue)
       } else {
+        // all schemas are the same, items remain an object
         retModel.items = potentialSchemas[0]
       }
     } else if (value === undefined) {
