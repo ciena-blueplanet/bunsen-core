@@ -326,6 +326,7 @@ describe('evaluate-conditions', () => {
                   }
                 }
               },
+              arrayType: 'list',
               items: [{
                 type: 'object',
                 properties: {
