@@ -1,3 +1,9 @@
+# 2.2.0 (2018-10-24)
+
+* Support `field` in `classNames` hook in UI Schema 2
+* Mark heterogenous arrays as list type vs tuple (arrays where conditions evaluate to multiple unique schemas)
+
+
 # 2.1.1 (2018-08-15)
 
 * Fixed an issue where validation was using the earlier model post value change
