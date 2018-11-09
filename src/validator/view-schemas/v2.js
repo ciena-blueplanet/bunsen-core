@@ -222,6 +222,10 @@ const definitions = {
         type: 'boolean'
       },
 
+      isSection: {
+        type: 'boolean'
+      },
+
       // The user-visible label for this cell
       label: {
         type: 'string'
@@ -265,6 +269,11 @@ const definitions = {
           {'$ref': '#/definitions/textareaRenderer'},
           {'$ref': '#/definitions/urlRenderer'}
         ]
+      },
+
+      // user defined identification string
+      tag: {
+        type: 'string'
       },
 
       // Transforms to perform on read/write
