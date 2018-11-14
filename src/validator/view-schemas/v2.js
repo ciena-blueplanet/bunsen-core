@@ -52,6 +52,11 @@ const definitions = {
         items: {
           '$ref': '#/definitions/cell'
         }
+      },
+
+      // Override default `@index` key for each helper
+      eachKey: {
+        type: 'string'
       }
     }
   },
