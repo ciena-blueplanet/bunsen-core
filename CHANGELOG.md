@@ -1,3 +1,7 @@
+# 2.5.0 (2019-01-22)
+
+`classNames` originally accepted only an object but support a new feature in Bunsen, this also needs to accept strings.
+
 # 2.4.0 (2018-11-14)
 * Add `eachKey` to `arrayOptions` view schema. This allows the consumer to pick a better key for the `{{#each key=eachKey}}` used in array containers
 
