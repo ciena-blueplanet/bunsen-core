@@ -115,29 +115,33 @@ const definitions = {
 
       // class names to put on DOM elements
       classNames: {
-        additionalProperties: false,
-        properties: {
-          // the class name for the div that is the cell itself
-          cell: {
-            type: 'string'
-          },
+        oneOf: [{
+          type: 'string'
+        }, {
+          additionalProperties: false,
+          properties: {
+            // the class name for the div that is the cell itself
+            cell: {
+              type: 'string'
+            },
 
-          // the class name for the field (the wrapper for the input)
-          field: {
-            type: 'string'
-          },
+            // the class name for the field (the wrapper for the input)
+            field: {
+              type: 'string'
+            },
 
-          // the class name for the label of the cell
-          label: {
-            type: 'string'
-          },
+            // the class name for the label of the cell
+            label: {
+              type: 'string'
+            },
 
-          // the class name for the value of the cell (generally an input)
-          value: {
-            type: 'string'
-          }
-        },
-        type: 'object'
+            // the class name for the value of the cell (generally an input)
+            value: {
+              type: 'string'
+            }
+          },
+          type: 'object'
+        }]
       },
 
       // cells that are nested within this cell
