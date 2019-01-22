@@ -1,3 +1,11 @@
+# 2.4.0 (2018-11-14)
+* Add `eachKey` to `arrayOptions` view schema. This allows the consumer to pick a better key for the `{{#each key=eachKey}}` used in array containers
+
+# 2.3.0 (2018-11-09)
+
+* Adds `isSection` and `tag` properties to v2 schema. Upcoming bunsen feature will utilize those extra properties to force a cell as a section without requiring a `label` or `collapsible` to be set. `tag` will allow users to defined an id they can use as a reference.
+
+
 # 2.2.0 (2018-10-24)
 
 * Support `field` in `classNames` hook in UI Schema 2
