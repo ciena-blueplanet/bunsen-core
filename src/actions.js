@@ -260,6 +260,12 @@ export function validate (
         // Check if field value has changed
         const newValue = _.get(formValue, field)
         const oldValue = _.get(initialFormValue, field)
+
+        /* TODO: Handle debounce (present on validator function)
+        * Some promise with cancel. If canceled return previous.
+        * Might have to have user validator be the throttled one (i think this makes the most sense
+        * in terms of doability), since it will have the context
+        */
         if (!_.isEqual(newValue, oldValue) || !initialFormValue) {
           promises.push(validatorFunc(formValue, field))
         } else {
@@ -286,7 +292,9 @@ export function validate (
 }
 
 function getAllpreviousValidationResults (field, {errors = [], warnings = []} = {}) {
+  // TODO: Should use something like field validation id instead of field
   const hasSameField = (item) => item.field === field
+
   const previousErrors = errors.filter(hasSameField)
   const previousWarnings = warnings.filter(hasSameField)
 
