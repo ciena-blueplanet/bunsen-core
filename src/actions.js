@@ -229,7 +229,8 @@ export function validate (
   bunsenId, inputValue, renderModel, validators, all = Promise.all, forceValidation = false, mergeDefaults = false
 ) {
   return function (dispatch, getState) {
-    let formValue = getState().value
+    const {validationResult: previousValidations, value: initialFormValue} = getState()
+    let formValue = initialFormValue
     const previousValue = _.get(formValue, bunsenId)
 
     inputValue = getDefaultedValue({inputValue, previousValue, bunsenId, renderModel, mergeDefaults})
@@ -249,7 +250,22 @@ export function validate (
 
     const promises = []
     validators.forEach((validator) => {
-      promises.push(validator(formValue))
+      const type = typeof validator
+      if (type === 'function') {
+        // Original validation
+        promises.push(validator(formValue))
+      } else {
+        // Must be an object
+        const {field, validator: validatorFunc} = validator
+        // Check if field value has changed
+        const newValue = _.get(formValue, field)
+        const oldValue = _.get(initialFormValue, field)
+        if (!_.isEqual(newValue, oldValue)) {
+          promises.push(validatorFunc(formValue, field))
+        } else {
+          // Return old value. Need to store
+        }
+      }
     })
 
     // Promise.all fails in Node when promises array is empty
@@ -258,7 +274,7 @@ export function validate (
       return
     }
 
-    all(promises)
+    return all(promises)
       .then((snapshots) => {
         const results = _.map(snapshots, 'value')
         results.push(result)
