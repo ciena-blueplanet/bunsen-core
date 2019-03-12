@@ -260,10 +260,12 @@ export function validate (
         // Check if field value has changed
         const newValue = _.get(formValue, field)
         const oldValue = _.get(initialFormValue, field)
-        if (!_.isEqual(newValue, oldValue)) {
+        if (!_.isEqual(newValue, oldValue) || !initialFormValue) {
           promises.push(validatorFunc(formValue, field))
         } else {
           // Return old value. Need to store
+          const previousValidatorResults = getAllpreviousValidationResults(field, previousValidations)
+          if (previousValidatorResults) promises.push(Promise.resolve(previousValidatorResults))
         }
       }
     })
@@ -280,5 +282,20 @@ export function validate (
         results.push(result)
         dispatchUpdatedResults(dispatch, results)
       })
+  }
+}
+
+function getAllpreviousValidationResults (field, {errors = [], warnings = []} = {}) {
+  const hasSameField = (item) => item.field === field
+  const previousErrors = errors.filter(hasSameField)
+  const previousWarnings = warnings.filter(hasSameField)
+
+  if (!_.isEmpty(previousErrors) || !_.isEmpty(warnings)) {
+    return {
+      value: {
+        errors: previousErrors,
+        warnings: previousWarnings
+      }
+    }
   }
 }
