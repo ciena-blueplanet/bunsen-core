@@ -253,10 +253,11 @@ export function validate (
       const type = typeof validator
       if (type === 'function') {
         // Original validation
+        // TODO: if nothing changed just send old validations (If this ever an actual case?)
         promises.push(validator(formValue))
       } else {
         // Must be an object
-        const {field, validator: validatorFunc} = validator
+        const {field, validator: validatorFunc, validators: validatorFuncs} = validator
         // Check if field value has changed
         const newValue = _.get(formValue, field)
         const oldValue = _.get(initialFormValue, field)
@@ -267,7 +268,9 @@ export function validate (
         * in terms of doability), since it will have the context
         */
         if (!_.isEqual(newValue, oldValue) || !initialFormValue) {
-          promises.push(validatorFunc(formValue, field))
+          const validations = validatorFuncs || [validatorFunc]
+          // TODO: Send actual field value
+          validations.forEach(validatorFunc => promises.push(validatorFunc(formValue, field, newValue)))
         } else {
           // Return old value. Need to store
           const previousValidatorResults = getAllpreviousValidationResults(field, previousValidations)
