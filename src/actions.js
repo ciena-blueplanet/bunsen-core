@@ -257,25 +257,29 @@ export function validate (
         promises.push(validator(formValue))
       } else {
         // Must be an object
-        const {field, validator: validatorFunc, validators: validatorFuncs} = validator
-        // Check if field value has changed
-        const newValue = _.get(formValue, field)
-        const oldValue = _.get(initialFormValue, field)
+        const {field, fields, validator: validatorFunc, validators: validatorFuncs} = validator
+
+        const fieldsToValidate = fields || [field]
+        fieldsToValidate.forEach((field) => {
+          // Check if field value has changed
+          const newValue = _.get(formValue, field)
+          const oldValue = _.get(initialFormValue, field)
 
         /* TODO: Handle debounce (present on validator function)
         * Some promise with cancel. If canceled return previous.
         * Might have to have user validator be the throttled one (i think this makes the most sense
         * in terms of doability), since it will have the context
         */
-        if (!_.isEqual(newValue, oldValue) || !initialFormValue) {
-          const validations = validatorFuncs || [validatorFunc]
+          if (!_.isEqual(newValue, oldValue) || !initialFormValue) {
+            const validations = validatorFuncs || [validatorFunc]
           // TODO: Send actual field value
-          validations.forEach(validatorFunc => promises.push(validatorFunc(formValue, field, newValue)))
-        } else {
+            validations.forEach(validatorFunc => promises.push(validatorFunc(formValue, field, newValue)))
+          } else {
           // Return old value. Need to store
-          const previousValidatorResults = getAllpreviousValidationResults(field, previousValidations)
-          if (previousValidatorResults) promises.push(Promise.resolve(previousValidatorResults))
-        }
+            const previousValidatorResults = getAllpreviousValidationResults(field, previousValidations)
+            if (previousValidatorResults) promises.push(Promise.resolve(previousValidatorResults))
+          }
+        })
       }
     })
 
