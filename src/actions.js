@@ -252,30 +252,37 @@ export function validate (
     validators.forEach((validator) => {
       const type = typeof validator
       if (type === 'function') {
-        // Original validation
-        // TODO: if nothing changed just send old validations (If this ever an actual case?)
+        // Original validation. Always validates
         promises.push(validator(formValue))
       } else {
-        // Must be an object
+        /**
+         * Field validation. Only validate if field has changed.
+         * Meant for expensive validations like server side validation
+         */
+
+        /**
+         * Field validator definition
+         * @typedef {Object} validator
+         * @property {String} field field to validate
+         * @property {String[]} fields fields to validate
+         * @property {Function} validator valdation function to validate field/fields. Must return field within error/warning
+         * @property {Function[]} validators valdation functions to validate field/fields. Must return field within error/warning
+         */
         const {field, fields, validator: validatorFunc, validators: validatorFuncs} = validator
 
         const fieldsToValidate = fields || [field]
         fieldsToValidate.forEach((field) => {
-          // Check if field value has changed
           const newValue = _.get(formValue, field)
           const oldValue = _.get(initialFormValue, field)
 
-        /* TODO: Handle debounce (present on validator function)
-        * Some promise with cancel. If canceled return previous.
-        * Might have to have user validator be the throttled one (i think this makes the most sense
-        * in terms of doability), since it will have the context
-        */
+          // Check if field value has changed
           if (!_.isEqual(newValue, oldValue) || !initialFormValue) {
             const validations = validatorFuncs || [validatorFunc]
-          // TODO: Send actual field value
+            // Send validator formValue, the field we're validating against, and the field's value
             validations.forEach(validatorFunc => promises.push(validatorFunc(formValue, field, newValue)))
           } else {
-          // Return old value. Need to store
+          // IMPORTANT: A field must only belong to one validator. Ie can't have two field validators that validate the same field
+          // Return old validation result if the field hasn't changed.
             const previousValidatorResults = getAllpreviousValidationResults(field, previousValidations)
             if (previousValidatorResults) promises.push(Promise.resolve(previousValidatorResults))
           }
@@ -299,9 +306,9 @@ export function validate (
 }
 
 function getAllpreviousValidationResults (field, {errors = [], warnings = []} = {}) {
-  // TODO: Should use something like field validation id instead of field
   const hasSameField = (item) => item.field === field
 
+  // Find errors and warnings that validated the field
   const previousErrors = errors.filter(hasSameField)
   const previousWarnings = warnings.filter(hasSameField)
 
