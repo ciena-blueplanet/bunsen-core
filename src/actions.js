@@ -7,6 +7,7 @@ import {aggregateResults} from './validator/utils'
 export const CHANGE = 'CHANGE'
 export const CHANGE_VALUE = 'CHANGE_VALUE'
 export const VALIDATION_RESOLVED = 'VALIDATION_RESOLVED'
+export const IS_VALIDATING = 'IS_VALIDATING'
 export const CHANGE_MODEL = 'SET_MODEL'
 export const CHANGE_VIEW = 'CHANGE_VIEW'
 
@@ -176,6 +177,10 @@ function dispatchUpdatedResults (dispatch, results) {
   const aggregatedResult = aggregateResults(results)
   // TODO: Dispatch an err action
   dispatch(updateValidationResults(aggregatedResult))
+  dispatch({
+    type: IS_VALIDATING,
+    isValidating: false
+  })
 }
 
 /**
@@ -220,13 +225,15 @@ function getDefaultedValue ({inputValue, previousValue, bunsenId, renderModel, m
  * @param {Object} inputValue - value of what changed
  * @param {Object} renderModel - bunsen model
  * @param {Array<Function>} validators - custom validators
+ * @param {Array<Object>} fieldValidators - custom field validators
  * @param {Function} [all=Promise.all] - framework specific Promise.all method
  * @param {Boolean} [forceValidation=false] - whether or not to force validation
  * @param {Boolean} [mergeDefaults=false] - whether to merge defaults with initial values
  * @returns {Function} Function to asynchronously validate
  */
 export function validate (
-  bunsenId, inputValue, renderModel, validators, all = Promise.all, forceValidation = false, mergeDefaults = false
+  bunsenId, inputValue, renderModel, validators, fieldValidators,
+   all = Promise.all, forceValidation = false, mergeDefaults = false
 ) {
   return function (dispatch, getState) {
     const {validationResult: previousValidations, value: initialFormValue} = getState()
@@ -248,14 +255,42 @@ export function validate (
 
     const result = validateValue(formValue, renderModel)
 
-    const promises = []
+    let promises = []
     validators.forEach((validator) => {
       const type = typeof validator
       if (type === 'function') {
         // Original validation. Always validates
         promises.push(validator(formValue))
-      } else {
-        /**
+      }
+    })
+
+    promises = promises.concat(fieldValidation(fieldValidators, formValue, initialFormValue, previousValidations))
+    // Promise.all fails in Node when promises array is empty
+    if (promises.length === 0) {
+      dispatchUpdatedResults(dispatch, [result])
+      return
+    }
+    // TODO: Need to dispatch we are currently validating
+    dispatch({
+      type: IS_VALIDATING,
+      isValidating: true
+    })
+
+    // TODO No promise all. Need to push validation as it happens
+    return all(promises)
+      .then((snapshots) => {
+        const results = _.map(snapshots, 'value')
+        results.push(result)
+        dispatchUpdatedResults(dispatch, results)
+      })
+  }
+}
+
+function fieldValidation (fieldValidators, formValue, initialFormValue, previousValidations) {
+  let fieldsBeingValidated = []
+  const promises = []
+  fieldValidators.forEach(validator => {
+            /**
          * Field validation. Only validate if field has changed.
          * Meant for expensive validations like server side validation
          */
@@ -268,41 +303,29 @@ export function validate (
          * @property {Function} validator valdation function to validate field/fields. Must return field within error/warning
          * @property {Function[]} validators valdation functions to validate field/fields. Must return field within error/warning
          */
-        const {field, fields, validator: validatorFunc, validators: validatorFuncs} = validator
+    const {field, fields, validator: validatorFunc, validators: validatorFuncs} = validator
 
-        const fieldsToValidate = fields || [field]
-        fieldsToValidate.forEach((field) => {
-          const newValue = _.get(formValue, field)
-          const oldValue = _.get(initialFormValue, field)
+    const fieldsToValidate = fields || [field]
+    fieldsBeingValidated = fieldsBeingValidated.concat(fieldsToValidate)
+    fieldsToValidate.forEach((field) => {
+      const newValue = _.get(formValue, field)
+      const oldValue = _.get(initialFormValue, field)
 
           // Check if field value has changed
-          if (!_.isEqual(newValue, oldValue) || !initialFormValue) {
-            const validations = validatorFuncs || [validatorFunc]
+      if (!_.isEqual(newValue, oldValue) || !initialFormValue) {
+        const validations = validatorFuncs || [validatorFunc]
             // Send validator formValue, the field we're validating against, and the field's value
-            validations.forEach(validatorFunc => promises.push(validatorFunc(formValue, field, newValue)))
-          } else {
+        validations.forEach(validatorFunc => promises.push(validatorFunc(formValue, field, newValue)))
+      } else {
           // IMPORTANT: A field must only belong to one validator. Ie can't have two field validators that validate the same field
           // Return old validation result if the field hasn't changed.
-            const previousValidatorResults = getAllpreviousValidationResults(field, previousValidations)
-            if (previousValidatorResults) promises.push(Promise.resolve(previousValidatorResults))
-          }
-        })
+        const previousValidatorResults = getAllpreviousValidationResults(field, previousValidations)
+        if (previousValidatorResults) promises.push(Promise.resolve(previousValidatorResults))
       }
     })
+  })
 
-    // Promise.all fails in Node when promises array is empty
-    if (promises.length === 0) {
-      dispatchUpdatedResults(dispatch, [result])
-      return
-    }
-
-    return all(promises)
-      .then((snapshots) => {
-        const results = _.map(snapshots, 'value')
-        results.push(result)
-        dispatchUpdatedResults(dispatch, results)
-      })
-  }
+  return promises
 }
 
 function getAllpreviousValidationResults (field, {errors = [], warnings = []} = {}) {
