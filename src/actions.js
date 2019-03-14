@@ -56,15 +56,17 @@ export function change ({model, view, value}) {
     view
   }
 }
-
-export function updateValidationResults (validationResult) {
-  const errorsByInput = _.groupBy(validationResult.errors, 'path')
+function mapErrorsFromValidation (errors) {
+  const errorsByInput = _.groupBy(errors, 'path')
   const errorsFilteredToMessagesOnly = _.mapValues(
     errorsByInput,
     (fieldErrors, bunsenId) => _.map(fieldErrors, 'message')
   )
-  const errorsMappedToDotNotation = _.mapKeys(errorsFilteredToMessagesOnly, (value, key) => getPath(key))
+  return _.mapKeys(errorsFilteredToMessagesOnly, (value, key) => getPath(key))
+}
 
+export function updateValidationResults (validationResult) {
+  const errorsMappedToDotNotation = mapErrorsFromValidation(validationResult.errors)
   return {
     errors: errorsMappedToDotNotation,
     type: VALIDATION_RESOLVED,
@@ -173,14 +175,19 @@ function isEmptyValue (value) {
   (_.isObject(value) && Object.keys(value).length === 0) // Check if empty object
 }
 
-function dispatchUpdatedResults (dispatch, results) {
-  const aggregatedResult = aggregateResults(results)
+function dispatchUpdatedResults (dispatch, results, getState) {
+  const {errors, warnings} = aggregateResults(results)
+  const {validationResult = {errors: [], warnings: []}} = getState()
+
+  const hasField = (item) => _.has(item, 'field')
+  const fieldErrors = validationResult.errors.filter(hasField)
+  const fieldWarnings = validationResult.warnings.filter(hasField)
+
   // TODO: Dispatch an err action
-  dispatch(updateValidationResults(aggregatedResult))
-  dispatch({
-    type: IS_VALIDATING,
-    isValidating: false
-  })
+  dispatch(updateValidationResults({
+    errors: errors.concat(fieldErrors),
+    warnings: warnings.concat(fieldWarnings)
+  }))
 }
 
 /**
@@ -255,7 +262,7 @@ export function validate (
 
     const result = validateValue(formValue, renderModel)
 
-    let promises = []
+    const promises = []
     validators.forEach((validator) => {
       const type = typeof validator
       if (type === 'function') {
@@ -264,29 +271,34 @@ export function validate (
       }
     })
 
-    promises = promises.concat(fieldValidation(fieldValidators, formValue, initialFormValue, previousValidations))
+    const fieldValidationPromises = fieldValidation(dispatch, getState,
+      fieldValidators, formValue, initialFormValue, previousValidations)
     // Promise.all fails in Node when promises array is empty
     if (promises.length === 0) {
-      dispatchUpdatedResults(dispatch, [result])
+      dispatchUpdatedResults(dispatch, [result], getState)
       return
     }
-    // TODO: Need to dispatch we are currently validating
+
     dispatch({
       type: IS_VALIDATING,
       isValidating: true
     })
 
-    // TODO No promise all. Need to push validation as it happens
-    return all(promises)
+    all(promises)
       .then((snapshots) => {
         const results = _.map(snapshots, 'value')
         results.push(result)
-        dispatchUpdatedResults(dispatch, results)
+        dispatchUpdatedResults(dispatch, results, getState)
+      }).then(() => all(fieldValidationPromises)).then(() => {
+        dispatch({
+          type: IS_VALIDATING,
+          isValidating: false
+        })
       })
   }
 }
 
-function fieldValidation (fieldValidators, formValue, initialFormValue, previousValidations) {
+function fieldValidation (dispatch, getState, fieldValidators, formValue, initialFormValue, previousValidations) {
   let fieldsBeingValidated = []
   const promises = []
   fieldValidators.forEach(validator => {
@@ -295,14 +307,13 @@ function fieldValidation (fieldValidators, formValue, initialFormValue, previous
          * Meant for expensive validations like server side validation
          */
 
-        /**
-         * Field validator definition
-         * @typedef {Object} validator
-         * @property {String} field field to validate
-         * @property {String[]} fields fields to validate
-         * @property {Function} validator valdation function to validate field/fields. Must return field within error/warning
-         * @property {Function[]} validators valdation functions to validate field/fields. Must return field within error/warning
-         */
+    /**
+     * Field validator definition
+     * @property {String} field field to validate
+     * @property {String[]} fields fields to validate
+     * @property {Function} validator valdation function to validate field/fields. Must return field within error/warning
+     * @property {Function[]} validators valdation functions to validate field/fields. Must return field within error/warning
+     */
     const {field, fields, validator: validatorFunc, validators: validatorFuncs} = validator
 
     const fieldsToValidate = fields || [field]
@@ -315,8 +326,35 @@ function fieldValidation (fieldValidators, formValue, initialFormValue, previous
       if (!_.isEqual(newValue, oldValue) || !initialFormValue) {
         const validations = validatorFuncs || [validatorFunc]
             // Send validator formValue, the field we're validating against, and the field's value
-        validations.forEach(validatorFunc => promises.push(validatorFunc(formValue, field, newValue)))
+        validations.forEach(validatorFunc => promises.push(validatorFunc(formValue, field, newValue)
+        .then((result) => {
+          const {
+            validationResult: {
+              errors: currentErrors = [],
+              warnings: currentWarnings = []
+            } = {}
+          } = getState()
+          const filterOutField = (item) => item.field !== field
+          const filteredOutErors = currentErrors.filter(filterOutField)
+          const filteredOutWarnings = currentWarnings.filter(filterOutField)
+          const {errors, warnings} = aggregateResults([result.value])
+
+          const newErrors = filteredOutErors.concat(errors)
+          const errorsMappedToDotNotation = mapErrorsFromValidation(newErrors)
+
+          dispatch({
+            errors: errorsMappedToDotNotation,
+            type: VALIDATION_RESOLVED,
+            validationResult: {
+              errors: newErrors,
+              warnings: filteredOutWarnings.concat(warnings)
+            }
+          })
+
+          return result
+        })))
       } else {
+        // TODO: Remove, and just not replace these validatiosn
           // IMPORTANT: A field must only belong to one validator. Ie can't have two field validators that validate the same field
           // Return old validation result if the field hasn't changed.
         const previousValidatorResults = getAllpreviousValidationResults(field, previousValidations)
