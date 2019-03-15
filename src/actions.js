@@ -326,7 +326,7 @@ function fieldValidation (dispatch, getState, fieldValidators, formValue, initia
       if (!_.isEqual(newValue, oldValue) || !initialFormValue) {
         const validations = validatorFuncs || [validatorFunc]
             // Send validator formValue, the field we're validating against, and the field's value
-        validations.forEach(validatorFunc => promises.push(validatorFunc(formValue, field, newValue)
+        validations.forEach((validatorFunc, index) => promises.push(validatorFunc(formValue, field, newValue)
         .then((result) => {
           const {
             validationResult: {
@@ -334,12 +334,17 @@ function fieldValidation (dispatch, getState, fieldValidators, formValue, initia
               warnings: currentWarnings = []
             } = {}
           } = getState()
-          const filterOutField = (item) => item.field !== field
+          const validationId = `${field}-${index}`
+          const filterOutField = (item) => item.validationId !== validationId
           const filteredOutErors = currentErrors.filter(filterOutField)
           const filteredOutWarnings = currentWarnings.filter(filterOutField)
           const {errors, warnings} = aggregateResults([result.value])
-
-          const newErrors = filteredOutErors.concat(errors)
+          const attachValidataionId = (item) => {
+            return _.assign(item, {
+              validationId
+            })
+          }
+          const newErrors = filteredOutErors.concat(errors.map(attachValidataionId))
           const errorsMappedToDotNotation = mapErrorsFromValidation(newErrors)
 
           dispatch({
@@ -347,7 +352,7 @@ function fieldValidation (dispatch, getState, fieldValidators, formValue, initia
             type: VALIDATION_RESOLVED,
             validationResult: {
               errors: newErrors,
-              warnings: filteredOutWarnings.concat(warnings)
+              warnings: filteredOutWarnings.concat(warnings.map(attachValidataionId))
             }
           })
 
