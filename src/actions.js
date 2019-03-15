@@ -177,16 +177,10 @@ function isEmptyValue (value) {
 
 function dispatchUpdatedResults (dispatch, results, getState) {
   const {errors, warnings} = aggregateResults(results)
-  const {validationResult = {errors: [], warnings: []}} = getState()
-
-  const hasValidationId = (item) => _.has(item, 'validationId')
-  const fieldErrors = validationResult.errors.filter(hasValidationId)
-  const fieldWarnings = validationResult.warnings.filter(hasValidationId)
-
   // TODO: Dispatch an err action
   dispatch(updateValidationResults({
-    errors: errors.concat(fieldErrors),
-    warnings: warnings.concat(fieldWarnings)
+    errors: errors,
+    warnings: warnings
   }))
 }
 
@@ -329,17 +323,17 @@ function fieldValidation (dispatch, getState, fieldValidators, formValue, initia
         validations.forEach((validatorFunc, index) => promises.push(validatorFunc(formValue, field, newValue)
         .then((result) => {
           const {
-            validationResult: {
+            fieldValidationResult: {
               errors: currentErrors = [],
               warnings: currentWarnings = []
             } = {}
           } = getState()
           const validationId = `${field}-${index}`
-          const filterOutField = (item) => item.validationId !== validationId
-          const filteredOutErors = currentErrors.filter(filterOutField)
-          const filteredOutWarnings = currentWarnings.filter(filterOutField)
+          const filterOutValidationId = (item) => item.validationId !== validationId
+          const filteredOutErors = currentErrors.filter(filterOutValidationId)
+          const filteredOutWarnings = currentWarnings.filter(filterOutValidationId)
 
-          // No need to use `aggeragate result as we should never have isRequired
+          // No need to use `aggeragateResult as we should never have isRequired
           const {errors = [], warnings = []} = result.value
           const attachValidataionId = (item) => {
             return _.assign({
@@ -351,9 +345,9 @@ function fieldValidation (dispatch, getState, fieldValidators, formValue, initia
           const errorsMappedToDotNotation = mapErrorsFromValidation(newErrors)
 
           dispatch({
-            errors: errorsMappedToDotNotation,
+            fieldErrors: errorsMappedToDotNotation,
             type: VALIDATION_RESOLVED,
-            validationResult: {
+            fieldValidationResult: {
               errors: newErrors,
               warnings: filteredOutWarnings.concat(warnings.map(attachValidataionId))
             }

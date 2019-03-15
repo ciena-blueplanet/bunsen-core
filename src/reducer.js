@@ -367,8 +367,10 @@ export const actionReducers = {
   [VALIDATION_RESOLVED]: function (state, action) {
     return _.defaults({
       errors: action.errors,
+      fieldErrors: action.fieldErrors,
       lastAction: VALIDATION_RESOLVED,
-      validationResult: action.validationResult
+      validationResult: action.validationResult,
+      fieldValidationResult: action.fieldValidationResult
     }, state)
   },
 
