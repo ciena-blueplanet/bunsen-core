@@ -360,32 +360,9 @@ function fieldValidation (dispatch, getState, fieldValidators, formValue, initia
 
           return result
         })))
-      } else {
-        // TODO: Remove, and just not replace these validatiosn
-          // IMPORTANT: A field must only belong to one validator. Ie can't have two field validators that validate the same field
-          // Return old validation result if the field hasn't changed.
-        const previousValidatorResults = getAllpreviousValidationResults(field, previousValidations)
-        if (previousValidatorResults) promises.push(Promise.resolve(previousValidatorResults))
       }
     })
   })
 
   return promises
-}
-
-function getAllpreviousValidationResults (field, {errors = [], warnings = []} = {}) {
-  const hasSameField = (item) => item.field === field
-
-  // Find errors and warnings that validated the field
-  const previousErrors = errors.filter(hasSameField)
-  const previousWarnings = warnings.filter(hasSameField)
-
-  if (!_.isEmpty(previousErrors) || !_.isEmpty(warnings)) {
-    return {
-      value: {
-        errors: previousErrors,
-        warnings: previousWarnings
-      }
-    }
-  }
 }
