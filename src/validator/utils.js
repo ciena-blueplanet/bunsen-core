@@ -58,12 +58,10 @@ export function addRequiredToErrors (error, errorList) {
 export function aggregateResults (results) {
   const nonRequiredErrors = []
   const requiredErrors = []
-  const warnings = []
+  let warnings = []
   results.forEach((result) => {
     if (result.warnings) {
-      result.warnings.forEach((warning) => {
-        warnings.push(warning)
-      })
+      warnings = result.warnings.slice()
     }
 
     if (result.errors) {
