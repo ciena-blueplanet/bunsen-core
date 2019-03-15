@@ -179,9 +179,9 @@ function dispatchUpdatedResults (dispatch, results, getState) {
   const {errors, warnings} = aggregateResults(results)
   const {validationResult = {errors: [], warnings: []}} = getState()
 
-  const hasField = (item) => _.has(item, 'field')
-  const fieldErrors = validationResult.errors.filter(hasField)
-  const fieldWarnings = validationResult.warnings.filter(hasField)
+  const hasValidationId = (item) => _.has(item, 'validationId')
+  const fieldErrors = validationResult.errors.filter(hasValidationId)
+  const fieldWarnings = validationResult.warnings.filter(hasValidationId)
 
   // TODO: Dispatch an err action
   dispatch(updateValidationResults({
@@ -342,9 +342,10 @@ function fieldValidation (dispatch, getState, fieldValidators, formValue, initia
           // No need to use `aggeragate result as we should never have isRequired
           const {errors = [], warnings = []} = result.value
           const attachValidataionId = (item) => {
-            return _.assign(item, {
-              validationId
-            })
+            return _.assign({
+              validationId,
+              field
+            }, item)
           }
           const newErrors = filteredOutErors.concat(errors.map(attachValidataionId))
           const errorsMappedToDotNotation = mapErrorsFromValidation(newErrors)
