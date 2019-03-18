@@ -335,13 +335,13 @@ function fieldValidation (dispatch, getState, fieldValidators, formValue, initia
 
           // No need to use `aggeragateResult as we should never have isRequired
           const {errors = [], warnings = []} = result.value
-          const attachValidataionId = (item) => {
+          const attachValidatationId = (item) => {
             return _.assign({
               validationId,
               field
             }, item)
           }
-          const newErrors = filteredOutErors.concat(errors.map(attachValidataionId))
+          const newErrors = filteredOutErors.concat(errors.map(attachValidatationId))
           const errorsMappedToDotNotation = mapErrorsFromValidation(newErrors)
 
           dispatch({
@@ -349,7 +349,7 @@ function fieldValidation (dispatch, getState, fieldValidators, formValue, initia
             type: VALIDATION_RESOLVED,
             fieldValidationResult: {
               errors: newErrors,
-              warnings: filteredOutWarnings.concat(warnings.map(attachValidataionId))
+              warnings: filteredOutWarnings.concat(warnings.map(attachValidatationId))
             }
           })
 

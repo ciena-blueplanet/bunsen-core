@@ -2,6 +2,7 @@ var expect = require('chai').expect
 var actions = require('../lib/actions')
 var _ = require('lodash')
 var sinon = require('sinon')
+var RSVP = require('rsvp')
 
 describe('changeValue action', function () {
   it(`returns a dispatcher action with type "${actions.CHANGE_VALUE}"`, function () {
@@ -507,6 +508,117 @@ describe('validate action', function () {
       firstName: 'Bruce',
       lastName: 'Wayne',
       alias: 'Batman'
+    })
+  })
+})
+
+function _validator (errors = [], warnings = []) {
+  return () => {
+    return RSVP.resolve({
+      value: {
+        errors,
+        warnings
+      }
+    })
+  }
+}
+describe('custom validators', function () {
+  describe('form validators', function () {
+    it('should call form validators', function (done) {
+      var thunk = actions.validate(null, {
+        foo: 'bar'
+      }, {}, [_validator([{
+        path: '#/foo',
+        message: 'I do no like bars'
+      }]), _validator([], [{
+        path: '#/foo',
+        message: 'They are bad'
+      }])], undefined, RSVP.all)
+
+      thunk((action) => {
+        if (action.type === actions.VALIDATION_RESOLVED) {
+          expect(action.validationResult).to.deep.eql({
+            errors: [{
+              path: '#/foo',
+              message: 'I do no like bars'
+            }],
+            warnings: [{
+              path: '#/foo',
+              message: 'They are bad'
+            }]})
+          done()
+        }
+      }, () => {
+        return {
+          value: {
+            foo: 'foo'
+          },
+          model: {
+            type: 'object',
+            properties: {
+              foo: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      })
+    })
+  })
+
+  function _changeValue (state, action) {
+    if (action.type === actions.CHANGE_VALUE) {
+      state.value = action.value
+    }
+  }
+  describe('field validators', function () {
+    let state, getState
+    beforeEach(function () {
+      state = {
+        value: {
+          foo: 'foo'
+        },
+        model: {
+          type: 'object',
+          properties: {
+            foo: {
+              type: 'string'
+            },
+            bar: {
+              type: 'string'
+            }
+          }
+        }
+      }
+
+      getState = () => state
+    })
+    it('should call field validators', function (done) {
+      var thunk = actions.validate(null, {
+        foo: 'bar',
+        bar: 'foo'
+      }, {}, [], [{
+        field: 'foo',
+        validator: _validator([{
+          path: '#/foo',
+          message: 'I do no like bars'
+        }])
+      }], RSVP.all)
+
+      thunk((action) => {
+        _changeValue(state, action)
+        if (action.type === actions.VALIDATION_RESOLVED && action.fieldErrors) {
+          expect(action.fieldValidationResult).to.deep.eql({
+            errors: [{
+              path: '#/foo',
+              field: 'foo',
+              validationId: 'foo-0',
+              message: 'I do no like bars'
+            }],
+            warnings: []})
+          done()
+        }
+      }, getState)
     })
   })
 })
