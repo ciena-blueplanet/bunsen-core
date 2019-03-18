@@ -265,8 +265,8 @@ export function validate (
       }
     })
 
-    const fieldValidationPromises = fieldValidation(dispatch, getState,
-      fieldValidators, formValue, initialFormValue, previousValidations)
+    const fieldValidationPromises = fieldValidators ? fieldValidation(dispatch, getState,
+      fieldValidators, formValue, initialFormValue, previousValidations) : []
     // Promise.all fails in Node when promises array is empty
     if (promises.length === 0) {
       dispatchUpdatedResults(dispatch, [result], getState)
