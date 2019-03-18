@@ -232,6 +232,7 @@ describe('validate action', function () {
       schema,
       [],
       undefined,
+      undefined,
       false,
       mergeDefaults)
 
@@ -432,7 +433,7 @@ describe('validate action', function () {
       })
 
       it('dispatches action when forceValidation is disabled', function () {
-        var thunk = actions.validate(null, _.cloneDeep(state.value), schema, [], Promise.all, false)
+        var thunk = actions.validate(null, _.cloneDeep(state.value), schema, [], undefined, Promise.all, false)
 
         thunk(
           spy,
@@ -445,7 +446,7 @@ describe('validate action', function () {
       })
 
       it('dispatches action when forceValidation is enabled', function () {
-        var thunk = actions.validate(null, _.cloneDeep(state.value), schema, [], Promise.all, true)
+        var thunk = actions.validate(null, _.cloneDeep(state.value), schema, [], undefined, Promise.all, true)
 
         thunk(
           spy,
@@ -472,7 +473,7 @@ describe('validate action', function () {
       })
 
       it('does not dispatch action when forceValidation is disabled', function () {
-        var thunk = actions.validate('alias', _.cloneDeep(state.value.alias), schema, [], Promise.all, false)
+        var thunk = actions.validate('alias', _.cloneDeep(state.value.alias), schema, [], undefined, Promise.all, false)
 
         thunk(
           spy,
@@ -485,7 +486,7 @@ describe('validate action', function () {
       })
 
       it('dispatches action when forceValidation is enabled', function () {
-        var thunk = actions.validate('alias', _.cloneDeep(state.value.alias), schema, [], Promise.all, true)
+        var thunk = actions.validate('alias', _.cloneDeep(state.value.alias), schema, [], undefined, Promise.all, true)
 
         thunk(
           spy,

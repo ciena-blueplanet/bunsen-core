@@ -724,9 +724,33 @@ describe('reducer', function () {
 
       expect(changedState).to.eql({
         errors: [],
+        fieldErrors: undefined,
+        fieldValidationResult: undefined,
         lastAction: 'VALIDATION_RESOLVED',
         validationResult: ['you look kinda fat'],
         value: {},
+        baseModel: {}
+      })
+    })
+
+    it('set field errrors and validation', function () {
+      var initialState = {
+        errors: ['this is broken'],
+        validationResult: ['this sucks'],
+        value: {},
+        baseModel: {}
+      }
+
+      var changedState = reducer(initialState, {
+        type: actions.VALIDATION_RESOLVED, fieldErrors: ['rude'], fieldValidationResult: ['that is really rude']
+      })
+
+      expect(changedState).to.eql({
+        errors: ['this is broken'],
+        fieldErrors: ['rude'],
+        fieldValidationResult: ['that is really rude'],
+        lastAction: 'VALIDATION_RESOLVED',
+        validationResult: ['this sucks'], value: {},
         baseModel: {}
       })
     })
