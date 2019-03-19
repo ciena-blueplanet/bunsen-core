@@ -350,7 +350,7 @@ function fieldValidation (dispatch, getState, fieldValidators, formValue, initia
           const filteredOutErors = currentErrors.filter(filterOutValidationId)
           const filteredOutWarnings = currentWarnings.filter(filterOutValidationId)
 
-          // No need to use `aggeragateResult as we should never have isRequired
+          // No need to use `aggregateResults as we should never have isRequired
           const {errors = [], warnings = []} = result.value
           const attachValidatationId = (item) => {
             return _.assign({
