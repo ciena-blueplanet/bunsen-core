@@ -333,7 +333,7 @@ function fieldValidation (dispatch, getState, fieldValidators, formValue, initia
       const newValue = _.get(formValue, field)
       const oldValue = _.get(initialFormValue, field)
 
-          // Check if field value has changed
+      // Check if field value has changed
       if (!_.isEqual(newValue, oldValue) || !initialFormValue) {
         const validations = validatorFuncs || [validatorFunc]
             // Send validator formValue, the field we're validating against, and the field's value
