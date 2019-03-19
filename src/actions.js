@@ -175,7 +175,7 @@ function isEmptyValue (value) {
   (_.isObject(value) && Object.keys(value).length === 0) // Check if empty object
 }
 
-function dispatchUpdatedResults (dispatch, results, getState) {
+function dispatchUpdatedResults (dispatch, results) {
   const {errors, warnings} = aggregateResults(results)
   // TODO: Dispatch an err action
   dispatch(updateValidationResults({
@@ -237,7 +237,7 @@ export function validate (
    all = Promise.all, forceValidation = false, mergeDefaults = false
 ) {
   return function (dispatch, getState) {
-    const {validationResult: previousValidations, value: initialFormValue} = getState()
+    const {value: initialFormValue} = getState()
     let formValue = initialFormValue
     const previousValue = _.get(formValue, bunsenId)
 
@@ -270,11 +270,11 @@ export function validate (
     })
 
     const fieldValidationPromises = fieldValidators ? fieldValidation(dispatch, getState,
-      fieldValidators, formValue, initialFormValue, previousValidations) : []
+      fieldValidators, formValue, initialFormValue) : []
 
     // Promise.all fails in Node when promises array is empty
     if (promises.length === 0) {
-      dispatchUpdatedResults(dispatch, [result], getState)
+      dispatchUpdatedResults(dispatch, [result])
       dispatchDoneValidating(dispatch, fieldValidationPromises, all)
       return
     }
@@ -283,7 +283,7 @@ export function validate (
       .then((snapshots) => {
         const results = _.map(snapshots, 'value')
         results.push(result)
-        dispatchUpdatedResults(dispatch, results, getState)
+        dispatchUpdatedResults(dispatch, results)
       }).then(() => dispatchDoneValidating(dispatch, fieldValidationPromises, all))
   }
 }
@@ -303,15 +303,21 @@ function dispatchDoneValidating (dispatch, fieldValidationPromises, all) {
   }
 }
 
-function fieldValidation (dispatch, getState, fieldValidators, formValue, initialFormValue, previousValidations) {
+/**
+ * Field validation. Only validate if field has changed.
+ * Meant for expensive validations like server side validation
+ * @function fieldValidation
+ * @param  {Function} dispatch        Redux store dispacth
+ * @param  {Function} getState        Function that returns current state of store
+ * @param  {Array<Object>} fieldValidators     Array of field validators
+ * @param  {type} formValue           value of what changed
+ * @param  {type} initialFormValue    initial value before change
+ * @returns {Array<Promise>} Array of field validation promies
+ */
+function fieldValidation (dispatch, getState, fieldValidators, formValue, initialFormValue) {
   let fieldsBeingValidated = []
   const promises = []
   fieldValidators.forEach(validator => {
-            /**
-         * Field validation. Only validate if field has changed.
-         * Meant for expensive validations like server side validation
-         */
-
     /**
      * Field validator definition
      * @property {String} field field to validate
