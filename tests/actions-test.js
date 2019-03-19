@@ -4,6 +4,20 @@ var _ = require('lodash')
 var sinon = require('sinon')
 var RSVP = require('rsvp')
 
+function debouncePromise (f, interval) {
+  let timer = null
+
+  return (...args) => {
+    clearTimeout(timer)
+    return new Promise((resolve) => {
+      timer = setTimeout(
+        () => resolve(f(...args)),
+        interval
+      )
+    })
+  }
+}
+
 describe('changeValue action', function () {
   it(`returns a dispatcher action with type "${actions.CHANGE_VALUE}"`, function () {
     var action = actions.changeValue('some.path', 'value')
@@ -430,7 +444,7 @@ describe('validate action', function () {
           }
         )
 
-        expect(spy.callCount).to.equal(2)
+        expect(spy.callCount).to.equal(4)
       })
 
       it('dispatches action when forceValidation is disabled', function () {
@@ -443,7 +457,7 @@ describe('validate action', function () {
           }
         )
 
-        expect(spy.callCount).to.equal(2)
+        expect(spy.callCount).to.equal(4)
       })
 
       it('dispatches action when forceValidation is enabled', function () {
@@ -456,7 +470,7 @@ describe('validate action', function () {
           }
         )
 
-        expect(spy.callCount).to.equal(1)
+        expect(spy.callCount).to.equal(3)
       })
     })
 
@@ -496,7 +510,7 @@ describe('validate action', function () {
           }
         )
 
-        expect(spy.callCount).to.equal(1)
+        expect(spy.callCount).to.equal(3)
       })
     })
   })
@@ -525,6 +539,27 @@ function _validator (errors = [], warnings = []) {
   }
 }
 describe('custom validators', function () {
+  let state, getState
+  beforeEach(function () {
+    state = {
+      value: {
+        foo: 'foo'
+      },
+      model: {
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'string'
+          },
+          bar: {
+            type: 'string'
+          }
+        }
+      }
+    }
+
+    getState = () => state
+  })
   describe('form validators', function () {
     it('should call form validators', function (done) {
       var thunk = actions.validate(null, {
@@ -574,28 +609,6 @@ describe('custom validators', function () {
     }
   }
   describe('field validators', function () {
-    let state, getState
-    beforeEach(function () {
-      state = {
-        value: {
-          foo: 'foo'
-        },
-        model: {
-          type: 'object',
-          properties: {
-            foo: {
-              type: 'string'
-            },
-            bar: {
-              type: 'string'
-            }
-          }
-        }
-      }
-
-      getState = () => state
-    })
-
     describe('ensure validation are called', function () {
       function validateFieldAndValidatorCalled (thunk, done, expectedErrors) {
         thunk((action) => {
@@ -726,19 +739,7 @@ describe('custom validators', function () {
           }
         }, getState)
       })
-      function debouncePromise (f, interval) {
-        let timer = null
 
-        return (...args) => {
-          clearTimeout(timer)
-          return new Promise((resolve) => {
-            timer = setTimeout(
-              () => resolve(f(...args)),
-              interval
-            )
-          })
-        }
-      }
       it('should dispatch all validations indivdually', function (done) {
         let count = 0
         var thunk = actions.validate(null, {
@@ -788,6 +789,107 @@ describe('custom validators', function () {
           }
         }, getState)
       })
+    })
+
+    describe('should not revalidate if field is not changed', function () {
+      it('should dispatch is validating true', function (done) {
+        let isValidatingCount = 0
+        let validationCount = 0
+        const args = [null, {
+          foo: 'bar',
+          bar: 'foo'
+        }, {}, [], [{
+          field: 'foo',
+          validators: [_validator([{
+            path: '#/foo',
+            message: 'I do no like bars'
+          }])]
+        }], RSVP.all]
+        var thunk1 = actions.validate(...args)
+
+        thunk1((action) => {
+          _changeValue(state, action)
+          if (action.type === actions.IS_VALIDATING) {
+            isValidatingCount++
+            switch (isValidatingCount) {
+              case 2:
+                expect(action.isValidating === false && validationCount === 2,
+                'should say done validating first with all validations done').to.eql(true)
+                break
+            }
+          }
+
+          if (action.type === actions.VALIDATION_RESOLVED) {
+            validationCount++
+          }
+        }, getState)
+
+        var thunk2 = actions.validate(...args)
+        let thunk2IsValidatingCount = 0
+        let thunk2ValidationCount = 0
+        thunk2((action) => {
+          _changeValue(state, action)
+          if (action.type === actions.IS_VALIDATING) {
+            thunk2IsValidatingCount++
+            switch (thunk2IsValidatingCount) {
+              case 2:
+                expect(action.isValidating === false && thunk2ValidationCount === 1,
+                'should say done validating first with all validations done').to.eql(true)
+                done()
+                break
+            }
+          }
+
+          if (action.type === actions.VALIDATION_RESOLVED) {
+            thunk2ValidationCount++
+          }
+        }, getState)
+      })
+    })
+  })
+
+  describe('is validating', function () {
+    it('should dispatch is validating true', function (done) {
+      let isValidatingCount = 0
+      let validationCount = 0
+      var thunk = actions.validate(null, {
+        foo: 'bar',
+        bar: 'foo'
+      }, {}, [_validator([{
+        path: '#/bar',
+        message: 'I do no like the form'
+      }])], [{
+        field: 'foo',
+        validators: [debouncePromise(_validator([{
+          path: '#/foo',
+          message: 'I do no like bars'
+        }]), 400), _validator([{
+          path: '#/bar',
+          message: 'I do no like foo'
+        }])]
+      }], RSVP.all)
+
+      thunk((action) => {
+        _changeValue(state, action)
+        if (action.type === actions.IS_VALIDATING) {
+          isValidatingCount++
+          switch (isValidatingCount) {
+            case 1:
+              expect(action.isValidating === true && validationCount === 0,
+              'should say  isValidating first with not validation yet').to.eql(true)
+              break
+            case 2:
+              expect(action.isValidating === false && validationCount === 3,
+              'should say done validating first with all validations done').to.eql(true)
+              done()
+              break
+          }
+        }
+
+        if (action.type === actions.VALIDATION_RESOLVED) {
+          validationCount++
+        }
+      }, getState)
     })
   })
 })
