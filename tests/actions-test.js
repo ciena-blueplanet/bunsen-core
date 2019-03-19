@@ -513,10 +513,12 @@ describe('validate action', function () {
 })
 
 function _validator (errors = [], warnings = []) {
-  return () => {
+  return (formValue, field = 'foo') => {
     return RSVP.resolve({
       value: {
-        errors,
+        errors: errors.map((error) => {
+          return _.assign({}, error, {path: `#/${field}`})
+        }),
         warnings
       }
     })
@@ -593,32 +595,199 @@ describe('custom validators', function () {
 
       getState = () => state
     })
-    it('should call field validators', function (done) {
-      var thunk = actions.validate(null, {
-        foo: 'bar',
-        bar: 'foo'
-      }, {}, [], [{
-        field: 'foo',
-        validator: _validator([{
-          path: '#/foo',
-          message: 'I do no like bars'
-        }])
-      }], RSVP.all)
 
-      thunk((action) => {
-        _changeValue(state, action)
-        if (action.type === actions.VALIDATION_RESOLVED && action.fieldErrors) {
-          expect(action.fieldValidationResult).to.deep.eql({
-            errors: [{
-              path: '#/foo',
-              field: 'foo',
-              validationId: 'foo-0',
-              message: 'I do no like bars'
-            }],
-            warnings: []})
-          done()
+    describe('ensure validation are called', function () {
+      function validateFieldAndValidatorCalled (thunk, done, expectedErrors) {
+        thunk((action) => {
+          _changeValue(state, action)
+          if (action.type === actions.VALIDATION_RESOLVED && action.fieldErrors) {
+            expect(action.fieldValidationResult).to.deep.eql({
+              errors: [{
+                path: '#/foo',
+                field: 'foo',
+                validationId: 'foo-0',
+                message: 'I do no like bars'
+              }],
+              warnings: []})
+            done()
+          }
+        }, getState)
+      }
+      it('should call field and validator', function (done) {
+        var thunk = actions.validate(null, {
+          foo: 'bar',
+          bar: 'foo'
+        }, {}, [], [{
+          field: 'foo',
+          validator: _validator([{
+            path: '#/foo',
+            message: 'I do no like bars'
+          }])
+        }], RSVP.all)
+
+        validateFieldAndValidatorCalled(thunk, done)
+      })
+
+      it('should call fields and validators', function (done) {
+        var thunk = actions.validate(null, {
+          foo: 'bar',
+          bar: 'foo'
+        }, {}, [], [{
+          fields: ['foo'],
+          validators: [_validator([{
+            path: '#/foo',
+            message: 'I do no like bars'
+          }])]
+        }], RSVP.all)
+
+        validateFieldAndValidatorCalled(thunk, done)
+      })
+
+      it('should call field and validators', function (done) {
+        var thunk = actions.validate(null, {
+          foo: 'bar',
+          bar: 'foo'
+        }, {}, [], [{
+          field: 'foo',
+          validators: [_validator([{
+            path: '#/foo',
+            message: 'I do no like bars'
+          }])]
+        }], RSVP.all)
+
+        validateFieldAndValidatorCalled(thunk, done)
+      })
+
+      it('should call fields and validator', function (done) {
+        var thunk = actions.validate(null, {
+          foo: 'bar',
+          bar: 'foo'
+        }, {}, [], [{
+          fields: ['foo'],
+          validator: _validator([{
+            path: '#/foo',
+            message: 'I do no like bars'
+          }])
+        }], RSVP.all)
+
+        validateFieldAndValidatorCalled(thunk, done)
+      })
+
+      it('should call all fields and validators', function (done) {
+        let count = 0
+        var thunk = actions.validate(null, {
+          foo: 'bar',
+          bar: 'foo'
+        }, {}, [], [{
+          fields: ['foo', 'bar'],
+          validators: [_validator([{
+            path: '#/foo',
+            message: 'I do no like bars'
+          }]), _validator([{
+            path: '#/bar',
+            message: 'I do no like foo'
+          }])]
+        }], RSVP.all)
+
+        thunk((action) => {
+          _changeValue(state, action)
+          if (action.type === actions.VALIDATION_RESOLVED && action.fieldErrors) {
+            count++
+            state.fieldErrors = action.fieldErrors
+            state.fieldValidationResult = action.fieldValidationResult
+            if (count === 4) {
+              expect(state.fieldValidationResult).to.deep.eql({
+                errors: [{
+                  path: '#/foo',
+                  field: 'foo',
+                  validationId: 'foo-0',
+                  message: 'I do no like bars'
+                }, {
+                  path: '#/foo',
+                  field: 'foo',
+                  validationId: 'foo-1',
+                  message: 'I do no like foo'
+                },
+                {
+                  path: '#/bar',
+                  field: 'bar',
+                  validationId: 'bar-0',
+                  message: 'I do no like bars'
+                },
+                {
+                  path: '#/bar',
+                  field: 'bar',
+                  validationId: 'bar-1',
+                  message: 'I do no like foo'
+                }],
+                warnings: []})
+              done()
+            }
+          }
+        }, getState)
+      })
+      function debouncePromise (f, interval) {
+        let timer = null
+
+        return (...args) => {
+          clearTimeout(timer)
+          return new Promise((resolve) => {
+            timer = setTimeout(
+              () => resolve(f(...args)),
+              interval
+            )
+          })
         }
-      }, getState)
+      }
+      it('should dispatch all validations indivdually', function (done) {
+        let count = 0
+        var thunk = actions.validate(null, {
+          foo: 'bar',
+          bar: 'foo'
+        }, {}, [], [{
+          field: 'foo',
+          validators: [debouncePromise(_validator([{
+            path: '#/foo',
+            message: 'I do no like bars'
+          }]), 400), _validator([{
+            path: '#/bar',
+            message: 'I do no like foo'
+          }])]
+        }], RSVP.all)
+
+        // eslint-disable-next-line complexity
+        thunk((action) => {
+          _changeValue(state, action)
+          if (action.type === actions.VALIDATION_RESOLVED && action.fieldErrors) {
+            count++
+            switch (count) {
+              case 1:
+                expect(action.fieldValidationResult).to.deep.eql({
+                  errors: [{
+                    path: '#/foo',
+                    field: 'foo',
+                    validationId: 'foo-1',
+                    message: 'I do no like foo'
+                  }],
+                  warnings: []
+                })
+                break
+              case 2:
+                expect(action.fieldValidationResult).to.deep.eql({
+                  errors: [{
+                    path: '#/foo',
+                    field: 'foo',
+                    validationId: 'foo-0',
+                    message: 'I do no like bars'
+                  }],
+                  warnings: []
+                })
+                done()
+                break
+            }
+          }
+        }, getState)
+      })
     })
   })
 })
