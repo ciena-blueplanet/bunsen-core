@@ -257,6 +257,10 @@ export function validate (
     const result = validateValue(formValue, renderModel)
 
     const promises = []
+    dispatch({
+      type: IS_VALIDATING,
+      isValidating: true
+    })
     validators.forEach((validator) => {
       const type = typeof validator
       if (type === 'function') {
@@ -267,28 +271,35 @@ export function validate (
 
     const fieldValidationPromises = fieldValidators ? fieldValidation(dispatch, getState,
       fieldValidators, formValue, initialFormValue, previousValidations) : []
+
     // Promise.all fails in Node when promises array is empty
     if (promises.length === 0) {
       dispatchUpdatedResults(dispatch, [result], getState)
+      dispatchDoneValidating(dispatch, fieldValidationPromises, all)
       return
     }
-
-    dispatch({
-      type: IS_VALIDATING,
-      isValidating: true
-    })
 
     all(promises)
       .then((snapshots) => {
         const results = _.map(snapshots, 'value')
         results.push(result)
         dispatchUpdatedResults(dispatch, results, getState)
-      }).then(() => all(fieldValidationPromises)).then(() => {
-        dispatch({
-          type: IS_VALIDATING,
-          isValidating: false
-        })
+      }).then(() => dispatchDoneValidating(dispatch, fieldValidationPromises, all))
+  }
+}
+function dispatchDoneValidating (dispatch, fieldValidationPromises, all) {
+  if (fieldValidationPromises.length === 0) {
+    dispatch({
+      type: IS_VALIDATING,
+      isValidating: false
+    })
+  } else {
+    return all(fieldValidationPromises).then(() => {
+      dispatch({
+        type: IS_VALIDATING,
+        isValidating: false
       })
+    })
   }
 }
 
