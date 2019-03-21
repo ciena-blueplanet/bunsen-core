@@ -25,7 +25,9 @@ describe('reducer', function () {
     actions.CHANGE,
     actions.CHANGE_MODEL,
     actions.CHANGE_VALUE,
-    actions.VALIDATION_RESOLVED
+    actions.VALIDATION_RESOLVED,
+    actions.IS_VALIDATING,
+    actions.IS_VALIDATING_FIELD
   ]
     .forEach((actionType) => {
       describe(`when action type is ${actionType}`, function () {
@@ -753,6 +755,45 @@ describe('reducer', function () {
         validationResult: ['this sucks'], value: {},
         baseModel: {}
       })
+    })
+  })
+})
+
+describe('IS_VALIDATING_FIELD reduced', function () {
+  const isValidatingFieldReducer = actionReducers[actions.IS_VALIDATING_FIELD]
+  it('should add field to validatingFields when true', function () {
+    const result = isValidatingFieldReducer({
+      validatingFields: {
+        foo: true,
+        bar: true
+      }
+    }, {
+      validating: true,
+      field: 'foobar'
+    })
+    expect(result).to.deep.equal({
+      validatingFields: {
+        foo: true,
+        bar: true,
+        foobar: true
+      }
+    })
+  })
+
+  it('should remove field from validatingFields when false', function () {
+    const result = isValidatingFieldReducer({
+      validatingFields: {
+        foo: true,
+        bar: true
+      }
+    }, {
+      validating: false,
+      field: 'foo'
+    })
+    expect(result).to.deep.equal({
+      validatingFields: {
+        bar: true
+      }
     })
   })
 })
