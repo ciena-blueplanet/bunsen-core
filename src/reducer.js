@@ -21,7 +21,10 @@ import evaluateViewConditions from './view-conditions'
 const INITIAL_VALUE = {
   lastAction: null,
   errors: {},
+  fieldErrors: {},
+  validatingFields: {},
   validationResult: {warnings: [], errors: []},
+  fieldValidationResult: {warnings: [], errors: []},
   value: null,
   model: {}, // Model calculated by the reducer
   baseModel: {}, // Original model recieved,
