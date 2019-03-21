@@ -740,7 +740,7 @@ describe('custom validators', function () {
         }, getState)
       })
 
-      it('should dispatch all validations indivdually', function (done) {
+      it('should dispatch all validations individually', function (done) {
         let count = 0
         var thunk = actions.validate(null, {
           foo: 'bar',
@@ -792,7 +792,7 @@ describe('custom validators', function () {
     })
 
     describe('should not revalidate if field is not changed', function () {
-      it('should dispatch is validating true', function (done) {
+      it('should dispatch is validating true with only 2 validations done', function (done) {
         let isValidatingCount = 0
         let validationCount = 0
         const args = [null, {
@@ -890,6 +890,71 @@ describe('custom validators', function () {
           validationCount++
         }
       }, getState)
+    })
+
+    describe('is field validating', function () {
+      it('should dispatch field is validating', function (done) {
+        let isFieldValidatingCount = 0
+        var thunk = actions.validate(null, {
+          foo: 'bar',
+          bar: 'foo'
+        }, {}, [], [{
+          field: 'foo',
+          validators: [debouncePromise(_validator([{
+            path: '#/foo',
+            message: 'I do no like bars'
+          }]), 400), _validator([{
+            path: '#/bar',
+            message: 'I do no like foo'
+          }])]
+        }], RSVP.all)
+
+        thunk((action) => {
+          _changeValue(state, action)
+          if (action.type === actions.IS_VALIDATING_FIELD) {
+            isFieldValidatingCount++
+            switch (isFieldValidatingCount) {
+              case 1:
+                expect(action.field).to.equal('foo')
+                expect(action.validating).to.equal(true)
+                break
+              case 2:
+                expect(action.field).to.equal('foo')
+                expect(action.validating).to.equal(false)
+                done()
+                break
+            }
+          }
+        }, getState)
+      })
+
+      it('should not dispatch field is validating if value has not changed', function (done) {
+        let isFieldValidatingCount = 0
+        var thunk = actions.validate(null, {
+          foo: 'foo',
+          bar: 'foo'
+        }, {}, [], [{
+          field: 'foo',
+          validators: [debouncePromise(_validator([{
+            path: '#/foo',
+            message: 'I do no like bars'
+          }]), 400), _validator([{
+            path: '#/bar',
+            message: 'I do no like foo'
+          }])]
+        }], RSVP.all)
+
+        thunk((action) => {
+          _changeValue(state, action)
+          if (action.type === actions.IS_VALIDATING_FIELD) {
+            isFieldValidatingCount++
+          }
+          if (action.type === actions.IS_VALIDATING && action.isValidating === false) {
+            expect(isFieldValidatingCount).to.equal(0)
+            done()
+          }
+        }, getState)
+      })
     })
   })
 })

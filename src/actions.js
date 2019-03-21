@@ -323,14 +323,13 @@ function fieldValidation (dispatch, getState, fieldValidators, formValue, initia
     const fieldsToValidate = fields || [field]
     fieldsBeingValidated = fieldsBeingValidated.concat(fieldsToValidate)
     fieldsToValidate.forEach((field) => {
-      dispatchFieldIsValidating(dispatch, field, true)
-
       let fieldValidationPromises = []
       const newValue = _.get(formValue, field)
       const oldValue = _.get(initialFormValue, field)
 
       // Check if field value has changed
       if (!_.isEqual(newValue, oldValue) || !initialFormValue) {
+        dispatchFieldIsValidating(dispatch, field, true)
         const validations = validatorFuncs || [validatorFunc]
             // Send validator formValue, the field we're validating against, and the field's value
         validations.forEach((validatorFunc, index) => {
@@ -375,10 +374,11 @@ function fieldValidation (dispatch, getState, fieldValidators, formValue, initia
           fieldValidationPromises.push(fieldValidationPromise)
         })
       }
-
-      _guardPromiseAll(fieldValidationPromises, all, () => {
-        dispatchFieldIsValidating(dispatch, field, false)
-      })
+      if (fieldValidationPromises.length >= 1) {
+        all(fieldValidationPromises).then(() => {
+          dispatchFieldIsValidating(dispatch, field, false)
+        })
+      }
     })
   })
 
