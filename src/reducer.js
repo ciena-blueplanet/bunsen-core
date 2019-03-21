@@ -2,7 +2,15 @@
 import _ from 'lodash'
 import immutable from 'seamless-immutable'
 
-import {CHANGE, CHANGE_MODEL, CHANGE_VALUE, CHANGE_VIEW, IS_VALIDATING, VALIDATION_RESOLVED} from './actions'
+import {
+  CHANGE,
+  CHANGE_MODEL,
+  CHANGE_VALUE,
+  CHANGE_VIEW,
+  IS_VALIDATING,
+  IS_VALIDATING_FIELD,
+  VALIDATION_RESOLVED
+} from './actions'
 import {getChangeSet} from './change-utils'
 import {dereference} from './dereference'
 import evaluateConditions from './evaluate-conditions'
@@ -384,6 +392,22 @@ export const actionReducers = {
     return _.defaults({
       isValidating: action.isValidating,
       lastAction: IS_VALIDATING
+    }, state)
+  },
+
+  [IS_VALIDATING_FIELD]: function (state, action) {
+    let {validatingFields = {}} = state
+    let newValidatingFields
+    // Currently validating the field
+    if (action.validating === true) {
+      newValidatingFields = _.defaults({
+        [action.field]: true
+      }, validatingFields)
+    } else {
+      newValidatingFields = _.omit(validatingFields, [action.field])
+    }
+    return _.defaults({
+      validatingFields: newValidatingFields
     }, state)
   }
 }

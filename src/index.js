@@ -4,6 +4,7 @@ import {
   CHANGE_VALUE,
   CHANGE_VIEW,
   IS_VALIDATING,
+  IS_VALIDATING_FIELD,
   VALIDATION_RESOLVED,
   change,
   changeModel,
@@ -25,7 +26,8 @@ export const actions = {
   updateValidationResults,
   validate,
   VALIDATION_RESOLVED,
-  IS_VALIDATING
+  IS_VALIDATING,
+  IS_VALIDATING_FIELD
 }
 
 import {
