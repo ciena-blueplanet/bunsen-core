@@ -1,3 +1,7 @@
+# 3.0.0 (2019-03-25)
+* Add field individual field validations to validate
+
+
 # 2.5.0 (2019-01-22)
 
 `classNames` originally accepted only an object but support a new feature in Bunsen, this also needs to accept strings.
