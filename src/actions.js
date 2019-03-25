@@ -7,13 +7,15 @@ import {aggregateResults} from './validator/utils'
 export const CHANGE = 'CHANGE'
 export const CHANGE_VALUE = 'CHANGE_VALUE'
 export const VALIDATION_RESOLVED = 'VALIDATION_RESOLVED'
+export const IS_VALIDATING = 'IS_VALIDATING'
+export const IS_VALIDATING_FIELD = 'IS_VALIDATING_FIELD'
 export const CHANGE_MODEL = 'SET_MODEL'
 export const CHANGE_VIEW = 'CHANGE_VIEW'
 
 /**
  * Update form value
  * @param {String} bunsenId - path to form property to update (updates entire form if left empty)
- * @param {*} value - new form valud for bunsenId
+ * @param {*} value - new form value for bunsenId
  * @returns {Object} redux action
  */
 export function changeValue (bunsenId, value) {
@@ -55,15 +57,17 @@ export function change ({model, view, value}) {
     view
   }
 }
-
-export function updateValidationResults (validationResult) {
-  const errorsByInput = _.groupBy(validationResult.errors, 'path')
+function mapErrorsFromValidation (errors) {
+  const errorsByInput = _.groupBy(errors, 'path')
   const errorsFilteredToMessagesOnly = _.mapValues(
     errorsByInput,
     (fieldErrors, bunsenId) => _.map(fieldErrors, 'message')
   )
-  const errorsMappedToDotNotation = _.mapKeys(errorsFilteredToMessagesOnly, (value, key) => getPath(key))
+  return _.mapKeys(errorsFilteredToMessagesOnly, (value, key) => getPath(key))
+}
 
+export function updateValidationResults (validationResult) {
+  const errorsMappedToDotNotation = mapErrorsFromValidation(validationResult.errors)
   return {
     errors: errorsMappedToDotNotation,
     type: VALIDATION_RESOLVED,
@@ -173,9 +177,12 @@ function isEmptyValue (value) {
 }
 
 function dispatchUpdatedResults (dispatch, results) {
-  const aggregatedResult = aggregateResults(results)
+  const {errors, warnings} = aggregateResults(results)
   // TODO: Dispatch an err action
-  dispatch(updateValidationResults(aggregatedResult))
+  dispatch(updateValidationResults({
+    errors: errors,
+    warnings: warnings
+  }))
 }
 
 /**
@@ -220,16 +227,19 @@ function getDefaultedValue ({inputValue, previousValue, bunsenId, renderModel, m
  * @param {Object} inputValue - value of what changed
  * @param {Object} renderModel - bunsen model
  * @param {Array<Function>} validators - custom validators
+ * @param {Array<Object>} fieldValidators - custom field validators
  * @param {Function} [all=Promise.all] - framework specific Promise.all method
  * @param {Boolean} [forceValidation=false] - whether or not to force validation
  * @param {Boolean} [mergeDefaults=false] - whether to merge defaults with initial values
  * @returns {Function} Function to asynchronously validate
  */
 export function validate (
-  bunsenId, inputValue, renderModel, validators, all = Promise.all, forceValidation = false, mergeDefaults = false
+  bunsenId, inputValue, renderModel, validators, fieldValidators,
+   all = Promise.all, forceValidation = false, mergeDefaults = false
 ) {
   return function (dispatch, getState) {
-    let formValue = getState().value
+    const {value: initialFormValue} = getState()
+    let formValue = initialFormValue
     const previousValue = _.get(formValue, bunsenId)
 
     inputValue = getDefaultedValue({inputValue, previousValue, bunsenId, renderModel, mergeDefaults})
@@ -248,13 +258,31 @@ export function validate (
     const result = validateValue(formValue, renderModel)
 
     const promises = []
+    dispatch({
+      type: IS_VALIDATING,
+      isValidating: true
+    })
     validators.forEach((validator) => {
-      promises.push(validator(formValue))
+      const type = typeof validator
+      if (type === 'function') {
+        // Original validation. Always validates
+        promises.push(validator(formValue))
+      }
     })
 
+    const fieldValidationPromises = fieldValidators ? fieldValidation(dispatch, getState,
+      fieldValidators, formValue, initialFormValue, all) : []
+
+    const doneValidatingCallback = () => {
+      dispatch({
+        type: IS_VALIDATING,
+        isValidating: false
+      })
+    }
     // Promise.all fails in Node when promises array is empty
     if (promises.length === 0) {
       dispatchUpdatedResults(dispatch, [result])
+      _guardPromiseAll(fieldValidationPromises, all, doneValidatingCallback)
       return
     }
 
@@ -263,6 +291,121 @@ export function validate (
         const results = _.map(snapshots, 'value')
         results.push(result)
         dispatchUpdatedResults(dispatch, results)
-      })
+      }).then(() => _guardPromiseAll(fieldValidationPromises, all, doneValidatingCallback))
+  }
+}
+
+/**
+ * Field validation. Only validate if field has changed.
+ * Meant for expensive validations like server side validation
+ * @function fieldValidation
+ * @param  {Function} dispatch        Redux store dispatch
+ * @param  {Function} getState        Function that returns current state of store
+ * @param  {Array<Object>} fieldValidators     Array of field validators
+ * @param  {Object} formValue           value of what changed
+ * @param  {Object} initialFormValue    initial value before change
+ * @param  {Function} all    framework specific Promise.all method
+ * @returns {Array<Promise>} Array of field validation promises
+ */
+function fieldValidation (dispatch, getState, fieldValidators, formValue, initialFormValue, all) {
+  let fieldsBeingValidated = []
+  const allValidationPromises = []
+  fieldValidators.forEach(validator => {
+    /**
+     * Field validator definition
+     * @property {String} field field to validate
+     * @property {String[]} fields fields to validate
+     * @property {Function} validator validation function to validate field/fields. Must return field within error/warning
+     * @property {Function[]} validators validation functions to validate field/fields. Must return field within error/warning
+     */
+    const {field, fields, validator: validatorFunc, validators: validatorFuncs} = validator
+
+    const fieldsToValidate = fields || [field]
+    fieldsBeingValidated = fieldsBeingValidated.concat(fieldsToValidate)
+    fieldsToValidate.forEach((field) => {
+      let fieldValidationPromises = []
+      const newValue = _.get(formValue, field)
+      const oldValue = _.get(initialFormValue, field)
+
+      // Check if field value has changed
+      if (!_.isEqual(newValue, oldValue) || !initialFormValue) {
+        dispatchFieldIsValidating(dispatch, field, true)
+        const validations = validatorFuncs || [validatorFunc]
+            // Send validator formValue, the field we're validating against, and the field's value
+        validations.forEach((validatorFunc, index) => {
+          const fieldValidationPromise = validatorFunc(formValue, field, newValue)
+            .then((result) => {
+              const {
+                fieldValidationResult: {
+                  errors: currentErrors = [],
+                  warnings: currentWarnings = []
+                } = {}
+              } = getState()
+              const validationId = `${field}-${index}`
+              const filterOutValidationId = (item) => item.validationId !== validationId
+              const filteredOutErrors = currentErrors.filter(filterOutValidationId)
+              const filteredOutWarnings = currentWarnings.filter(filterOutValidationId)
+
+              // No need to use `aggregateResults as we should never have isRequired
+              const {
+                errors = [], warnings = []
+              } = result.value
+              const attachValidationId = (item) => {
+                return _.assign({
+                  validationId,
+                  field
+                }, item)
+              }
+              const newErrors = filteredOutErrors.concat(errors.map(attachValidationId))
+              const errorsMappedToDotNotation = mapErrorsFromValidation(newErrors)
+
+              dispatch({
+                fieldErrors: errorsMappedToDotNotation,
+                type: VALIDATION_RESOLVED,
+                fieldValidationResult: {
+                  errors: newErrors,
+                  warnings: filteredOutWarnings.concat(warnings.map(attachValidationId))
+                }
+              })
+
+              return result
+            })
+          allValidationPromises.push(fieldValidationPromise)
+          fieldValidationPromises.push(fieldValidationPromise)
+        })
+      }
+      if (fieldValidationPromises.length >= 1) {
+        all(fieldValidationPromises).then(() => {
+          dispatchFieldIsValidating(dispatch, field, false)
+        })
+      }
+    })
+  })
+
+  return allValidationPromises
+}
+
+function dispatchFieldIsValidating (dispatch, field, validating = true) {
+  dispatch({
+    field,
+    type: IS_VALIDATING_FIELD,
+    validating
+  })
+}
+
+/**
+ * Simple function to guard Promise.all
+ * @function _guardPromiseAll
+ * @param  {Array<Promise>} promises Array of promises
+ * @param  {Function} all      Promise all function
+ * @param  {Function} callback Function to call after all promises finished
+ */
+function _guardPromiseAll (promises, all, callback) {
+  if (promises.length === 0) {
+    callback()
+  } else {
+    all(promises).then(() => {
+      callback()
+    })
   }
 }

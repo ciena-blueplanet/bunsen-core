@@ -2,7 +2,15 @@
 import _ from 'lodash'
 import immutable from 'seamless-immutable'
 
-import {CHANGE, CHANGE_MODEL, CHANGE_VALUE, CHANGE_VIEW, VALIDATION_RESOLVED} from './actions'
+import {
+  CHANGE,
+  CHANGE_MODEL,
+  CHANGE_VALUE,
+  CHANGE_VIEW,
+  IS_VALIDATING,
+  IS_VALIDATING_FIELD,
+  VALIDATION_RESOLVED
+} from './actions'
 import {getChangeSet} from './change-utils'
 import {dereference} from './dereference'
 import evaluateConditions from './evaluate-conditions'
@@ -13,7 +21,10 @@ import evaluateViewConditions from './view-conditions'
 const INITIAL_VALUE = {
   lastAction: null,
   errors: {},
+  fieldErrors: {},
+  validatingFields: {},
   validationResult: {warnings: [], errors: []},
+  fieldValidationResult: {warnings: [], errors: []},
   value: null,
   model: {}, // Model calculated by the reducer
   baseModel: {}, // Original model recieved,
@@ -367,8 +378,39 @@ export const actionReducers = {
   [VALIDATION_RESOLVED]: function (state, action) {
     return _.defaults({
       errors: action.errors,
+      fieldErrors: action.fieldErrors,
       lastAction: VALIDATION_RESOLVED,
-      validationResult: action.validationResult
+      validationResult: action.validationResult,
+      fieldValidationResult: action.fieldValidationResult
+    }, state)
+  },
+
+    /**
+   * Update is validating result
+   * @param {State} state - state to update
+   * @param {Action} action - action
+   * @returns {State} - updated state
+   */
+  [IS_VALIDATING]: function (state, action) {
+    return _.defaults({
+      isValidating: action.isValidating,
+      lastAction: IS_VALIDATING
+    }, state)
+  },
+
+  [IS_VALIDATING_FIELD]: function (state, action) {
+    let {validatingFields = {}} = state
+    let newValidatingFields
+    // Currently validating the field
+    if (action.validating === true) {
+      newValidatingFields = _.defaults({
+        [action.field]: true
+      }, validatingFields)
+    } else {
+      newValidatingFields = _.omit(validatingFields, [action.field])
+    }
+    return _.defaults({
+      validatingFields: newValidatingFields
     }, state)
   }
 }

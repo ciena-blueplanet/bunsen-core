@@ -25,7 +25,9 @@ describe('reducer', function () {
     actions.CHANGE,
     actions.CHANGE_MODEL,
     actions.CHANGE_VALUE,
-    actions.VALIDATION_RESOLVED
+    actions.VALIDATION_RESOLVED,
+    actions.IS_VALIDATING,
+    actions.IS_VALIDATING_FIELD
   ]
     .forEach((actionType) => {
       describe(`when action type is ${actionType}`, function () {
@@ -724,11 +726,74 @@ describe('reducer', function () {
 
       expect(changedState).to.eql({
         errors: [],
+        fieldErrors: undefined,
+        fieldValidationResult: undefined,
         lastAction: 'VALIDATION_RESOLVED',
         validationResult: ['you look kinda fat'],
         value: {},
         baseModel: {}
       })
+    })
+
+    it('set field errrors and validation', function () {
+      var initialState = {
+        errors: ['this is broken'],
+        validationResult: ['this sucks'],
+        value: {},
+        baseModel: {}
+      }
+
+      var changedState = reducer(initialState, {
+        type: actions.VALIDATION_RESOLVED, fieldErrors: ['rude'], fieldValidationResult: ['that is really rude']
+      })
+
+      expect(changedState).to.eql({
+        errors: ['this is broken'],
+        fieldErrors: ['rude'],
+        fieldValidationResult: ['that is really rude'],
+        lastAction: 'VALIDATION_RESOLVED',
+        validationResult: ['this sucks'], value: {},
+        baseModel: {}
+      })
+    })
+  })
+})
+
+describe('IS_VALIDATING_FIELD reduced', function () {
+  const isValidatingFieldReducer = actionReducers[actions.IS_VALIDATING_FIELD]
+  it('should add field to validatingFields when true', function () {
+    const result = isValidatingFieldReducer({
+      validatingFields: {
+        foo: true,
+        bar: true
+      }
+    }, {
+      validating: true,
+      field: 'foobar'
+    })
+    expect(result).to.deep.equal({
+      validatingFields: {
+        foo: true,
+        bar: true,
+        foobar: true
+      }
+    })
+  })
+
+  it('should remove field from validatingFields when false', function () {
+    const result = isValidatingFieldReducer({
+      validatingFields: {
+        foo: true,
+        bar: true
+      }
+    }, {
+      validating: false,
+      field: 'foo'
+    })
+    expect(result).to.deep.equal({
+      validatingFields: {
+        bar: true
+      }
     })
   })
 })
