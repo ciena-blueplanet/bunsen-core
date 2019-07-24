@@ -506,6 +506,11 @@ const definitions = {
       endpoint: {
         type: 'string'
       },
+      
+      // attribute to set the maximum text length required to filter
+      maxNumOfFilterRequired: {
+        type: number
+      },
 
       // the attribute to enable local filtering
       localFiltering: {
@@ -547,6 +552,11 @@ const definitions = {
             }
           },
 
+          // attribute to set the maximum text length required to filter
+          maxNumOfFilterRequired: {
+            type: number
+          },
+          
           // description: the API endpoint for list-based inputs
           endpoint: {
             type: 'string'
