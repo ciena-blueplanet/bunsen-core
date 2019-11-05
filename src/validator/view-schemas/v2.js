@@ -113,6 +113,11 @@ const definitions = {
         '$ref': '#/definitions/arrayOptions'
       },
 
+      // Text to display at bottom of cell
+      cellMessage: {
+        type: 'string'
+      },
+
       // class names to put on DOM elements
       classNames: {
         oneOf: [{
