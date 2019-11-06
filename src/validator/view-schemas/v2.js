@@ -113,11 +113,6 @@ const definitions = {
         '$ref': '#/definitions/arrayOptions'
       },
 
-      // Text to display at bottom of cell
-      cellMessage: {
-        type: 'string'
-      },
-
       // class names to put on DOM elements
       classNames: {
         oneOf: [{
@@ -283,6 +278,11 @@ const definitions = {
           {'$ref': '#/definitions/textareaRenderer'},
           {'$ref': '#/definitions/urlRenderer'}
         ]
+      },
+
+      // Text to display at bottom of section
+      sectionFootnote: {
+        type: 'string'
       },
 
       // user defined identification string
