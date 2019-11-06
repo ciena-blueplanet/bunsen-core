@@ -217,6 +217,11 @@ const definitions = {
         type: 'string'
       },
 
+      // Text to display at bottom of cell
+      footnote: {
+        type: 'string'
+      },
+
       // Whether or not cell label should be hidden
       hideLabel: {
         default: false,
@@ -278,11 +283,6 @@ const definitions = {
           {'$ref': '#/definitions/textareaRenderer'},
           {'$ref': '#/definitions/urlRenderer'}
         ]
-      },
-
-      // Text to display at bottom of section
-      sectionFootnote: {
-        type: 'string'
       },
 
       // user defined identification string
