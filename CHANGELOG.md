@@ -1,3 +1,7 @@
+# 3.1.0 (2019-11-06)
+Added 'cellMessage' property for cell view schema
+
+
 # 3.0.0 (2019-03-25)
 * Add field individual field validations to validate
 
