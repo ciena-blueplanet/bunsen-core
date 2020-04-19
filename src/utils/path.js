@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import {parseVariables} from '../utils'
 
 /* eslint-disable complexity */
 /**
@@ -48,7 +49,7 @@ export class ValueWrapper {
 
   constructor (value, curPath) {
     this.value = value
-    this.path = ValueWrapper.pathAsArray(curPath)
+    this.path = ValueWrapper.pathAsArray(parseVariables(this.value, curPath))
   }
 
   /**
@@ -70,6 +71,7 @@ export class ValueWrapper {
       }
       return _.get(this.value, this.path.join('.'))
     }
+    path = parseVariables(this.value, path)
     path = path.split('./')
 
     if (path.length <= 1) {
@@ -94,7 +96,7 @@ export class ValueWrapper {
     if (path === undefined) {
       return this
     }
-    path = ValueWrapper.pathAsArray(path)
+    path = ValueWrapper.pathAsArray(parseVariables(this.value, path))
     return new ValueWrapper(this.value, this.path.concat(path))
   }
 }
