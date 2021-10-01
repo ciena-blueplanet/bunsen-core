@@ -112,8 +112,7 @@ function getSchema (pathStack, model, resolveRef) {
   }
 
   if (model.properties) {
-    const current = pathStack.pop()
-    return getSchema(pathStack, model.properties[current], resolveRef)
+    return modelFromPropertiesOrDependencies(model, pathStack, resolveRef)
   }
 
   if (model.items) { // This model is an array
@@ -122,6 +121,29 @@ function getSchema (pathStack, model, resolveRef) {
   }
 
   return {}
+}
+
+function modelFromPropertiesOrDependencies (model, pathStack, resolveRef) {
+  const current = pathStack.pop()
+  if (model.properties[current]) {
+    return getSchema(pathStack, model.properties[current], resolveRef)
+  } else {
+    // must be a dependency
+    let modelFromDependency
+    Object.keys(model.dependencies).find(aKey => {
+      if (model.dependencies[aKey]['properties'][current]) {
+        modelFromDependency = model.dependencies[aKey]['properties'][current]
+        return true
+      }
+      return false
+    })
+    if (modelFromDependency) {
+      return getSchema(pathStack, modelFromDependency, resolveRef)
+    } else {
+      console.warn(`Could not find schema for ${current}`)
+      return {}
+    }
+  }
 }
 
 function findSchema (model, path, resolveRef) {
