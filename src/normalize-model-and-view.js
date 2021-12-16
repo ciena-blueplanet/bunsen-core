@@ -88,13 +88,14 @@ export function addBunsenModelProperty (bunsenModel, propertyModel, modelPath) {
 
     if (key in pointer) {
       pointer[key] = Object.assign({}, pointer[key])
-    } else if (segments.length === 0) {
-      pointer[key] = propertyModel
-    } else {
+    } else if (segments.length !== 0) {
       pointer[key] = {
         properties: {},
         type: 'object'
       }
+    }
+    if (segments.length === 0) {
+      pointer[key] = propertyModel
     }
 
     pointer = pointer[key]
@@ -207,8 +208,24 @@ function pluckFromArrayOptions (cell, modelPath, models, cellDefinitions) {
 }
 
 /**
+ * Verify if any of the children need to be added to the model
+ * @param {BunsenCell} cell BunsenCell with array options
+ * @param {BunsenModelPath} modelPath Current path within the model
+ * @param {Object} models Hash containing schemas to add
+ * @param {Object} cellDefinitions Hash containing cell definitions
+ * @param {boolean} includeParentPath Will the path be prepended with the parent
+ */
+function pluckChildren (cell, modelPath, models, cellDefinitions, includeParentPath) {
+  cell.children.forEach((aCell) => {
+    const path = includeParentPath ? `${cell.id}.${aCell.model}` : aCell.model
+    const newPath = typeof aCell.model === 'string' ? modelPath.concat(path) : modelPath
+    pluckModels(aCell, newPath, models, cellDefinitions)
+  })
+}
+
+/**
  * Collects schemas from a cell to add to the model in a hash. Keys in the hash are
- * the schema's path withinthe bunsen model.
+ * the schema's path within the bunsen model.
  *
  * @param {BunsenCell} cell BunsenCell with array options
  * @param {BunsenModelPath} modelPath Current path within the model
@@ -220,11 +237,11 @@ function pluckModels (cell, modelPath, models, cellDefinitions) {
   if (_.isObject(cell.model)) {
     const addedPath = appendModelPath(modelPath.modelPath(), cell.id, cell.internal)
     models[addedPath] = cell.model
+    if (cell.children) {
+      pluckChildren(cell, modelPath, models, cellDefinitions, true)
+    }
   } else if (cell.children) { // recurse on objects
-    cell.children.forEach((cell) => {
-      const newPath = typeof cell.model === 'string' ? modelPath.concat(cell.model) : modelPath
-      pluckModels(cell, newPath, models, cellDefinitions)
-    })
+    pluckChildren(cell, modelPath, models, cellDefinitions, false)
   } else if (cell.arrayOptions) { // recurse on arrays
     pluckFromArrayOptions(cell, modelPath, models, cellDefinitions)
   }
