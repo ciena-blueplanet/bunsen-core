@@ -232,7 +232,7 @@ function pluckChildren (cell, modelPath, models, cellDefinitions, includeParentP
  * @param {Object} models Hash containing schemas to add
  * @param {Object} cellDefinitions Hash containing cell definitions
  */
-function pluckModels (cell, modelPath, models, cellDefinitions) {
+export function pluckModels (cell, modelPath, models, cellDefinitions) {
   cell = extendCell(cell, cellDefinitions)
   if (_.isObject(cell.model)) {
     const addedPath = appendModelPath(modelPath.modelPath(), cell.id, cell.internal)

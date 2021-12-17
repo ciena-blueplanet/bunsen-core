@@ -2,6 +2,7 @@ var expect = require('chai').expect
 
 const stuff = require('../lib/normalize-model-and-view')
 const deepFreeze = require('./deep-freeze')
+const {BunsenModelPath} = require('../lib/utils')
 
 describe('normalize model and view', function () {
   describe('addBunsenModelProperty()', () => {
@@ -100,6 +101,27 @@ describe('normalize model and view', function () {
               }
             },
             type: 'object'
+          }
+        },
+        type: 'object'
+      })
+    })
+    it('overwriting an existing model', () => {
+      const partial = {type: 'number'}
+      const actual = stuff.addBunsenModelProperty(model, partial, 'properties.bar.properties.baz')
+
+      expect(actual).to.eql({
+        properties: {
+          bar: {
+            properties: {
+              baz: {
+                type: 'number'
+              }
+            },
+            type: 'object'
+          },
+          foo: {
+            type: 'string'
           }
         },
         type: 'object'
@@ -355,6 +377,131 @@ describe('normalize model and view', function () {
             ]
           }
         ]
+      })
+    })
+  })
+
+  describe('pluckModels', () => {
+    it('should add object models including extended cell definitions', () => {
+      const bunsenModel = {
+        properties: {
+          properties: {
+            properties: {
+              l1ServiceEndPointList: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    node: {
+                      type: 'string',
+                      title: 'Node'
+                    },
+                    port: {
+                      type: 'string',
+                      title: 'Port'
+                    }
+                  },
+                  required: [
+                    'node',
+                    'port'
+                  ]
+                }
+              }
+            },
+            type: 'object',
+            required: [
+              'l1ServiceEndPointList'
+            ]
+          }
+        },
+        type: 'object',
+        required: [
+          'properties'
+        ]
+      }
+      const cell = {
+        children: [
+          {
+            id: 'properties.l1ServiceEndPointList',
+            extends: 'endPoints',
+            model: {
+              type: 'array',
+              title: 'Endpoints',
+              minItems: 2,
+              items: {
+                type: 'object',
+                properties: {
+                  node: {
+                    type: 'string',
+                    title: 'Node'
+                  },
+                  port: {
+                    type: 'string',
+                    title: 'Port'
+                  }
+                },
+                required: [
+                  'node',
+                  'port'
+                ]
+              }
+            }
+          }
+        ]
+      }
+      const modelPath = new BunsenModelPath(bunsenModel)
+      const cellDefinitions = {
+        endPoints: {
+          children: [
+            {
+              classNames: {
+                cell: 'one-half'
+              },
+              model: '0',
+              label: 'A-end',
+              extends: 'endPoint'
+            },
+            {
+              classNames: {
+                cell: 'one-half'
+              },
+              model: '1',
+              label: 'Z-end',
+              extends: 'endPoint'
+            }
+          ]
+        },
+        endPoint: {
+          children: [
+            {
+              id: 'domainId',
+              internal: true,
+              model: {
+                type: 'string'
+              },
+              label: 'Domain',
+              placeholder: 'Select a domain ...'
+            },
+            {
+              model: 'node',
+              label: 'Node',
+              placeholder: 'Select a node ...'
+            },
+            {
+              model: 'port',
+              label: 'Port',
+              placeholder: 'Select a port ...'
+            }
+          ]
+        }
+      }
+      let models = {}
+      stuff.pluckModels(cell, modelPath, models, cellDefinitions)
+      expect(models).to.eql({
+        'properties.properties.properties.l1ServiceEndPointList': cell.children[0].model,
+        'properties.properties.properties.l1ServiceEndPointList.items.properties._internal.properties.domainId': {
+          type: 'string'
+        }
       })
     })
   })
