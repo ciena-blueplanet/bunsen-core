@@ -1,3 +1,6 @@
+# 3.1.1 (2021-12-17)
+* Fixed Cannot extend from a model object
+
 # 3.1.0 (2019-11-06)
 Added 'cellMessage' property for cell view schema
 
