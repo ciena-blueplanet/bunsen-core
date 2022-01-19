@@ -239,7 +239,7 @@ const definitions = {
       isSection: {
         type: 'boolean'
       },
-      
+
       // ID used to reference the cell externally
       cellId: {
         type: 'string'
