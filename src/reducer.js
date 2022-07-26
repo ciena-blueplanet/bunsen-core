@@ -16,6 +16,7 @@ import {dereference} from './dereference'
 import evaluateConditions from './evaluate-conditions'
 import {set, unset} from './immutable-utils'
 import normalizeModelAndView from './normalize-model-and-view'
+import evaluateValue from './value-utils'
 import evaluateViewConditions from './view-conditions'
 
 const INITIAL_VALUE = {
@@ -361,7 +362,10 @@ export const actionReducers = {
 
       if (state.baseView) {
         const newView = evaluateViewConditions(state.baseView, newState.value)
+        const newValue = evaluateValue(state.baseView, newView, newState.value)
         newState.view = _.isEqual(state.view, newView) ? state.view : newView
+
+        newState.value = newValue
       }
     }
 
